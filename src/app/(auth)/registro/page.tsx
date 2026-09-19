@@ -39,7 +39,7 @@ export default function RegistroPage() {
       </SubmitButton>
       <p className="text-center text-sm text-muted">
         <Link href="/entrar" className="text-muted underline underline-offset-4 hover:text-ink">
-          Entrar
+          Iniciar sesión
         </Link>
       </p>
     </form>

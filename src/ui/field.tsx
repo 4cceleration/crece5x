@@ -8,9 +8,9 @@ export function Field({ label, hint, className = '', ...props }: ComponentProps<
         <input
           {...props}
           placeholder=" "
-          className={`peer h-14 w-full rounded-md bg-surface px-4 pb-2 pt-6 text-ink outline-none focus:ring-2 focus:ring-brand ${className}`}
+          className={`peer h-14 w-full rounded-md bg-surface px-4 pb-2 pt-6 text-ink outline-none ring-1 ring-transparent transition-[background-color,box-shadow] duration-200 ease-out hover:bg-[#F1F1EE] focus:bg-white focus:ring-brand/60 focus-visible:outline-none ${className}`}
         />
-        <span className="pointer-events-none absolute left-4 top-2 text-xs text-muted transition-all duration-150 ease-out peer-[:placeholder-shown:not(:focus)]:top-1/2 peer-[:placeholder-shown:not(:focus)]:-translate-y-1/2 peer-[:placeholder-shown:not(:focus)]:text-base">
+        <span className="pointer-events-none absolute left-4 top-2 text-xs text-muted transition-all duration-200 ease-out peer-focus:text-brand-strong peer-[:placeholder-shown:not(:focus)]:top-1/2 peer-[:placeholder-shown:not(:focus)]:-translate-y-1/2 peer-[:placeholder-shown:not(:focus)]:text-base">
           {label}
         </span>
       </span>

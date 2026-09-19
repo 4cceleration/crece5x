@@ -11,7 +11,7 @@ export default function EntrarPage() {
 
   return (
     <form action={action} className="space-y-5">
-      <h1 className="sr-only">Entrar</h1>
+      <h1 className="sr-only">Iniciar sesión</h1>
       <Field label="Correo" name="email" type="email" autoComplete="email" required />
       <Field
         label="Contraseña"
@@ -25,8 +25,8 @@ export default function EntrarPage() {
           {state.error}
         </p>
       )}
-      <SubmitButton className="w-full" pendingLabel="Entrando…">
-        Entrar
+      <SubmitButton className="w-full" pendingLabel="Iniciando sesión…">
+        Iniciar sesión
       </SubmitButton>
       <p className="text-center text-sm text-muted">
         <Link href="/registro" className="text-muted underline underline-offset-4 hover:text-ink">

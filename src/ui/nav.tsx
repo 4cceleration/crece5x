@@ -24,7 +24,7 @@ const NAV: Record<Role, { href: string; label: string }[]> = {
 export function Nav({ role }: { role: Role }) {
   return (
     <header className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-6 sm:px-6">
-      <Link href="/" className="text-lg font-semibold tracking-tight">
+      <Link href="/" className="font-display text-xl font-semibold tracking-tight">
         crece<span className="text-brand">.</span>
       </Link>
       <nav aria-label="Principal" className="-mr-3 flex items-center overflow-x-auto text-sm">
