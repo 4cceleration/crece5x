@@ -7,6 +7,8 @@ import { analyzeAction, finalizeAction, removeUploadAction, uploadAction } from 
 import { UploadForm } from '@/components/upload-form'
 import { buttonClass } from '@/ui/button'
 import { SubmitButton } from '@/ui/submit-button'
+import { Icon } from '@/ui/icons'
+import { StepCard } from '@/components/step-card'
 
 export const maxDuration = 60
 
@@ -26,48 +28,62 @@ export default async function ExaminarPage({
 
   if (c.flags.tieneEEFF !== true) {
     return (
-      <>
-        <section className="space-y-6">
-          <h1 className="text-3xl font-semibold">Sin estados financieros no hay nada que examinar</h1>
-          <p className="max-w-prose text-muted">Le mostramos su resultado con lo que respondió. Un consultor puede ayudarle a prepararlos.</p>
-          <form action={finalizeAction.bind(null, id)}>
-            <SubmitButton pendingLabel="Calculando…">Ver resultado</SubmitButton>
-          </form>
-        </section>
-      </>
+      <StepCard
+        eyebrow="Examinar"
+        title="Sin estados financieros no hay nada que examinar"
+        subtitle="Le mostramos su resultado con lo que respondió. Un consultor puede ayudarle a prepararlos."
+      >
+        <form action={finalizeAction.bind(null, id)} className="flex justify-center">
+          <SubmitButton className="w-full max-w-sm gap-2" pendingLabel="Calculando…">
+            Ver resultado
+            <Icon name="siguiente" size={18} />
+          </SubmitButton>
+        </form>
+      </StepCard>
     )
   }
 
   const files = await listUploads(db, id)
   return (
-    <>
-      <section className="space-y-8">
-        <h1 className="text-3xl font-semibold">Suba sus estados financieros</h1>
+    <StepCard
+      eyebrow="Examinar"
+      title="Suba sus estados financieros"
+      subtitle="Balance, estado de resultados y notas del último cierre."
+    >
+      <div className="space-y-5 text-left">
         <UploadForm action={uploadAction.bind(null, id)} />
         {error && <p className="text-sm text-bad">{error}</p>}
         {files.length > 0 && (
-          <ul className="divide-y divide-surface">
+          <ul className="divide-y divide-ink/10 rounded-md bg-white/70 ring-1 ring-ink/10">
             {files.map((f) => (
-              <li key={f.id} className="flex items-center justify-between py-3">
-                <span className="truncate">{f.fileName}</span>
+              <li key={f.id} className="flex items-center justify-between gap-3 px-4 py-3">
+                <span className="flex min-w-0 items-center gap-2">
+                  <Icon name="documento" size={20} className="text-brand-strong" />
+                  <span className="truncate">{f.fileName}</span>
+                </span>
                 <form action={removeUploadAction.bind(null, id, f.id)}>
-                  <button className={buttonClass('link')}>Quitar</button>
+                  <button className="text-sm text-muted hover:text-bad">Quitar</button>
                 </form>
               </li>
             ))}
           </ul>
         )}
-        <div className="flex flex-wrap items-center gap-6">
-          {files.length > 0 && (
-            <form action={analyzeAction.bind(null, id)}>
-              <SubmitButton pendingLabel="Analizando… puede tardar un minuto">Analizar</SubmitButton>
-            </form>
-          )}
-          <form action={finalizeAction.bind(null, id)}>
-            <button className={buttonClass('link')}>{files.length > 0 ? 'Ver resultado sin analizar' : 'Continuar sin archivos'}</button>
+      </div>
+      <div className="mt-8 flex flex-col items-center gap-4">
+        {files.length > 0 && (
+          <form action={analyzeAction.bind(null, id)} className="w-full max-w-sm">
+            <SubmitButton className="w-full gap-2" pendingLabel="Analizando… puede tardar un minuto">
+              <Icon name="examinar" size={20} />
+              Analizar
+            </SubmitButton>
           </form>
-        </div>
-      </section>
-    </>
+        )}
+        <form action={finalizeAction.bind(null, id)}>
+          <button className={buttonClass('link')}>
+            {files.length > 0 ? 'Ver resultado sin analizar' : 'Continuar sin archivos'}
+          </button>
+        </form>
+      </div>
+    </StepCard>
   )
 }

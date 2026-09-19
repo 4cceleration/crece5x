@@ -3,12 +3,20 @@ import { db } from '@/db'
 import { requireCompany } from '@/lib/session'
 import { getOwnedConsultation, loadDiagnosticState } from '@/services/consultations'
 import { nextStep, previousTarget } from '@/domain/flow'
-import { ANSWER_LABEL, DIMENSIONS, type AnswerValue } from '@/domain/types'
+import { ANSWER_LABEL, type AnswerValue } from '@/domain/types'
 import { answerAction, flagAction, undoAction } from '../../actions'
-import { buttonClass } from '@/ui/button'
+import { Icon } from '@/ui/icons'
+import { StepCard, backLinkClass } from '@/components/step-card'
 
 const option =
-  'h-14 rounded-md bg-white ring-1 ring-ink/15 text-lg font-medium text-ink transition-colors hover:bg-brand-soft hover:ring-brand focus-visible:bg-brand-soft'
+  'flex h-16 items-center justify-center gap-2.5 rounded-md bg-white/80 text-lg font-medium text-ink ring-1 ring-ink/10 transition-[background-color,box-shadow] hover:bg-brand-soft hover:ring-brand focus-visible:bg-brand-soft'
+
+const ICON_COLOR: Record<AnswerValue, string> = {
+  si: 'text-ok',
+  parcial: 'text-warn',
+  no: 'text-bad',
+  nose: 'text-muted',
+}
 
 export default async function RevisarPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -26,43 +34,47 @@ export default async function RevisarPage({ params }: { params: Promise<{ id: st
   const key = isFlag ? step.flag : step.question.id
   const title = isFlag ? step.text : step.question.text
   const help = isFlag ? null : step.question.help
-  const context = isFlag
-    ? `Antes de empezar · ${step.position} de ${step.total}`
-    : `${DIMENSIONS.find((d) => d.key === step.question.dimension)?.name} · ${step.position} de ${step.total}`
+  const options: AnswerValue[] = isFlag ? ['si', 'no'] : ['si', 'parcial', 'no', 'nose']
 
   return (
-    <>
-      <div data-step={key} className="space-y-10">
-        <div className="space-y-4">
-          <p className="text-sm text-muted">{context}</p>
-          <h1 className="text-2xl font-semibold leading-snug sm:text-3xl">{title}</h1>
-          {help && (
-            <details className="text-muted">
-              <summary className="cursor-pointer text-sm">¿Qué significa?</summary>
-              <p className="mt-2 max-w-prose">{help}</p>
+    <div data-step={key}>
+      <StepCard
+        title={title}
+        progress={step.position / step.total}
+        back={
+          canGoBack ? (
+            <form action={undoAction.bind(null, id)}>
+              <button className={backLinkClass}>
+                <Icon name="atras" size={16} />
+                Atrás
+              </button>
+            </form>
+          ) : undefined
+        }
+        subtitle={
+          help ? (
+            <details className="mx-auto max-w-md text-sm">
+              <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-muted hover:text-ink">
+                <Icon name="info" size={16} />
+                ¿Qué significa?
+              </summary>
+              <p className="mt-2 text-ink">{help}</p>
             </details>
-          )}
-        </div>
-
-        {isFlag ? (
-          <form action={flagAction.bind(null, id, step.flag)} className="grid grid-cols-2 gap-3">
-            <button name="value" value="si" className={option}>Sí</button>
-            <button name="value" value="no" className={option}>No</button>
-          </form>
-        ) : (
-          <form action={answerAction.bind(null, id, step.question.id)} className="grid grid-cols-2 gap-3">
-            {(['si', 'parcial', 'no', 'nose'] as AnswerValue[]).map((v) => (
-              <button key={v} name="value" value={v} className={option}>{ANSWER_LABEL[v]}</button>
-            ))}
-          </form>
-        )}
-
-        {canGoBack && (
-          <form action={undoAction.bind(null, id)}>
-            <button className={buttonClass('link')}>Atrás</button>
-          </form>
-        )}
-      </div>
-    </>
+          ) : undefined
+        }
+      >
+        <form
+          action={isFlag ? flagAction.bind(null, id, step.flag) : answerAction.bind(null, id, step.question.id)}
+          className="grid grid-cols-2 gap-3"
+        >
+          {options.map((v) => (
+            <button key={v} name="value" value={v} className={option}>
+              <Icon name={v} size={22} className={ICON_COLOR[v]} />
+              {ANSWER_LABEL[v]}
+            </button>
+          ))}
+        </form>
+      </StepCard>
+    </div>
   )
 }

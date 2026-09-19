@@ -61,6 +61,8 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
 
 /* Vidrio: superficie translúcida con desenfoque. Úsese sobre <Backdrop /> para que se note */
 @utility glass {
+  /* color resultante del vidrio sobre el fondo: lo usa la muesca de la etiqueta flotante de los campos */
+  --notch-bg: #F7F8FA;
   background-color: rgb(255 255 255 / 0.62);
   backdrop-filter: blur(24px) saturate(160%);
   -webkit-backdrop-filter: blur(24px) saturate(160%);

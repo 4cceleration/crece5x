@@ -7,6 +7,7 @@ import {
   ChartPieSlice,
   ChatCircleText,
   CheckCircle,
+  CircleHalf,
   Clock,
   Envelope,
   FilePdf,
@@ -20,6 +21,7 @@ import {
   Lock,
   MagnifyingGlass,
   Plant,
+  Question,
   SignIn,
   SignOut,
   SlidersHorizontal,
@@ -28,6 +30,7 @@ import {
   UserPlus,
   UsersThree,
   WarningCircle,
+  XCircle,
 } from '@phosphor-icons/react/ssr'
 
 // Iconos de la app: Phosphor en peso "duotone" (trazo + relleno suave). Usar siempre <Icon name="..." />
@@ -58,6 +61,11 @@ const ICONS = {
   nit: IdentificationCard,
   ingresar: SignIn,
   registrarse: UserPlus,
+  // Respuestas del diagnóstico
+  si: CheckCircle,
+  parcial: CircleHalf,
+  no: XCircle,
+  nose: Question,
   // Pasos del método CRECE
   clasificar: Funnel,
   revisar: ListChecks,

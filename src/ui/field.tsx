@@ -34,7 +34,7 @@ export function Field({
           />
         )}
         <span
-          className={`pointer-events-none absolute ${labelX} top-1/2 origin-left -translate-y-[calc(50%+1.75rem)] scale-75 bg-white px-1 text-base text-muted transition-[translate,scale,color] duration-base peer-focus:text-brand-strong peer-[:placeholder-shown:not(:focus)]:-translate-y-1/2 peer-[:placeholder-shown:not(:focus)]:scale-100`}
+          className={`pointer-events-none absolute ${labelX} top-1/2 origin-left -translate-y-[calc(50%+1.75rem)] scale-75 bg-[linear-gradient(to_bottom,var(--notch-bg,var(--color-canvas))_50%,#fff_50%)] px-1 text-base text-muted transition-[translate,scale,color] duration-base peer-focus:text-brand-strong peer-[:placeholder-shown:not(:focus)]:-translate-y-1/2 peer-[:placeholder-shown:not(:focus)]:scale-100`}
         >
           {label}
         </span>
