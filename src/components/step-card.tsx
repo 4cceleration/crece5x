@@ -5,6 +5,7 @@ export function StepCard({
   subtitle,
   back,
   progress,
+  corner,
   children,
   wide = false,
 }: {
@@ -14,6 +15,8 @@ export function StepCard({
   back?: React.ReactNode
   /** Progreso 0–1 que se muestra como barra fina arriba de la tarjeta */
   progress?: number
+  /** Elemento en la esquina superior derecha de la tarjeta (p. ej. la ayuda de una pregunta) */
+  corner?: React.ReactNode
   children?: React.ReactNode
   wide?: boolean
 }) {
@@ -22,17 +25,18 @@ export function StepCard({
       className={`animate-enter mx-auto flex min-h-[calc(100dvh-14rem)] flex-col justify-center gap-4 ${wide ? 'max-w-2xl' : 'max-w-xl'}`}
     >
       {back && <div className="text-sm">{back}</div>}
-      <div className="glass overflow-hidden rounded-lg">
+      <div className="glass relative rounded-lg">
         {progress !== undefined && (
-          <div className="h-1 bg-ink/8" aria-hidden>
+          <div className="h-1 overflow-hidden rounded-t-lg bg-ink/8" aria-hidden>
             <div
               className="h-1 bg-brand transition-[width] duration-slow"
               style={{ width: `${Math.round(progress * 100)}%` }}
             />
           </div>
         )}
+        {corner && <div className="absolute right-3 top-4 z-10">{corner}</div>}
         <div className="p-6 text-center sm:p-8">
-          <div className={`space-y-2 ${children ? 'mb-8' : ''}`}>
+          <div className={`space-y-2 ${children ? 'mb-8' : ''} ${corner ? 'px-8' : ''}`}>
             {eyebrow && <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted">{eyebrow}</p>}
             <h1 className="font-display text-2xl font-semibold leading-snug tracking-tight sm:text-3xl">{title}</h1>
             {subtitle && <div className="text-muted">{subtitle}</div>}

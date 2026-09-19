@@ -6,6 +6,7 @@ import { nextStep, previousTarget } from '@/domain/flow'
 import { ANSWER_LABEL, type AnswerValue } from '@/domain/types'
 import { answerAction, flagAction, undoAction } from '../../actions'
 import { Icon } from '@/ui/icons'
+import { InfoTip } from '@/ui/info-tip'
 import { StepCard, backLinkClass } from '@/components/step-card'
 
 const option =
@@ -51,17 +52,7 @@ export default async function RevisarPage({ params }: { params: Promise<{ id: st
             </form>
           ) : undefined
         }
-        subtitle={
-          help ? (
-            <details className="mx-auto max-w-md text-sm">
-              <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-muted hover:text-ink">
-                <Icon name="info" size={16} />
-                ¿Qué significa?
-              </summary>
-              <p className="mt-2 text-ink">{help}</p>
-            </details>
-          ) : undefined
-        }
+        corner={help ? <InfoTip text={help} /> : undefined}
       >
         <form
           action={isFlag ? flagAction.bind(null, id, step.flag) : answerAction.bind(null, id, step.question.id)}
