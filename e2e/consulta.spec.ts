@@ -48,8 +48,8 @@ test('consulta completa: registro → clasificar → revisar → examinar → re
   await expect(page.getByText('Enviado. Revise su correo.')).toBeVisible()
 
   await page.getByRole('link', { name: 'Hablar con un consultor' }).click()
-  await page.locator('main ul a').first().click()
-  await page.locator('main ul a').first().click()
+  await page.locator('main table a').first().click() // día en el calendario
+  await page.locator('main ul a').first().click() // hora
   await page.getByRole('button', { name: 'Confirmar cita' }).click()
   await expect(page.getByRole('link', { name: 'Agregar a mi calendario' })).toBeVisible()
   await expect(page.getByText('Laura Consultora', { exact: false })).toBeVisible()

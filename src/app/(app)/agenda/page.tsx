@@ -3,7 +3,9 @@ import { db } from '@/db'
 import { requireCompany } from '@/lib/session'
 import { openSlots, upcomingForCompany } from '@/services/agenda'
 import { uniqueTimes } from '@/domain/slots'
-import { formatDayParts, formatLongDate, formatTime, localDayKey, localHour } from '@/domain/dates'
+import { formatLongDate, formatTime, localDayKey, localHour } from '@/domain/dates'
+import { addMonths, monthKey } from '@/domain/calendar'
+import { MonthCalendar } from '@/components/month-calendar'
 import { bookAction, cancelAction } from './actions'
 import { buttonClass } from '@/ui/button'
 import { Icon } from '@/ui/icons'
@@ -20,10 +22,10 @@ const ERRORS: Record<string, string> = {
 export default async function AgendaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ dia?: string; hora?: string; error?: string }>
+  searchParams: Promise<{ dia?: string; hora?: string; error?: string; mes?: string }>
 }) {
   const { companyId } = await requireCompany()
-  const { dia, hora, error } = await searchParams
+  const { dia, hora, error, mes } = await searchParams
 
   const upcoming = await upcomingForCompany(db, companyId)
   if (upcoming) {
@@ -85,16 +87,11 @@ export default async function AgendaPage({
   }
 
   const times = uniqueTimes(await openSlots(db))
-  const days = [...new Set(times.map((t) => localDayKey(t)))].slice(0, 6)
+  const days = [...new Set(times.map((t) => localDayKey(t)))]
   const errorText = error ? ERRORS[error] : null
 
   if (times.length === 0) {
-    return (
-      <section className="space-y-4 pt-6">
-        <h1 className="text-3xl font-semibold">No hay horarios disponibles</h1>
-        <p className="text-muted">Vuelva a intentarlo en unos días.</p>
-      </section>
-    )
+    return <AgendaCard title="No hay horarios disponibles" subtitle="Vuelva a intentarlo en unos días." />
   }
 
   const chosen = hora ? times.find((t) => t.toISOString() === hora) : undefined
@@ -156,23 +153,21 @@ export default async function AgendaPage({
     )
   }
 
+  // Mes visible: el pedido si está dentro de la ventana de reserva; si no, el del primer día disponible
+  const firstMonth = monthKey(days[0])
+  const lastMonth = monthKey(days[days.length - 1])
+  const month = mes && /^\d{4}-\d{2}$/.test(mes) && mes >= firstMonth && mes <= lastMonth ? mes : firstMonth
   return (
     <AgendaCard title="¿Qué día le sirve?" subtitle="Consulta de 60 minutos con un consultor NIIF">
       {errorText && <p className="mb-4 text-sm text-bad">{errorText}</p>}
-      <ul className="grid grid-cols-3 gap-2">
-        {days.map((d) => {
-          const p = formatDayParts(times.find((t) => localDayKey(t) === d)!)
-          return (
-            <li key={d}>
-              <Link href={`/agenda?dia=${d}`} className={`${chip} h-auto flex-col gap-0.5 py-3`}>
-                <span className="text-xs uppercase tracking-wide text-muted">{p.weekday}</span>
-                <span className="font-display text-2xl font-semibold leading-none">{p.day}</span>
-                <span className="text-xs text-muted">{p.month}</span>
-              </Link>
-            </li>
-          )
-        })}
-      </ul>
+      <MonthCalendar
+        month={month}
+        available={new Set(days)}
+        todayKey={localDayKey(new Date())}
+        hrefFor={(d) => `/agenda?dia=${d}`}
+        prevHref={month > firstMonth ? `/agenda?mes=${addMonths(month, -1)}` : undefined}
+        nextHref={month < lastMonth ? `/agenda?mes=${addMonths(month, 1)}` : undefined}
+      />
     </AgendaCard>
   )
 }
@@ -187,10 +182,10 @@ function AgendaCard({
   title: string
   subtitle?: string
   back?: { href: string; label: string }
-  children: React.ReactNode
+  children?: React.ReactNode
 }) {
   return (
-    <section className="animate-enter mx-auto max-w-xl space-y-4 pt-6">
+    <section className="animate-enter mx-auto flex min-h-[calc(100dvh-14rem)] max-w-xl flex-col justify-center gap-4">
       {back && (
         <Link href={back.href} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink">
           <Icon name="atras" size={16} />
@@ -198,7 +193,7 @@ function AgendaCard({
         </Link>
       )}
       <div className="glass rounded-lg p-6 sm:p-8">
-        <div className="mb-6 space-y-1">
+        <div className={`space-y-1 ${children ? 'mb-6' : ''}`}>
           <h1 className="font-display text-2xl font-semibold tracking-tight">{title}</h1>
           {subtitle && <p className="text-muted first-letter:uppercase">{subtitle}</p>}
         </div>

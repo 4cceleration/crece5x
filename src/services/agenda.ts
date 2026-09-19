@@ -9,6 +9,9 @@ import { appointmentEmail } from '@/mail/templates'
 import { companyEmails } from './companies'
 import { getSettings } from './settings'
 
+// Ventana de reserva: días hacia adelante que se ofrecen en el calendario y se aceptan al confirmar
+export const BOOKING_WINDOW_DAYS = 60
+
 export async function openSlots(db: Db, now = new Date()): Promise<Slot[]> {
   const settings = await getSettings(db)
   const rules = await db
@@ -18,7 +21,7 @@ export async function openSlots(db: Db, now = new Date()): Promise<Slot[]> {
     .select({ consultantId: appointment.consultantId, startsAt: appointment.startsAt, endsAt: appointment.endsAt })
     .from(appointment)
     .where(and(eq(appointment.status, 'reservada'), gt(appointment.endsAt, now)))
-  return availableSlots({ rules, busy, now, days: 14, durationMin: settings.appointmentMinutes, offsetMin: BOGOTA_OFFSET_MIN })
+  return availableSlots({ rules, busy, now, days: BOOKING_WINDOW_DAYS, durationMin: settings.appointmentMinutes, offsetMin: BOGOTA_OFFSET_MIN })
 }
 
 export type BookResult = { ok: true; appointmentId: string } | { ok: false; reason: 'ocupado' | 'ya-tiene-cita' }
