@@ -8,14 +8,14 @@ const DISCLAIMER = 'Este reporte es orientativo y no constituye una opinión de 
 function layout(body: string, disclaimer = false): string {
   return `<!doctype html><html lang="es"><body style="margin:0;background:#ffffff;font-family:Inter,Arial,sans-serif;color:#14213D">
 <div style="max-width:560px;margin:0 auto;padding:32px 20px">
-<p style="font-size:18px;font-weight:600;margin:0 0 32px">crece<span style="color:#F26B1D">.</span></p>
+<p style="font-size:18px;font-weight:600;margin:0 0 32px">crece<span style="color:#3F9B6E">.</span></p>
 ${body}
 ${disclaimer ? `<p style="margin-top:40px;font-size:12px;color:#5B6477">${DISCLAIMER}</p>` : ''}
 </div></body></html>`
 }
 
 const button = (href: string, label: string) =>
-  `<a href="${esc(href)}" style="display:inline-block;background:#C2490F;color:#ffffff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:999px">${esc(label)}</a>`
+  `<a href="${esc(href)}" style="display:inline-block;background:#2E7D5B;color:#ffffff;text-decoration:none;font-weight:600;padding:14px 24px;border-radius:6px">${esc(label)}</a>`
 
 export function reportEmail(d: {
   companyName: string
