@@ -11,7 +11,7 @@ export default function EntrarPage() {
 
   return (
     <form action={action} className="space-y-5">
-      <h1 className="text-3xl font-semibold">Entrar</h1>
+      <h1 className="sr-only">Entrar</h1>
       <Field label="Correo" name="email" type="email" autoComplete="email" required />
       <Field
         label="Contraseña"
