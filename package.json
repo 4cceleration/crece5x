@@ -12,7 +12,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:seed": "tsx src/db/seed.ts",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "e2e:serve": "rm -rf .data/e2e* && mkdir -p .data && npm run db:migrate && npm run db:seed && tsx e2e/make-fixture.ts && next build && next start --port 3100"
   },
   "dependencies": {
     "@libsql/client": "^0.18.0",

@@ -50,7 +50,8 @@ export function getMailer(): Mailer {
   if (process.env.RESEND_API_KEY) {
     return resendMailer(process.env.RESEND_API_KEY, process.env.MAIL_FROM ?? 'CRECE <onboarding@resend.dev>')
   }
-  if (process.env.NODE_ENV !== 'production') return fileMailer(process.env.MAIL_DIR ?? '.data/emails')
+  // MAIL_DIR también fuerza archivos en producción (p. ej. la prueba E2E, que corre con next start)
+  if (process.env.MAIL_DIR || process.env.NODE_ENV !== 'production') return fileMailer(process.env.MAIL_DIR ?? '.data/emails')
   return consoleMailer
 }
 
