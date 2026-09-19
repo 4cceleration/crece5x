@@ -17,6 +17,7 @@
     "admin": "tsx src/cli/admin.ts"
   },
   "dependencies": {
+    "@ai-sdk/groq": "^4.0.46",
     "@libsql/client": "^0.18.0",
     "@phosphor-icons/react": "^2.1.10",
     "@react-pdf/renderer": "^4.9.0",

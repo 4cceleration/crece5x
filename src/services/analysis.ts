@@ -51,7 +51,7 @@ export async function runAnalysis(
     const group = (c.group ?? 2) as Group
     const extracted = await deps.analyst.extract(text)
     const checks = runChecks(extracted, group)
-    const ai = await deps.analyst.judge({ text, extracted, group })
+    const ai = await deps.analyst.judge({ text, extracted, group, alreadyFound: checks.map((f) => f.title) })
     const aiFindings = ai.map((f): NewFinding => ({ ...f, source: 'ia', lesson: lessonForSection(f.niifSection, LESSONS) }))
 
     const all = [...checks, ...aiFindings]
