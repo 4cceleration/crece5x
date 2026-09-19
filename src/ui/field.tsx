@@ -12,3 +12,12 @@ export function Field({ label, hint, className = '', ...props }: ComponentProps<
     </label>
   )
 }
+
+export function Check({ label, ...props }: ComponentProps<'input'> & { label: string }) {
+  return (
+    <label className="flex items-start gap-3 text-ink">
+      <input type="checkbox" className="mt-0.5 size-5 shrink-0 accent-brand-strong" {...props} />
+      <span>{label}</span>
+    </label>
+  )
+}
