@@ -13,6 +13,14 @@ import {
   undoLast,
 } from '@/services/consultations'
 import type { AnswerValue, Flag } from '@/domain/types'
+import { getAnalyst } from '@/ai/analyst'
+import { getStorage } from '@/storage/storage'
+import { appUrl, getMailer } from '@/mail/mailer'
+import { renderReportPdf } from '@/report/report-pdf'
+import { removeUpload, saveUpload } from '@/services/uploads'
+import { runAnalysis } from '@/services/analysis'
+import { finalizeConsultation } from '@/services/report'
+import { audit } from '@/services/audit'
 
 async function owned(id: string) {
   const { companyId, user } = await requireCompany()
@@ -67,4 +75,44 @@ export async function undoAction(id: string) {
   await owned(id)
   await undoLast(db, id)
   redirect(`/consulta/${id}/revisar`)
+}
+
+export async function uploadAction(id: string, fd: FormData) {
+  const { user } = await owned(id)
+  const storage = getStorage()
+  for (const file of fd.getAll('files')) {
+    if (!(file instanceof File) || file.size === 0) continue
+    const r = await saveUpload(db, storage, {
+      consultationId: id,
+      name: file.name,
+      size: file.size,
+      bytes: Buffer.from(await file.arrayBuffer()),
+    })
+    if (!r.ok) redirect(`/consulta/${id}/examinar?error=${encodeURIComponent(`${file.name}: ${r.error}`)}`)
+    await audit(db, { userId: user.id, action: 'subir_archivo', entity: 'upload', entityId: r.id })
+  }
+  redirect(`/consulta/${id}/examinar`)
+}
+
+export async function removeUploadAction(id: string, uploadId: string) {
+  await owned(id)
+  await removeUpload(db, id, uploadId)
+  redirect(`/consulta/${id}/examinar`)
+}
+
+async function finish(id: string) {
+  await finalizeConsultation(db, id, { mailer: getMailer(), renderPdf: renderReportPdf, baseUrl: appUrl() })
+  redirect(`/consulta/${id}/resultado`)
+}
+
+export async function analyzeAction(id: string) {
+  const { user } = await owned(id)
+  await runAnalysis(db, id, { analyst: getAnalyst(), storage: getStorage() })
+  await audit(db, { userId: user.id, action: 'analizar', entity: 'consultation', entityId: id })
+  await finish(id)
+}
+
+export async function finalizeAction(id: string) {
+  await owned(id)
+  await finish(id)
 }
