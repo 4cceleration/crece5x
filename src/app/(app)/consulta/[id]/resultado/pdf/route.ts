@@ -9,6 +9,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   const { id } = await params
   const user = await getCurrentUser()
   if (!user) return new Response('No autorizado', { status: 401 })
+  // La empresa recibe el PDF solo por correo (plan de acción bloqueado en pantalla); el consultor lo descarga aquí
+  if (user.role !== 'consultor') return new Response('No encontrado', { status: 404 })
   if (!(await canViewConsultation(db, user, id))) return new Response('No encontrado', { status: 404 })
   const data = await getResultData(db, id)
   if (!data) return new Response('No encontrado', { status: 404 })

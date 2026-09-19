@@ -16,24 +16,29 @@ export default async function InicioPage() {
   const upcoming = await upcomingForCompany(db, companyId)
   const appointmentLine = upcoming && (
     <p className="text-sm text-muted">
-      Su cita: <Link href="/agenda" className="text-ink underline underline-offset-4">{formatDateTime(upcoming.startsAt)}</Link>
+      Su cita:{' '}
+      <Link href="/agenda" className="text-ink underline underline-offset-4">
+        {formatDateTime(upcoming.startsAt)}
+      </Link>
     </p>
   )
   const firstName = user.name.split(' ')[0]
 
   if (last?.status === 'resultado' && last.finalScore !== null) {
     return (
-      <section className="animate-enter space-y-10 pt-6">
-        <p className="text-muted">Hola, {firstName}. Su índice de salud NIIF:</p>
-        <Score value={last.finalScore} />
-        <div className="flex flex-wrap items-center gap-6">
-          <ButtonLink href={`/consulta/${last.id}/resultado`} className="gap-2">
-            Ver resultado
-            <Icon name="siguiente" size={18} />
-          </ButtonLink>
-          <form action={startConsultationAction}>
-            <button className={buttonClass('link')}>Nueva consulta</button>
-          </form>
+      <section className="animate-enter mx-auto max-w-xl space-y-6 pt-6">
+        <h1 className="font-display text-4xl font-semibold tracking-tight">Hola, {firstName}</h1>
+        <div className="glass space-y-8 rounded-lg p-6 sm:p-8">
+          <Score value={last.finalScore} />
+          <div className="flex flex-wrap items-center gap-6">
+            <ButtonLink href={`/consulta/${last.id}/resultado`} className="gap-2">
+              Ver resultado
+              <Icon name="siguiente" size={18} />
+            </ButtonLink>
+            <form action={startConsultationAction}>
+              <button className={buttonClass('link')}>Nueva consulta</button>
+            </form>
+          </div>
         </div>
         {appointmentLine}
       </section>

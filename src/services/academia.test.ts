@@ -47,7 +47,7 @@ describe('academia', () => {
       await saveAnswer(db, id, step.question.id, 'no')
     }
     await completeReviewIfDone(db, id)
-    await finalizeConsultation(db, id, { mailer: { send: async () => {} }, renderPdf: async () => Buffer.from('%PDF'), baseUrl: 'https://crece.test' })
+    await finalizeConsultation(db, id)
     const terminada = (await getResultData(db, id))!.path
     expect(terminada.length).toBeGreaterThan(0)
 

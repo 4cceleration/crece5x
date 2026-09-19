@@ -19,7 +19,7 @@ import { appUrl, getMailer } from '@/mail/mailer'
 import { renderReportPdf } from '@/report/report-pdf'
 import { removeUpload, saveUpload } from '@/services/uploads'
 import { runAnalysis } from '@/services/analysis'
-import { finalizeConsultation } from '@/services/report'
+import { finalizeConsultation, sendReport } from '@/services/report'
 import { audit } from '@/services/audit'
 
 async function owned(id: string) {
@@ -101,7 +101,7 @@ export async function removeUploadAction(id: string, uploadId: string) {
 }
 
 async function finish(id: string) {
-  await finalizeConsultation(db, id, { mailer: getMailer(), renderPdf: renderReportPdf, baseUrl: appUrl() })
+  await finalizeConsultation(db, id)
   redirect(`/consulta/${id}/resultado`)
 }
 
@@ -115,4 +115,17 @@ export async function analyzeAction(id: string) {
 export async function finalizeAction(id: string) {
   await owned(id)
   await finish(id)
+}
+
+// El plan de acción completo (hallazgos + PDF) se entrega solo por correo, a pedido
+export async function sendReportAction(id: string) {
+  const { user } = await owned(id)
+  let sent = false
+  try {
+    sent = (await sendReport(db, id, { mailer: getMailer(), renderPdf: renderReportPdf, baseUrl: appUrl() })).length > 0
+  } catch (e) {
+    console.error('No se pudo enviar el reporte', e)
+  }
+  if (sent) await audit(db, { userId: user.id, action: 'enviar_reporte', entity: 'consultation', entityId: id })
+  redirect(`/consulta/${id}/resultado?${sent ? 'enviado=1' : 'error=correo'}`)
 }

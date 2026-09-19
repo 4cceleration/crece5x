@@ -6,10 +6,18 @@ import { getOwnedConsultation, stepPath } from '@/services/consultations'
 import { getResultData } from '@/services/report'
 import { isMockAnalyst } from '@/ai/analyst'
 import { ResultView } from '@/components/result-view'
+import { sendReportAction } from '../../actions'
 import { ButtonLink, buttonClass } from '@/ui/button'
 
-export default async function ResultadoPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ResultadoPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ enviado?: string; error?: string }>
+}) {
   const { id } = await params
+  const { enviado, error } = await searchParams
   const { companyId } = await requireCompany()
   const c = await getOwnedConsultation(db, id, companyId)
   if (!c) notFound()
@@ -25,7 +33,7 @@ export default async function ResultadoPage({ params }: { params: Promise<{ id: 
     <>
       <ResultView
         data={data}
-        pdfHref={`/consulta/${id}/resultado/pdf`}
+        locked={{ sendAction: sendReportAction.bind(null, id), sent: enviado === '1', error: error === 'correo' }}
         mockNote={isMockAnalyst()}
         actions={
           <>

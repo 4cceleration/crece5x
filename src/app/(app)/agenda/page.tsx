@@ -101,7 +101,6 @@ export default async function AgendaPage({
   if (dia && chosen) {
     return (
       <section className="space-y-6 pt-6">
-        <p className="text-sm text-muted">Paso 3 de 3</p>
         <h1 className="text-3xl font-semibold first-letter:uppercase">{formatDateTime(chosen)}</h1>
         <p className="text-muted">Consulta de 60 minutos con un consultor NIIF.</p>
         <div className="flex flex-wrap items-center gap-6">
@@ -120,7 +119,6 @@ export default async function AgendaPage({
     return (
       <section className="space-y-8 pt-6">
         <div className="space-y-2">
-          <p className="text-sm text-muted">Paso 2 de 3</p>
           <h1 className="text-3xl font-semibold">¿A qué hora?</h1>
           <p className="capitalize text-muted">{formatDay(hours[0])}</p>
         </div>
@@ -141,7 +139,6 @@ export default async function AgendaPage({
   return (
     <section className="space-y-8 pt-6">
       <div className="space-y-2">
-        <p className="text-sm text-muted">Paso 1 de 3</p>
         <h1 className="text-3xl font-semibold">¿Qué día le sirve?</h1>
       </div>
       {errorText && <p className="text-sm text-bad">{errorText}</p>}

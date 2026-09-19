@@ -38,7 +38,7 @@ export type ResultData = {
 
 type Deps = { mailer: Mailer; renderPdf: (d: ResultData) => Promise<Buffer>; baseUrl: string }
 
-export async function finalizeConsultation(db: Db, id: string, deps: Deps): Promise<void> {
+export async function finalizeConsultation(db: Db, id: string): Promise<void> {
   const c = await db.query.consultation.findFirst({ where: eq(consultation.id, id) })
   if (!c) throw new Error('Consulta no encontrada')
   const settings = await getSettings(db)
@@ -63,7 +63,6 @@ export async function finalizeConsultation(db: Db, id: string, deps: Deps): Prom
     threshold: settings.consultantThreshold,
   })
 
-  const firstTime = c.completedAt === null
   await db
     .update(consultation)
     .set({
@@ -75,21 +74,15 @@ export async function finalizeConsultation(db: Db, id: string, deps: Deps): Prom
       completedAt: c.completedAt ?? new Date(),
     })
     .where(eq(consultation.id, id))
-
-  if (firstTime) {
-    try {
-      await sendReport(db, id, deps)
-    } catch (e) {
-      console.error('No se pudo enviar el reporte', e)
-    }
-  }
 }
 
-async function sendReport(db: Db, id: string, deps: Deps): Promise<void> {
+// El plan de acción completo solo se entrega por correo, cuando la empresa lo pide desde el resultado.
+// Devuelve los destinatarios.
+export async function sendReport(db: Db, id: string, deps: Deps): Promise<string[]> {
   const data = await getResultData(db, id)
-  if (!data) return
+  if (!data) return []
   const to = await companyEmails(db, data.companyId)
-  if (to.length === 0) return
+  if (to.length === 0) return []
   const { subject, html } = reportEmail({
     companyName: data.companyName,
     score: data.finalScore,
@@ -100,6 +93,7 @@ async function sendReport(db: Db, id: string, deps: Deps): Promise<void> {
   })
   const pdf = await deps.renderPdf(data)
   await deps.mailer.send({ to, subject, html, attachments: [{ filename: 'reporte-crece.pdf', content: pdf }] })
+  return to
 }
 
 export async function getResultData(db: Db, id: string): Promise<ResultData | null> {

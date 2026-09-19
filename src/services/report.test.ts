@@ -16,7 +16,7 @@ import { createCompanyForUser } from './companies'
 import { completeReviewIfDone, loadDiagnosticState, saveAnswer, saveClassification, setFlag, startConsultation } from './consultations'
 import { saveUpload } from './uploads'
 import { runAnalysis } from './analysis'
-import { finalizeConsultation, getResultData } from './report'
+import { finalizeConsultation, getResultData, sendReport } from './report'
 
 let db: Db
 let id: string
@@ -46,9 +46,9 @@ beforeEach(async () => {
 })
 
 describe('finalizeConsultation', () => {
-  it('sin análisis: diagnóstico 100, sin derivación y un solo correo con PDF', async () => {
+  it('sin análisis: diagnóstico 100, sin derivación; el correo solo sale al pedirlo', async () => {
     await answerAll('si', true)
-    await finalizeConsultation(db, id, deps())
+    await finalizeConsultation(db, id)
     const data = await getResultData(db, id)
     expect(data).not.toBeNull()
     expect(data!.diagnosticScore).toBe(100)
@@ -57,7 +57,10 @@ describe('finalizeConsultation', () => {
     expect(data!.companyName).toBe('La Espiga')
     expect(data!.dimensions).toHaveLength(5)
 
-    await finalizeConsultation(db, id, deps())
+    await finalizeConsultation(db, id)
+    expect(readdirSync(mailDir)).toHaveLength(0)
+
+    expect(await sendReport(db, id, deps())).toEqual(['gerente@espiga.co'])
     const files = readdirSync(mailDir)
     expect(files.filter((f) => f.endsWith('.html'))).toHaveLength(1)
     expect(files.some((f) => f.endsWith('reporte-crece.pdf'))).toBe(true)
@@ -72,7 +75,7 @@ describe('finalizeConsultation', () => {
     await saveUpload(db, storage, { consultationId: id, name: 'eeff.xlsx', size: bytes.length, bytes })
     expect(await runAnalysis(db, id, { analyst: mockAnalyst, storage })).toBe('listo')
 
-    await finalizeConsultation(db, id, deps())
+    await finalizeConsultation(db, id)
     const data = await getResultData(db, id)
     expect(data!.analysisScore).toBe(85)
     expect(data!.finalScore).toBe(94)
@@ -83,7 +86,7 @@ describe('finalizeConsultation', () => {
 
   it('sin estados financieros deriva al consultor y genera hallazgos del diagnóstico', async () => {
     await answerAll('no', false)
-    await finalizeConsultation(db, id, deps())
+    await finalizeConsultation(db, id)
     const data = await getResultData(db, id)
     expect(data!.needsConsultant).toBe(true)
     expect(data!.analysisScore).toBeNull()
@@ -96,7 +99,7 @@ describe('finalizeConsultation', () => {
   it('renderiza el PDF real', async () => {
     const { renderReportPdf } = await import('@/report/report-pdf')
     await answerAll('parcial', true)
-    await finalizeConsultation(db, id, deps())
+    await finalizeConsultation(db, id)
     const pdf = await renderReportPdf((await getResultData(db, id))!)
     expect(pdf.subarray(0, 4).toString()).toBe('%PDF')
   })

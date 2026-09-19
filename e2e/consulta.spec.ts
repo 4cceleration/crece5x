@@ -39,9 +39,13 @@ test('consulta completa: registro → clasificar → revisar → examinar → re
   await page.getByRole('button', { name: 'Analizar', exact: true }).click()
 
   await expect(page).toHaveURL(/\/resultado$/)
-  await expect(page.locator('main')).toContainText('94/100')
+  await expect(page.locator('main')).toContainText('94')
+  await expect(page.locator('main')).toContainText('de 100')
   await expect(page.getByText('Saludable')).toBeVisible()
-  await expect(page.getByText('No se evidencia el cálculo del impuesto diferido')).toBeVisible()
+  // El plan de acción está bloqueado en pantalla: se envía al correo a pedido
+  await expect(page.getByText('No se evidencia el cálculo del impuesto diferido')).toHaveCount(0)
+  await page.getByRole('button', { name: 'Enviármelo al correo' }).click()
+  await expect(page.getByText('Enviado. Revise su correo.')).toBeVisible()
 
   await page.getByRole('link', { name: 'Hablar con un consultor' }).click()
   await page.locator('main ul a').first().click()
