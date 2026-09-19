@@ -21,8 +21,21 @@ export function Field({ label, hint, className = '', ...props }: ComponentProps<
 
 export function Check({ label, ...props }: ComponentProps<'input'> & { label: string }) {
   return (
-    <label className="flex items-start gap-3 text-ink">
-      <input type="checkbox" className="mt-0.5 size-5 shrink-0 accent-brand-strong" {...props} />
+    <label className="flex cursor-pointer items-start gap-3 text-ink">
+      <span className="relative mt-0.5 flex size-5 shrink-0">
+        <input
+          type="checkbox"
+          className="peer size-5 cursor-pointer appearance-none rounded-full bg-surface ring-1 ring-muted/40 transition-colors checked:bg-brand-strong checked:ring-brand-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+          {...props}
+        />
+        <svg
+          viewBox="0 0 20 20"
+          aria-hidden
+          className="pointer-events-none absolute inset-0 size-5 text-white opacity-0 transition-opacity peer-checked:opacity-100"
+        >
+          <path d="M6 10.5l2.5 2.5L14 7.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </span>
       <span>{label}</span>
     </label>
   )
