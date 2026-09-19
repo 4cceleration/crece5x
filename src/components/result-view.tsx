@@ -3,6 +3,7 @@ import type { ResultData } from '@/services/report'
 import { RATIO_LABELS } from '@/domain/ratios'
 import { SEVERITY_LABEL, type Severity } from '@/domain/types'
 import { Score } from '@/ui/score'
+import { Icon } from '@/ui/icons'
 import { buttonClass } from '@/ui/button'
 
 const SEV_DOT: Record<Severity, string> = { critica: 'bg-bad', alta: 'bg-bad', media: 'bg-warn', baja: 'bg-muted' }
@@ -99,7 +100,10 @@ export function ResultView({
         )}
         {mockNote && data.analysisStatus === 'listo' && <p>Análisis de demostración: aún no hay un modelo de IA configurado.</p>}
         <p>
-          <Link href={pdfHref} className={buttonClass('link')} prefetch={false}>Descargar PDF</Link>
+          <Link href={pdfHref} className={`${buttonClass('link')} inline-flex items-center gap-1.5`} prefetch={false}>
+            <Icon name="pdf" size={18} />
+            Descargar PDF
+          </Link>
         </p>
         <p>Este reporte es orientativo y no constituye una opinión de auditoría.</p>
       </footer>

@@ -9,7 +9,7 @@ import { Steps } from '@/ui/steps'
 import { buttonClass } from '@/ui/button'
 
 const option =
-  'h-14 rounded-2xl bg-surface text-lg font-medium text-ink transition-colors hover:bg-brand-soft focus-visible:bg-brand-soft'
+  'h-14 rounded-md bg-white ring-1 ring-ink/15 text-lg font-medium text-ink transition-colors hover:bg-brand-soft hover:ring-brand focus-visible:bg-brand-soft'
 
 export default async function RevisarPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

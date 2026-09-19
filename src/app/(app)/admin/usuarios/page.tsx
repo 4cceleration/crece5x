@@ -5,7 +5,7 @@ import { createConsultantAction, setRoleAction } from '../actions'
 import { Field } from '@/ui/field'
 import { SubmitButton } from '@/ui/submit-button'
 
-const select = 'h-9 rounded-md bg-surface px-2 text-sm outline-none focus:ring-2 focus:ring-brand'
+const select = 'h-9 rounded-md px-2 text-sm bg-white ring-1 ring-ink/15 outline-hidden transition-shadow duration-base hover:ring-ink/30 focus:ring-brand'
 
 export default async function UsuariosPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const me = await requireUser(['admin'])

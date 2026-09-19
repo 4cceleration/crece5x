@@ -14,7 +14,7 @@ export function NavLink({ href, children }: { href: string; children: React.Reac
     <Link
       href={href}
       aria-current={active ? 'page' : undefined}
-      className={`relative rounded-md px-3 py-2 transition-[color] focus-visible:-outline-offset-2 ${
+      className={`relative flex items-center gap-1.5 rounded-md px-3 py-2 transition-[color] focus-visible:-outline-offset-2 ${
         active ? 'text-ink' : 'text-muted hover:text-ink'
       }`}
     >

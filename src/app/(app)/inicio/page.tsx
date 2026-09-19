@@ -8,6 +8,7 @@ import { startConsultationAction } from '../consulta/actions'
 import { Score } from '@/ui/score'
 import { ButtonLink, buttonClass } from '@/ui/button'
 import { SubmitButton } from '@/ui/submit-button'
+import { Icon } from '@/ui/icons'
 
 export default async function InicioPage() {
   const { user, companyId } = await requireCompany()
@@ -26,7 +27,10 @@ export default async function InicioPage() {
         <p className="text-muted">Hola, {firstName}. Su índice de salud NIIF:</p>
         <Score value={last.finalScore} />
         <div className="flex flex-wrap items-center gap-6">
-          <ButtonLink href={`/consulta/${last.id}/resultado`}>Ver resultado</ButtonLink>
+          <ButtonLink href={`/consulta/${last.id}/resultado`} className="gap-2">
+            Ver resultado
+            <Icon name="siguiente" size={18} />
+          </ButtonLink>
           <form action={startConsultationAction}>
             <button className={buttonClass('link')}>Nueva consulta</button>
           </form>
@@ -41,7 +45,10 @@ export default async function InicioPage() {
       <h1 className="text-4xl font-semibold tracking-tight">Hola, {firstName}</h1>
       <p className="max-w-prose text-lg text-muted">Su consulta NIIF toma unos 15 minutos.</p>
       <form action={startConsultationAction}>
-        <SubmitButton>{last ? 'Continuar consulta' : 'Iniciar consulta'}</SubmitButton>
+        <SubmitButton className="gap-2">
+          {last ? 'Continuar consulta' : 'Iniciar consulta'}
+          <Icon name="siguiente" size={18} />
+        </SubmitButton>
       </form>
       <p className="text-sm text-muted">
         ¿Prefiere hablar con alguien? <Link href="/agenda" className="underline underline-offset-4">Agende un consultor</Link>

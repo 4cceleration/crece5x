@@ -45,7 +45,7 @@ export default async function CasoPage({
             name="notes"
             defaultValue={appt.notes ?? ''}
             rows={5}
-            className="w-full rounded-md bg-white p-4 text-ink outline-none ring-1 ring-ink/15 transition-shadow duration-200 ease-out hover:ring-ink/30 focus:ring-brand focus-visible:outline-none"
+            className="w-full rounded-md p-4 text-ink bg-white ring-1 ring-ink/15 outline-hidden transition-shadow duration-base hover:ring-ink/30 focus:ring-brand"
           />
         </label>
         <div className="flex flex-wrap items-center gap-6">

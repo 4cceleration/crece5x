@@ -1,23 +1,24 @@
 import Link from 'next/link'
 import { signOutAction } from '@/app/(auth)/actions'
 import type { Role } from '@/domain/types'
+import { Icon, type IconName } from './icons'
 import { NavLink } from './nav-link'
 
-const NAV: Record<Role, { href: string; label: string }[]> = {
+const NAV: Record<Role, { href: string; label: string; icon: IconName }[]> = {
   empresa: [
-    { href: '/inicio', label: 'Inicio' },
-    { href: '/academia', label: 'Academia' },
-    { href: '/agenda', label: 'Agenda' },
+    { href: '/inicio', label: 'Inicio', icon: 'inicio' },
+    { href: '/academia', label: 'Academia', icon: 'academia' },
+    { href: '/agenda', label: 'Agenda', icon: 'agenda' },
   ],
   consultor: [
-    { href: '/consultor', label: 'Agenda' },
-    { href: '/consultor/disponibilidad', label: 'Disponibilidad' },
+    { href: '/consultor', label: 'Agenda', icon: 'agenda' },
+    { href: '/consultor/disponibilidad', label: 'Disponibilidad', icon: 'disponibilidad' },
   ],
   admin: [
-    { href: '/admin', label: 'Resumen' },
-    { href: '/admin/preguntas', label: 'Preguntas' },
-    { href: '/admin/ajustes', label: 'Ajustes' },
-    { href: '/admin/usuarios', label: 'Usuarios' },
+    { href: '/admin', label: 'Resumen', icon: 'resumen' },
+    { href: '/admin/preguntas', label: 'Preguntas', icon: 'preguntas' },
+    { href: '/admin/ajustes', label: 'Ajustes', icon: 'ajustes' },
+    { href: '/admin/usuarios', label: 'Usuarios', icon: 'usuarios' },
   ],
 }
 
@@ -31,11 +32,15 @@ export function Nav({ role }: { role: Role }) {
         <nav aria-label="Principal" className="-mr-3 flex items-center overflow-x-auto text-sm">
           {NAV[role].map((item) => (
             <NavLink key={item.href} href={item.href}>
-              {item.label}
+              <Icon name={item.icon} size={18} />
+              <span className="max-sm:sr-only">{item.label}</span>
             </NavLink>
           ))}
           <form action={signOutAction}>
-            <button className="rounded-md px-3 py-2 text-muted transition-[color] hover:text-ink focus-visible:-outline-offset-2">Salir</button>
+            <button className="flex items-center gap-1.5 rounded-md px-3 py-2 text-muted transition-[color] hover:text-ink focus-visible:-outline-offset-2">
+              <Icon name="salir" size={18} />
+              <span className="max-sm:sr-only">Salir</span>
+            </button>
           </form>
         </nav>
       </div>

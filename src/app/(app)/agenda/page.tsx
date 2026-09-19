@@ -9,7 +9,7 @@ import { buttonClass } from '@/ui/button'
 import { SubmitButton } from '@/ui/submit-button'
 
 const option =
-  'flex h-14 items-center justify-center rounded-2xl bg-surface font-medium capitalize transition-colors hover:bg-brand-soft'
+  'flex h-14 items-center justify-center rounded-md bg-white ring-1 ring-ink/15 font-medium capitalize transition-colors hover:bg-brand-soft hover:ring-brand'
 
 const ERRORS: Record<string, string> = {
   ocupado: 'Ese horario acaba de ocuparse. Elija otro.',
