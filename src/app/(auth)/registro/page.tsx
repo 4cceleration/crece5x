@@ -11,7 +11,7 @@ export default function RegistroPage() {
 
   return (
     <form action={action} className="space-y-5">
-      <h1 className="text-3xl font-semibold">Crear cuenta</h1>
+      <h1 className="sr-only">Crear cuenta</h1>
       <Field label="Tu nombre" name="name" autoComplete="name" required />
       <Field label="Empresa" name="company" autoComplete="organization" required />
       <Field label="NIT" name="nit" inputMode="numeric" required />
