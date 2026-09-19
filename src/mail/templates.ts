@@ -8,7 +8,7 @@ const DISCLAIMER = 'Este reporte es orientativo y no constituye una opinión de 
 function layout(body: string, disclaimer = false): string {
   return `<!doctype html><html lang="es"><body style="margin:0;background:#ffffff;font-family:Inter,Arial,sans-serif;color:#14213D">
 <div style="max-width:560px;margin:0 auto;padding:32px 20px">
-<p style="font-size:18px;font-weight:600;margin:0 0 32px">crece<span style="color:#3F9B6E">.</span></p>
+<p style="font-size:18px;font-weight:600;margin:0 0 32px">crece<span style="color:#3F9B6E">5x</span></p>
 ${body}
 ${disclaimer ? `<p style="margin-top:40px;font-size:12px;color:#5B6477">${DISCLAIMER}</p>` : ''}
 </div></body></html>`
@@ -36,7 +36,7 @@ export function reportEmail(d: {
 ${items ? `<p style="font-weight:600;margin:0 0 12px">Lo más importante</p><ul style="padding-left:18px;margin:0 0 32px">${items}</ul>` : ''}
 ${button(d.url, d.needsConsultant ? 'Agendar con un consultor' : 'Ver el reporte completo')}
 <p style="margin-top:16px;font-size:14px;color:#5B6477">Adjuntamos el reporte en PDF.</p>`
-  return { subject: `Su resultado CRECE: ${d.score}/100`, html: layout(body, true) }
+  return { subject: `Su resultado crece5x: ${d.score}/100`, html: layout(body, true) }
 }
 
 type AppointmentKind = 'confirmada' | 'recordatorio' | 'cancelada' | 'asignada'
@@ -73,5 +73,5 @@ export function passwordResetEmail(d: { name: string; url: string }): { subject:
 <p style="margin:0 0 32px;color:#5B6477">Hola, ${esc(d.name)}. Recibimos una solicitud para cambiar su contraseña. El enlace vence en una hora.</p>
 ${button(d.url, 'Crear nueva contraseña')}
 <p style="margin-top:24px;font-size:14px;color:#5B6477">Si no la pidió, ignore este correo: su contraseña no cambia.</p>`
-  return { subject: 'Restablecer su contraseña de CRECE', html: layout(body) }
+  return { subject: 'Restablecer su contraseña de crece5x', html: layout(body) }
 }

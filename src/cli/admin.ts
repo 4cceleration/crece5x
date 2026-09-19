@@ -1,4 +1,4 @@
-// Administración de CRECE por línea de comandos. No hay panel web de administración:
+// Administración de crece5x por línea de comandos. No hay panel web de administración:
 // quien administra necesita acceso a la base de datos (DATABASE_URL / DATABASE_AUTH_TOKEN).
 // Uso: npm run admin -- <grupo> <comando> [opciones]
 import 'dotenv/config'
@@ -24,7 +24,7 @@ import { audit } from '@/services/audit'
 import { getSettings, saveSettings } from '@/services/settings'
 import { createUserWithPassword } from '@/services/users'
 
-const HELP = `CRECE · administración
+const HELP = `crece5x · administración
 
   npm run admin -- resumen
   npm run admin -- preguntas listar [--dimension D1..D5]

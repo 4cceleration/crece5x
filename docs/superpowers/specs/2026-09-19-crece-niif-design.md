@@ -1,4 +1,4 @@
-# CRECE — Consulta financiera NIIF para pymes
+# crece5x — Consulta financiera NIIF para pymes (Método CRECE)
 
 Fecha: 2026-09-19 · Estado: aprobado para plan
 

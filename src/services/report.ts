@@ -92,7 +92,7 @@ export async function sendReport(db: Db, id: string, deps: Deps): Promise<string
     needsConsultant: data.needsConsultant,
   })
   const pdf = await deps.renderPdf(data)
-  await deps.mailer.send({ to, subject, html, attachments: [{ filename: 'reporte-crece.pdf', content: pdf }] })
+  await deps.mailer.send({ to, subject, html, attachments: [{ filename: 'reporte-crece5x.pdf', content: pdf }] })
   return to
 }
 

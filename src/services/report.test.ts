@@ -63,7 +63,7 @@ describe('finalizeConsultation', () => {
     expect(await sendReport(db, id, deps())).toEqual(['gerente@espiga.co'])
     const files = readdirSync(mailDir)
     expect(files.filter((f) => f.endsWith('.html'))).toHaveLength(1)
-    expect(files.some((f) => f.endsWith('reporte-crece.pdf'))).toBe(true)
+    expect(files.some((f) => f.endsWith('reporte-crece5x.pdf'))).toBe(true)
   })
 
   it('con análisis simulado listo, el índice final es 0.6·100 + 0.4·85 = 94', async () => {

@@ -11,7 +11,7 @@ describe('plantillas de correo', () => {
       url: 'https://crece.app/consulta/1/resultado',
       needsConsultant: true,
     })
-    expect(subject).toBe('Su resultado CRECE: 72/100')
+    expect(subject).toBe('Su resultado crece5x: 72/100')
     expect(html).toContain('La Espiga &lt;SAS&gt;')
     expect(html).toContain('Falta flujo &amp; notas')
     expect(html).toContain('https://crece.app/consulta/1/resultado')

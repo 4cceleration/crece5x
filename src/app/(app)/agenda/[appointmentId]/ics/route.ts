@@ -15,7 +15,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ appoint
   return new Response(appointmentIcs(d), {
     headers: {
       'content-type': 'text/calendar; charset=utf-8',
-      'content-disposition': 'attachment; filename="cita-crece.ics"',
+      'content-disposition': 'attachment; filename="cita-crece5x.ics"',
     },
   })
 }

@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const display = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-bricolage' })
 
 export const metadata: Metadata = {
-  title: 'CRECE · Consulta NIIF',
+  title: 'crece5x · Consulta NIIF',
   description: 'Diagnóstico y guía NIIF para pymes',
 }
 

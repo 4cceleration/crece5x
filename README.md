@@ -1,4 +1,4 @@
-# CRECE · Consulta NIIF para pymes
+# crece5x · Consulta NIIF para pymes
 
 Diagnóstico, análisis de estados financieros con IA, agenda con consultores y academia NIIF.
 Método **CRECE**: Clasificar → Revisar → Examinar → Comunicar → Escalar/Educar.

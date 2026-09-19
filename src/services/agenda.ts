@@ -108,7 +108,7 @@ export function appointmentIcs(d: Detail): string {
     uid: d.appointment.id,
     start: d.appointment.startsAt,
     end: d.appointment.endsAt,
-    summary: `Consulta NIIF CRECE · ${d.companyName}`,
+    summary: `Consulta NIIF crece5x · ${d.companyName}`,
     description: `Consulta con ${d.consultantName}.`,
   })
 }
@@ -123,7 +123,7 @@ export async function notifyAppointment(
   const d = await getAppointmentDetail(db, appointmentId)
   if (!d) return
   const when = formatDateTime(d.appointment.startsAt)
-  const ics = kind === 'cancelada' ? [] : [{ filename: 'cita-crece.ics', content: Buffer.from(appointmentIcs(d)) }]
+  const ics = kind === 'cancelada' ? [] : [{ filename: 'cita-crece5x.ics', content: Buffer.from(appointmentIcs(d)) }]
   const base = { when, companyName: d.companyName, consultantName: d.consultantName }
 
   const toCompany = appointmentEmail({ ...base, kind, url: `${baseUrl}/agenda` })

@@ -57,5 +57,5 @@ test('consulta completa: registro → clasificar → revisar → examinar → re
   expect(existsSync('.data/e2e-emails')).toBe(true)
   const emails = readdirSync('.data/e2e-emails')
   expect(emails.filter((f) => f.endsWith('.html')).length).toBeGreaterThanOrEqual(3) // reporte + cita empresa + cita consultor
-  expect(emails.some((f) => f.endsWith('reporte-crece.pdf'))).toBe(true)
+  expect(emails.some((f) => f.endsWith('reporte-crece5x.pdf'))).toBe(true)
 })

@@ -21,7 +21,7 @@ export function Nav({ role }: { role: Role }) {
     <header className="glass sticky top-0 z-20">
       <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
         <Link href="/" className="font-display text-xl font-semibold tracking-tight">
-          crece<span className="text-brand">.</span>
+          crece<span className="text-brand">5x</span>
         </Link>
         <nav aria-label="Principal" className="-mr-3 flex items-center overflow-x-auto text-sm">
           {NAV[role].map((item) => (

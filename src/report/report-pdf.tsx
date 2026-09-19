@@ -27,9 +27,9 @@ function fmtRatio(v: number, percent: boolean) {
 
 export function ReportPdf({ data }: { data: ResultData }) {
   return (
-    <Document title={`CRECE · ${data.companyName}`}>
+    <Document title={`crece5x · ${data.companyName}`}>
       <Page size="LETTER" style={s.page}>
-        <Text style={s.brand}>crece.</Text>
+        <Text style={s.brand}>crece5x</Text>
         <Text style={s.muted}>{data.companyName} · Grupo {data.group} · {data.groupName}</Text>
         <Text style={s.muted}>{formatDateTime(data.completedAt)}</Text>
         <Text style={s.score}>{data.finalScore}/100</Text>

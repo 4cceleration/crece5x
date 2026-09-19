@@ -5,10 +5,10 @@ export function buildIcs(e: { uid: string; start: Date; end: Date; summary: stri
   return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//CRECE//Consulta NIIF//ES',
+    'PRODID:-//crece5x//Consulta NIIF//ES',
     'METHOD:PUBLISH',
     'BEGIN:VEVENT',
-    `UID:${e.uid}@crece`,
+    `UID:${e.uid}@crece5x`,
     `DTSTAMP:${stamp(new Date())}`,
     `DTSTART:${stamp(e.start)}`,
     `DTEND:${stamp(e.end)}`,
