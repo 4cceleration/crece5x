@@ -5,7 +5,6 @@ import { requireCompany } from '@/lib/session'
 import { getOwnedConsultation } from '@/services/consultations'
 import { GROUP_NAMES } from '@/domain/classify'
 import { classifyAction } from '../../actions'
-import { Steps } from '@/ui/steps'
 import { Check, Field } from '@/ui/field'
 import { ButtonLink, buttonClass } from '@/ui/button'
 import { SubmitButton } from '@/ui/submit-button'
@@ -27,7 +26,6 @@ export default async function ClasificarPage({
   if (c.group !== null && editar === undefined) {
     return (
       <>
-        <Steps current={0} />
         <section className="space-y-5">
           <p className="text-sm text-muted">Su marco contable</p>
           <h1 className="text-5xl font-semibold tracking-tight">Grupo {c.group}</h1>
@@ -44,7 +42,6 @@ export default async function ClasificarPage({
 
   return (
     <>
-      <Steps current={0} />
       <form action={classifyAction.bind(null, id)} className="space-y-6">
         <h1 className="text-3xl font-semibold">¿Qué tamaño tiene su empresa?</h1>
         <Field label="Activos totales (COP)" name="assets" inputMode="numeric" required defaultValue={input?.assets} />

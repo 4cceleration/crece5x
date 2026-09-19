@@ -5,7 +5,6 @@ import { getOwnedConsultation, loadDiagnosticState } from '@/services/consultati
 import { nextStep, previousTarget } from '@/domain/flow'
 import { ANSWER_LABEL, DIMENSIONS, type AnswerValue } from '@/domain/types'
 import { answerAction, flagAction, undoAction } from '../../actions'
-import { Steps } from '@/ui/steps'
 import { buttonClass } from '@/ui/button'
 
 const option =
@@ -33,7 +32,6 @@ export default async function RevisarPage({ params }: { params: Promise<{ id: st
 
   return (
     <>
-      <Steps current={1} />
       <div data-step={key} className="space-y-10">
         <div className="space-y-4">
           <p className="text-sm text-muted">{context}</p>

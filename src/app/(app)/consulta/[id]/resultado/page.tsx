@@ -6,7 +6,6 @@ import { getOwnedConsultation, stepPath } from '@/services/consultations'
 import { getResultData } from '@/services/report'
 import { isMockAnalyst } from '@/ai/analyst'
 import { ResultView } from '@/components/result-view'
-import { Steps } from '@/ui/steps'
 import { ButtonLink, buttonClass } from '@/ui/button'
 
 export default async function ResultadoPage({ params }: { params: Promise<{ id: string }> }) {
@@ -24,7 +23,6 @@ export default async function ResultadoPage({ params }: { params: Promise<{ id: 
 
   return (
     <>
-      <Steps current={data.needsConsultant ? 4 : 3} />
       <ResultView
         data={data}
         pdfHref={`/consulta/${id}/resultado/pdf`}

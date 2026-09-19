@@ -5,7 +5,6 @@ import { getOwnedConsultation, stepPath } from '@/services/consultations'
 import { listUploads } from '@/services/uploads'
 import { analyzeAction, finalizeAction, removeUploadAction, uploadAction } from '../../actions'
 import { UploadForm } from '@/components/upload-form'
-import { Steps } from '@/ui/steps'
 import { buttonClass } from '@/ui/button'
 import { SubmitButton } from '@/ui/submit-button'
 
@@ -28,7 +27,6 @@ export default async function ExaminarPage({
   if (c.flags.tieneEEFF !== true) {
     return (
       <>
-        <Steps current={2} />
         <section className="space-y-6">
           <h1 className="text-3xl font-semibold">Sin estados financieros no hay nada que examinar</h1>
           <p className="max-w-prose text-muted">Le mostramos su resultado con lo que respondió. Un consultor puede ayudarle a prepararlos.</p>
@@ -43,7 +41,6 @@ export default async function ExaminarPage({
   const files = await listUploads(db, id)
   return (
     <>
-      <Steps current={2} />
       <section className="space-y-8">
         <h1 className="text-3xl font-semibold">Suba sus estados financieros</h1>
         <UploadForm action={uploadAction.bind(null, id)} />
