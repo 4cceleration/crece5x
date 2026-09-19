@@ -35,7 +35,7 @@ export function Nav({ role }: { role: Role }) {
             </NavLink>
           ))}
           <form action={signOutAction}>
-            <button className="rounded-md px-3 py-2 text-muted hover:text-ink">Salir</button>
+            <button className="rounded-md px-3 py-2 text-muted transition-[color] hover:text-ink focus-visible:-outline-offset-2">Salir</button>
           </form>
         </nav>
       </div>

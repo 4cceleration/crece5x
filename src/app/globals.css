@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/*
+ * Movimiento: breve y funcional (150–250 ms); se desactiva con prefers-reduced-motion (al final).
+ * Clases para pantallas y otros agentes (siempre incluidas en el CSS):
+ *   animate-enter    entrada de contenido (fade + sube 8 px, 250 ms): en el contenedor principal de cada pantalla
+ *   animate-fade     aparición suave (fade, 200 ms): errores, ayudas y contenido que aparece
+ *   animate-spinner  giro continuo (800 ms): con <Spinner /> de src/ui/spinner.tsx
+ *   duration-fast | duration-base | duration-slow   150 | 200 | 250 ms
+ *   ease-out-soft    easing base; todo `transition-*` ya lo usa por defecto, con duration-fast
+ *   glass            superficie de vidrio; úsese sobre <Backdrop /> (src/ui/backdrop.tsx)
+ * Botones: Button, ButtonLink y buttonClass() ya traen estado presionado, foco y transición.
+ */
+@source inline("animate-enter animate-fade animate-spinner duration-fast duration-base duration-slow ease-out-soft");
+
 @theme {
   --color-brand: #3F9B6E;
   --color-brand-strong: #2E7D5B;
@@ -13,13 +26,37 @@
   --color-bad: #D64545;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-bricolage), var(--font-inter), ui-sans-serif, sans-serif;
+
+  --transition-duration-fast: 150ms;
+  --transition-duration-base: 200ms;
+  --transition-duration-slow: 250ms;
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --default-transition-duration: var(--transition-duration-fast);
+  --default-transition-timing-function: var(--ease-out-soft);
+
+  --animate-enter: fade-slide-up var(--transition-duration-slow) var(--ease-out-soft) backwards;
+  --animate-fade: fade-in var(--transition-duration-base) var(--ease-out-soft) backwards;
+  --animate-spinner: spin-round 800ms linear infinite;
+
+  @keyframes fade-slide-up {
+    from { opacity: 0; transform: translateY(0.5rem); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+  }
+  @keyframes spin-round {
+    to { transform: rotate(360deg); }
+  }
 }
 
 html { color-scheme: light; }
 body { background: #ffffff; color: var(--color-ink); }
 /* Títulos con la fuente de marca; el texto corrido sigue en Inter */
 h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
-:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+/* En la capa base para que utilidades como outline-hidden (campos) la puedan reemplazar */
+@layer base {
+  :focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+}
 
 /* Vidrio: superficie translúcida con desenfoque. Úsese sobre <Backdrop /> para que se note */
 @utility glass {
@@ -30,4 +67,15 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
     inset 0 0 0 1px rgb(255 255 255 / 0.75),
     0 1px 2px rgb(20 33 61 / 0.04),
     0 16px 40px -16px rgb(20 33 61 / 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

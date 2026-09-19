@@ -3,12 +3,14 @@ import type { ComponentProps } from 'react'
 
 type Variant = 'primary' | 'ghost' | 'link'
 
+// Transición por propiedad (no `transition-colors`): así el anillo de foco aparece sin fundido de color
+const solid =
+  'inline-flex h-12 items-center justify-center rounded-md text-base transition-[color,background-color,opacity,scale] not-disabled:active:scale-98 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:opacity-50'
+
 const styles: Record<Variant, string> = {
-  primary:
-    'inline-flex h-12 items-center justify-center rounded-md bg-brand-strong px-7 text-base font-semibold text-white transition-colors hover:bg-brand-deep disabled:opacity-50',
-  ghost:
-    'inline-flex h-12 items-center justify-center rounded-md px-5 text-base font-medium text-ink transition-colors hover:bg-surface disabled:opacity-50',
-  link: 'text-sm text-muted underline underline-offset-4 hover:text-ink',
+  primary: `${solid} bg-brand-strong px-7 font-semibold text-white hover:bg-brand-deep`,
+  ghost: `${solid} px-5 font-medium text-ink hover:bg-surface`,
+  link: 'text-sm text-muted underline underline-offset-4 transition-[color] hover:text-ink',
 }
 
 export function buttonClass(variant: Variant = 'primary', extra = '') {

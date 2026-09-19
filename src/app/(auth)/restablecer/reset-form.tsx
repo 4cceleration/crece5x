@@ -20,7 +20,7 @@ export function ResetForm({ token }: { token: string }) {
         required
       />
       {state?.error && (
-        <p role="alert" className="text-sm text-bad">
+        <p role="alert" className="animate-fade text-sm text-bad">
           {state.error}{' '}
           <Link href="/recuperar" className="underline underline-offset-4">
             Solicitar otro enlace

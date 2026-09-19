@@ -20,7 +20,7 @@ export function SignInForm({ reset }: { reset: boolean }) {
         </Link>
       </p>
       {state?.error && (
-        <p role="alert" className="text-sm text-bad">
+        <p role="alert" className="animate-fade text-sm text-bad">
           {state.error}
         </p>
       )}
