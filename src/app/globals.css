@@ -21,6 +21,7 @@
   --color-ink: #14213D;
   --color-muted: #5B6477;
   --color-surface: #F7F7F5;
+  --color-canvas: #E9EDF2; /* fondo de página: gris azulado liso */
   --color-ok: #2F9E6B;
   --color-warn: #E0A100;
   --color-bad: #D64545;
@@ -50,7 +51,7 @@
 }
 
 html { color-scheme: light; }
-body { background: #E6EFE9; color: var(--color-ink); }
+body { background: var(--color-canvas); color: var(--color-ink); }
 /* Títulos con la fuente de marca; el texto corrido sigue en Inter */
 h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
 /* En la capa base para que utilidades como outline-hidden (campos) la puedan reemplazar */
