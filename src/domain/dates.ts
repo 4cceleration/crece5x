@@ -20,3 +20,14 @@ export function localDayKey(d: Date, offsetMin = BOGOTA_OFFSET_MIN): string {
 export function formatLongDate(d: Date): string {
   return new Intl.DateTimeFormat('es-CO', { timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long' }).format(d)
 }
+
+// Partes de una fecha para fichas de calendario: { weekday: 'mar', day: '22', month: 'sept' }
+export function formatDayParts(d: Date): { weekday: string; day: string; month: string } {
+  const part = (o: Intl.DateTimeFormatOptions) =>
+    new Intl.DateTimeFormat('es-CO', { timeZone: TZ, ...o }).format(d).replace('.', '')
+  return { weekday: part({ weekday: 'short' }), day: part({ day: 'numeric' }), month: part({ month: 'short' }) }
+}
+
+export function localHour(d: Date, offsetMin = BOGOTA_OFFSET_MIN): number {
+  return new Date(d.getTime() + offsetMin * 60_000).getUTCHours()
+}
