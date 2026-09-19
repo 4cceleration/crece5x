@@ -38,8 +38,7 @@ export default function RegistroPage() {
         Crear cuenta
       </SubmitButton>
       <p className="text-center text-sm text-muted">
-        ¿Ya tiene cuenta?{' '}
-        <Link href="/entrar" className="text-ink underline underline-offset-4">
+        <Link href="/entrar" className="text-muted underline underline-offset-4 hover:text-ink">
           Entrar
         </Link>
       </p>

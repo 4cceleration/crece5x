@@ -29,8 +29,7 @@ export default function EntrarPage() {
         Entrar
       </SubmitButton>
       <p className="text-center text-sm text-muted">
-        ¿Primera vez?{' '}
-        <Link href="/registro" className="text-ink underline underline-offset-4">
+        <Link href="/registro" className="text-muted underline underline-offset-4 hover:text-ink">
           Crear cuenta
         </Link>
       </p>
