@@ -66,3 +66,12 @@ export function appointmentEmail(d: {
 ${button(d.url, d.kind === 'asignada' ? 'Ver el caso' : 'Ver mi agenda')}`
   return { subject, html: layout(body) }
 }
+
+export function passwordResetEmail(d: { name: string; url: string }): { subject: string; html: string } {
+  const body = `
+<p style="font-size:22px;font-weight:600;margin:0 0 8px">Restablecer contraseña</p>
+<p style="margin:0 0 32px;color:#5B6477">Hola, ${esc(d.name)}. Recibimos una solicitud para cambiar su contraseña. El enlace vence en una hora.</p>
+${button(d.url, 'Crear nueva contraseña')}
+<p style="margin-top:24px;font-size:14px;color:#5B6477">Si no la pidió, ignore este correo: su contraseña no cambia.</p>`
+  return { subject: 'Restablecer su contraseña de CRECE', html: layout(body) }
+}
