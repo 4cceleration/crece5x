@@ -55,6 +55,10 @@ export function getMailer(): Mailer {
   return consoleMailer
 }
 
+// URL pública de la app: BETTER_AUTH_URL si existe; en despliegues de Vercel sin ella, la del despliegue
 export function appUrl(): string {
-  return (process.env.BETTER_AUTH_URL ?? 'http://localhost:3000').replace(/\/$/, '')
+  const url =
+    process.env.BETTER_AUTH_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+  return url.replace(/\/$/, '')
 }

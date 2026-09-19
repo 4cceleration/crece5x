@@ -4,13 +4,15 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { nextCookies } from 'better-auth/next-js'
 import { db } from '@/db'
 import * as schema from '@/db/schema'
-import { getMailer } from '@/mail/mailer'
+import { appUrl, getMailer } from '@/mail/mailer'
 import { passwordResetEmail } from '@/mail/templates'
 
 // Google solo se activa si hay credenciales; si no, la app funciona solo con correo
 export const GOOGLE_ENABLED = Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)
 
 export const auth = betterAuth({
+  baseURL: appUrl(),
+  trustedOrigins: [appUrl(), ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : [])],
   socialProviders: GOOGLE_ENABLED
     ? {
         google: {
