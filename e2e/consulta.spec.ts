@@ -41,7 +41,7 @@ test('consulta completa: registro → clasificar → revisar → examinar → re
   await expect(page).toHaveURL(/\/resultado$/)
   await expect(page.locator('main')).toContainText('94')
   await expect(page.locator('main')).toContainText('de 100')
-  await expect(page.getByText('Saludable')).toBeVisible()
+  await expect(page.locator('ol[aria-label="Escala del índice"] li[aria-current="true"]')).toContainText('Saludable')
   // El plan de acción está bloqueado en pantalla: se envía al correo a pedido
   await expect(page.getByText('No se evidencia el cálculo del impuesto diferido')).toHaveCount(0)
   await page.getByRole('button', { name: 'Enviármelo al correo' }).click()

@@ -15,7 +15,7 @@ export default async function InicioPage() {
   const last = await latestConsultation(db, companyId)
   const upcoming = await upcomingForCompany(db, companyId)
   const appointmentLine = upcoming && (
-    <p className="text-sm text-muted">
+    <p className="text-center text-sm text-muted">
       Su cita:{' '}
       <Link href="/agenda" className="text-ink underline underline-offset-4">
         {formatDateTime(upcoming.startsAt)}
@@ -27,11 +27,11 @@ export default async function InicioPage() {
   if (last?.status === 'resultado' && last.finalScore !== null) {
     return (
       <section className="animate-enter mx-auto max-w-xl space-y-6 pt-6">
-        <h1 className="font-display text-4xl font-semibold tracking-tight">Hola, {firstName}</h1>
+        <h1 className="text-center font-display text-4xl font-semibold tracking-tight">Hola, {firstName}</h1>
         <div className="glass space-y-8 rounded-lg p-6 sm:p-8">
           <Score value={last.finalScore} />
-          <div className="flex flex-wrap items-center gap-6">
-            <ButtonLink href={`/consulta/${last.id}/resultado`} className="gap-2">
+          <div className="flex flex-col items-center gap-4">
+            <ButtonLink href={`/consulta/${last.id}/resultado`} className="w-full max-w-sm gap-2">
               Ver resultado
               <Icon name="siguiente" size={18} />
             </ButtonLink>

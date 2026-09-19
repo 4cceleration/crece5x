@@ -102,12 +102,12 @@ export function ResultView({
   const rest = data.findings.slice(5)
   return (
     <div className="space-y-12">
-      <section className="glass space-y-8 rounded-lg p-6 sm:p-8">
+      <section className="glass space-y-8 rounded-lg p-6 text-center sm:p-8">
         <p className="text-sm text-muted">
           {data.companyName} · Grupo {data.group} · {data.groupName}
         </p>
         <Score value={data.finalScore} />
-        {actions && <div className="flex flex-wrap items-center gap-6">{actions}</div>}
+        {actions && <div className="flex flex-col items-center gap-4 [&>a:first-child]:w-full [&>a:first-child]:max-w-sm">{actions}</div>}
       </section>
 
       <section className="space-y-4">
