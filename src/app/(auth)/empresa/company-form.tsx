@@ -8,8 +8,8 @@ export function CompanyForm() {
   const [state, action] = useActionState(completeCompanyAction, null)
   return (
     <form action={action} className="space-y-5">
-      <Field label="Empresa" name="company" autoComplete="organization" required />
-      <Field label="NIT" name="nit" inputMode="numeric" required />
+      <Field label="Empresa" icon="empresa" name="company" autoComplete="organization" required />
+      <Field label="NIT" icon="nit" name="nit" inputMode="numeric" required />
       <Check name="consent" label="Autorizo el tratamiento de mis datos según la Ley 1581 de 2012." required />
       {state?.error && (
         <p role="alert" className="animate-fade text-sm text-bad">

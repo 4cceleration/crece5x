@@ -12,7 +12,9 @@ export default async function EntrarPage({
   return (
     <AuthCard title="Iniciar sesión">
       {GOOGLE_ENABLED && <GoogleButton />}
-      {error === 'google' && <p className="mb-5 text-sm text-bad">No pudimos iniciar sesión con Google. Intente de nuevo.</p>}
+      {error === 'google' && (
+        <p className="mb-5 text-sm text-bad">No pudimos iniciar sesión con Google. Intente de nuevo.</p>
+      )}
       <SignInForm reset={restablecida === '1'} />
     </AuthCard>
   )

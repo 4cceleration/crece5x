@@ -4,7 +4,8 @@ import { Button } from './button'
 import { Spinner } from './spinner'
 import type { ComponentProps } from 'react'
 
-const layer = 'col-start-1 row-start-1'
+// inline-flex: iconos (svg es block por el reset de Tailwind) y texto quedan en la misma fila
+const layer = 'col-start-1 row-start-1 inline-flex items-center gap-2'
 
 // Al enviar, el spinner se abre junto al texto (la ranura crece de 0 a 24 px con transición).
 // Texto y pendingLabel comparten celda: el botón mide lo que el más largo y el ancho no salta al cambiar.

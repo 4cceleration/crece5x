@@ -29,7 +29,7 @@ export default function RecuperarPage() {
     <AuthCard title="Recuperar contraseña">
       <form action={action} className="space-y-5">
         <p className="text-muted">Escriba su correo y le enviamos un enlace para crear una nueva contraseña.</p>
-        <Field label="Correo" name="email" type="email" autoComplete="email" required />
+        <Field label="Correo" icon="correo" name="email" type="email" autoComplete="email" required />
         {state?.error && (
           <p role="alert" className="animate-fade text-sm text-bad">
             {state.error}

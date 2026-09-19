@@ -1,17 +1,34 @@
 import type { ComponentProps } from 'react'
+import { Icon, type IconName } from './icons'
 
 // Etiqueta flotante: dentro del campo cuando está vacío y sin foco; al escribir o enfocar se asienta sobre el borde superior.
 // Solo se animan translate y scale (no top ni tamaño de letra) para que el movimiento sea fluido.
-export function Field({ label, hint, className = '', ...props }: ComponentProps<'input'> & { label: string; hint?: string }) {
+// Con `icon`, el icono va a la izquierda dentro del campo y la etiqueta en reposo se corre a su derecha
+export function Field({
+  label,
+  hint,
+  icon,
+  className = '',
+  ...props
+}: ComponentProps<'input'> & { label: string; hint?: string; icon?: IconName }) {
+  const labelX = icon ? 'left-10 -translate-x-7 peer-[:placeholder-shown:not(:focus)]:translate-x-0' : 'left-3'
   return (
     <label className="block space-y-2">
       <span className="relative block">
         <input
           {...props}
           placeholder=" "
-          className={`peer h-14 w-full rounded-md bg-white px-4 text-ink outline-hidden ring-1 ring-ink/15 transition-shadow duration-base hover:ring-ink/30 focus:ring-brand ${className}`}
+          className={`peer h-14 w-full rounded-md bg-white ${icon ? 'pl-11 pr-4' : 'px-4'} text-ink outline-hidden ring-1 ring-ink/15 transition-shadow duration-base hover:ring-ink/30 focus:ring-brand ${className}`}
         />
-        <span className="pointer-events-none absolute left-3 top-1/2 origin-left -translate-y-[calc(50%+1.75rem)] scale-75 bg-white px-1 text-base text-muted transition-[translate,scale,color] duration-base peer-focus:text-brand-strong peer-[:placeholder-shown:not(:focus)]:-translate-y-1/2 peer-[:placeholder-shown:not(:focus)]:scale-100">
+        {icon && (
+          <Icon
+            name={icon}
+            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted transition-[color] duration-base peer-focus:text-brand-strong"
+          />
+        )}
+        <span
+          className={`pointer-events-none absolute ${labelX} top-1/2 origin-left -translate-y-[calc(50%+1.75rem)] scale-75 bg-white px-1 text-base text-muted transition-[translate,scale,color] duration-base peer-focus:text-brand-strong peer-[:placeholder-shown:not(:focus)]:-translate-y-1/2 peer-[:placeholder-shown:not(:focus)]:scale-100`}
+        >
           {label}
         </span>
       </span>

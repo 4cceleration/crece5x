@@ -13,6 +13,7 @@ export function ResetForm({ token }: { token: string }) {
       <input type="hidden" name="token" value={token} />
       <Field
         label="Nueva contraseña"
+        icon="contrasena"
         name="password"
         type="password"
         autoComplete="new-password"
