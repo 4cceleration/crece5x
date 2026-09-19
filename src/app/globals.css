@@ -50,7 +50,7 @@
 }
 
 html { color-scheme: light; }
-body { background: #ffffff; color: var(--color-ink); }
+body { background: #E6EFE9; color: var(--color-ink); }
 /* Títulos con la fuente de marca; el texto corrido sigue en Inter */
 h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
 /* En la capa base para que utilidades como outline-hidden (campos) la puedan reemplazar */
