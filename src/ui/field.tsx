@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react'
 
-// Etiqueta flotante: va dentro del campo cuando está vacío y sin foco; sube al escribir o enfocar
+// Etiqueta flotante: dentro del campo cuando está vacío y sin foco; al escribir o enfocar se asienta sobre el borde superior
 export function Field({ label, hint, className = '', ...props }: ComponentProps<'input'> & { label: string; hint?: string }) {
   return (
     <label className="block space-y-2">
@@ -8,9 +8,9 @@ export function Field({ label, hint, className = '', ...props }: ComponentProps<
         <input
           {...props}
           placeholder=" "
-          className={`peer h-14 w-full rounded-md bg-surface px-4 pb-2 pt-6 text-ink outline-none ring-1 ring-transparent transition-[background-color,box-shadow] duration-200 ease-out hover:bg-[#F1F1EE] focus:bg-white focus:ring-brand/60 focus-visible:outline-none ${className}`}
+          className={`peer h-14 w-full rounded-md bg-white px-4 text-ink outline-none ring-1 ring-ink/15 transition-shadow duration-200 ease-out hover:ring-ink/30 focus:ring-brand focus-visible:outline-none ${className}`}
         />
-        <span className="pointer-events-none absolute left-4 top-2 text-xs text-muted transition-all duration-200 ease-out peer-focus:text-brand-strong peer-[:placeholder-shown:not(:focus)]:top-1/2 peer-[:placeholder-shown:not(:focus)]:-translate-y-1/2 peer-[:placeholder-shown:not(:focus)]:text-base">
+        <span className="pointer-events-none absolute left-3 top-0 -translate-y-1/2 bg-white px-1 text-xs text-muted transition-all duration-200 ease-out peer-focus:text-brand-strong peer-[:placeholder-shown:not(:focus)]:top-1/2 peer-[:placeholder-shown:not(:focus)]:text-base">
           {label}
         </span>
       </span>
