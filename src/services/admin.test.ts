@@ -5,7 +5,7 @@ import { consultation } from '@/db/schema'
 import { DEFAULT_SETTINGS } from '@/domain/settings'
 import { createUserWithPassword } from './users'
 import { createCompanyForUser } from './companies'
-import { adminMetrics, listQuestions, listUsers, setUserRole, settingsFromForm, updateQuestion } from './admin'
+import { adminMetrics, flattenSettings, listQuestions, listUsers, parseNumber, setSetting, setUserRole, updateQuestion } from './admin'
 
 describe('admin', () => {
   it('métricas básicas', async () => {
@@ -33,17 +33,24 @@ describe('admin', () => {
     expect((await listUsers(db)).find((x) => x.id === u)?.role).toBe('consultor')
   })
 
-  it('convierte el formulario de ajustes', () => {
-    const fd = new FormData()
-    fd.set('smmlv', '1.750.905')
-    fd.set('consultantThreshold', '65')
-    fd.set('blend.diagnostic', '0,7')
-    fd.set('severityPenalty.critica', '25')
-    const s = settingsFromForm(fd, DEFAULT_SETTINGS)
+  it('cambia ajustes por clave con validación', () => {
+    let s = setSetting(DEFAULT_SETTINGS, 'smmlv', '1.750.905')
+    s = setSetting(s, 'consultantThreshold', '65')
+    s = setSetting(s, 'blend.diagnostic', '0,7')
+    s = setSetting(s, 'severityPenalty.critica', '25')
     expect(s.smmlv).toBe(1_750_905)
     expect(s.consultantThreshold).toBe(65)
     expect(s.blend).toEqual({ diagnostic: 0.7, analysis: 0.3 })
     expect(s.severityPenalty.critica).toBe(25)
     expect(s.group1).toEqual(DEFAULT_SETTINGS.group1)
+    expect(DEFAULT_SETTINGS.smmlv).toBe(1_423_500)
+    expect(flattenSettings(s)['blend.diagnostic']).toBe(0.7)
+  })
+
+  it('rechaza claves desconocidas, valores fuera de rango y texto', () => {
+    expect(() => setSetting(DEFAULT_SETTINGS, 'secreto', '1')).toThrow(/desconocida/)
+    expect(() => setSetting(DEFAULT_SETTINGS, 'blend.diagnostic', '2')).toThrow(/entre 0 y 1/)
+    expect(() => setSetting(DEFAULT_SETTINGS, 'smmlv', 'mucho')).toThrow(/no es un número/)
+    expect(() => parseNumber('')).toThrow()
   })
 })

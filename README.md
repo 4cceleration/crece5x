@@ -14,7 +14,6 @@ npm run dev
 ```
 
 - App: http://localhost:3000
-- Admin demo: `admin@crece.local` / `Admin12345!`
 - Consultor demo: `consultor@crece.local` / `Consultor123!`
 - Base de datos: `local.db` (SQLite)
 - Correos: se guardan en `.data/emails/` (abra el `.html`)
@@ -36,7 +35,27 @@ npm run dev
 |---|---|
 | Empresa | Inicio, consulta (Clasificar → Revisar → Examinar → Resultado), Academia, Agenda |
 | Consultor | Agenda, casos con el reporte del cliente y notas, Disponibilidad |
-| Admin | Resumen, Preguntas, Ajustes, Usuarios |
+
+No hay panel web de administración: la administración se hace con la CLI (ver abajo).
+
+## Administración (CLI)
+
+Por seguridad no hay pantallas de administración en la web. Quien administra necesita acceso a la base de datos (`DATABASE_URL` y `DATABASE_AUTH_TOKEN`); cada cambio queda en `audit_log` con el usuario del sistema que lo hizo.
+
+```bash
+npm run admin -- ayuda
+npm run admin -- resumen
+npm run admin -- preguntas listar [--dimension D1..D5]
+npm run admin -- preguntas editar d5-software --peso 3 --activa no
+npm run admin -- ajustes ver
+npm run admin -- ajustes cambiar smmlv 1.750.905
+npm run admin -- usuarios listar
+npm run admin -- usuarios rol correo@empresa.com consultor
+npm run admin -- usuarios crear-consultor --nombre "Laura Pérez" --correo laura@empresa.com
+npm run admin -- auditoria --limite 50
+```
+
+Contra producción, anteponga las variables de Turso: `DATABASE_URL=libsql://… DATABASE_AUTH_TOKEN=… npm run admin -- resumen`.
 
 ## Diseño
 
@@ -63,7 +82,6 @@ El E2E usa Chromium sin interfaz (la primera vez: `npx playwright install chromi
    ```bash
    DATABASE_URL=libsql://… DATABASE_AUTH_TOKEN=… npm run db:migrate
    DATABASE_URL=libsql://… DATABASE_AUTH_TOKEN=… \
-   SEED_ADMIN_EMAIL=usted@empresa.com SEED_ADMIN_PASSWORD='una-clave-segura' \
    SEED_DEMO_CONSULTANT=false npm run db:seed
    ```
 3. **Proyecto en Vercel**: `vercel link`, luego crear un Blob store **privado** y conectarlo al proyecto (agrega `BLOB_READ_WRITE_TOKEN`).
@@ -90,4 +108,4 @@ El análisis usa el Vercel AI SDK con AI Gateway: basta con poner `AI_MODEL` (po
 
 ## Aviso
 
-Los umbrales de clasificación (SMMLV y límites por grupo) son configurables en `/admin/ajustes` y deben validarse con un contador. Los reportes son orientativos y no constituyen una opinión de auditoría.
+Los umbrales de clasificación (SMMLV y límites por grupo) son configurables con `npm run admin -- ajustes cambiar` y deben validarse con un contador. Los reportes son orientativos y no constituyen una opinión de auditoría.

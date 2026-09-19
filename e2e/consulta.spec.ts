@@ -13,7 +13,8 @@ test('consulta completa: registro → clasificar → revisar → examinar → re
   await page.getByLabel(/Autorizo el tratamiento/).check()
   await page.getByRole('button', { name: 'Crear cuenta' }).click()
 
-  await page.getByRole('button', { name: 'Iniciar consulta' }).click()
+  // Tras registrarse entra directo al formulario de la consulta
+  await expect(page).toHaveURL(/\/consulta\/.+\/clasificar$/)
   await page.getByLabel('Activos totales').fill('800000000')
   await page.getByLabel('Ingresos del último año').fill('1500000000')
   await page.getByLabel('Número de empleados').fill('25')

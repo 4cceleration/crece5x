@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { db } from '@/db'
 import { auth } from '@/lib/auth'
 import { homeFor } from '@/lib/session'
+import { WEB_ROLES } from '@/domain/types'
 import { createCompanyForUser, getCompanyIdForUser } from '@/services/companies'
 import { getUserRole } from '@/services/users'
 
@@ -65,7 +66,12 @@ export async function signInAction(_: FormState, formData: FormData): Promise<Fo
     return { error: 'Correo o contraseña incorrectos.' }
   }
 
-  redirect(homeFor(await getUserRole(db, userId)))
+  const role = await getUserRole(db, userId)
+  if (!WEB_ROLES.includes(role)) {
+    await auth.api.signOut({ headers: await headers() })
+    return { error: 'Esta cuenta no tiene acceso web.' }
+  }
+  redirect(homeFor(role))
 }
 
 export async function signOutAction() {

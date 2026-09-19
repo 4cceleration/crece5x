@@ -12,7 +12,7 @@ export type Settings = {
 }
 
 export const DEFAULT_SETTINGS: Settings = {
-  // Valor 2025. Actualizarlo cada año desde /admin/ajustes.
+  // Valor 2025. Actualizarlo cada año con: npm run admin -- ajustes cambiar smmlv <valor>
   smmlv: 1_423_500,
   group1: { assetsSmmlv: 30_000, employees: 200 },
   group3: { assetsSmmlv: 500, revenueSmmlv: 6_000, employees: 10 },

@@ -7,7 +7,7 @@ export function NavLink({ href, children }: { href: string; children: React.Reac
   const pathname = usePathname()
   const active =
     pathname === href ||
-    (href !== '/admin' && href !== '/consultor' && pathname.startsWith(`${href}/`))
+    (href !== '/consultor' && pathname.startsWith(`${href}/`))
 
   // El foco va hacia adentro (offset negativo): la barra de navegación hace scroll y recortaría un anillo exterior
   return (

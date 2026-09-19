@@ -6,7 +6,9 @@ export type AnswerValue = 'si' | 'parcial' | 'no' | 'nose'
 export type Severity = 'critica' | 'alta' | 'media' | 'baja'
 export type FindingSource = 'diagnostico' | 'chequeo' | 'ia'
 export type Light = 'verde' | 'ambar' | 'rojo'
-export type Role = 'empresa' | 'consultor' | 'admin'
+// Solo roles con acceso web. La administración se hace con la CLI (npm run admin), nunca desde la web
+export type Role = 'empresa' | 'consultor'
+export const WEB_ROLES: Role[] = ['empresa', 'consultor']
 
 export type Question = {
   id: string

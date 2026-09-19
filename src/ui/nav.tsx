@@ -14,12 +14,6 @@ const NAV: Record<Role, { href: string; label: string; icon: IconName }[]> = {
     { href: '/consultor', label: 'Agenda', icon: 'agenda' },
     { href: '/consultor/disponibilidad', label: 'Disponibilidad', icon: 'disponibilidad' },
   ],
-  admin: [
-    { href: '/admin', label: 'Resumen', icon: 'resumen' },
-    { href: '/admin/preguntas', label: 'Preguntas', icon: 'preguntas' },
-    { href: '/admin/ajustes', label: 'Ajustes', icon: 'ajustes' },
-    { href: '/admin/usuarios', label: 'Usuarios', icon: 'usuarios' },
-  ],
 }
 
 export function Nav({ role }: { role: Role }) {

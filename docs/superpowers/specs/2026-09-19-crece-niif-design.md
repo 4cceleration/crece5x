@@ -75,7 +75,7 @@ Todo reporte incluye: "Este reporte es orientativo y no constituye una opinión 
 
 | # | Módulo | Responsabilidad |
 |---|---|---|
-| 1 | Identidad | Registro, sesión, roles (empresa, consultor, admin), empresa y miembros, consentimiento Ley 1581 |
+| 1 | Identidad | Registro, sesión, roles con acceso web (empresa, consultor), empresa y miembros, consentimiento Ley 1581 |
 | 2 | Clasificador | Función pura `classify(input, settings)` + pantalla paso C |
 | 3 | Diagnóstico | Banco de preguntas, banderas, respuestas con guardado automático, pantalla paso R |
 | 4 | Índice | Funciones puras `scoreDiagnostic`, `scoreAnalysis`, `finalIndex`, `trafficLight` |
@@ -87,9 +87,9 @@ Todo reporte incluye: "Este reporte es orientativo y no constituye una opinión 
 | 10 | Academia | Guías en markdown (módulo TS) por sección NIIF Pymes, glosario, ruta según brechas, progreso |
 | 11 | Portal empresa | Inicio con índice actual y una acción principal |
 | 12 | Panel consultor | Citas, casos, reporte del cliente, notas |
-| 13 | Administración | Resumen (métricas simples), preguntas y pesos, ajustes (umbrales, reglas), usuarios (roles, crear consultor). El contenido de la Academia vive en el código |
+| 13 | Administración | **Solo por CLI** (`npm run admin`), sin panel web, por seguridad: resumen, preguntas y pesos, ajustes con claves y rangos validados, usuarios (roles, crear consultor) y consulta de la auditoría. El contenido de la Academia vive en el código |
 
-Transversales: `audit_log` (subidas, vistas de reportes, cambios admin), autorización por empresa en cada consulta a datos, aviso legal.
+Transversales: `audit_log` (subidas, vistas de reportes, cambios hechos con la CLI, registrados como `cli:<usuario>:<acción>`), autorización por empresa en cada consulta a datos, aviso legal.
 
 ## 5. Arquitectura
 
@@ -104,7 +104,7 @@ Transversales: `audit_log` (subidas, vistas de reportes, cambios admin), autoriz
 
 ### 5.1 Modelo de datos
 
-- `user`, `session`, `account`, `verification` (Better Auth) — `user.role ∈ {empresa, consultor, admin}`.
+- `user`, `session`, `account`, `verification` (Better Auth) — `user.role ∈ {empresa, consultor}` (cualquier otro valor no tiene acceso web).
 - `company` (id, nit, name, country, createdAt) · `company_member` (companyId, userId).
 - `consultation` (id, companyId, status ∈ {clasificar, revisar, examinar, resultado}, group, classificationInput JSON, flags JSON, diagnosticScore, analysisScore, finalScore, needsConsultant, createdAt, completedAt).
 - `question` (id, dimension, text, help, gap, fix, weight, requiresFlag nullable, groups JSON, niifSection, lesson, order, active) · `answer` (consultationId, questionId, value ∈ {si, parcial, no, nose}).
@@ -130,7 +130,7 @@ Paleta:
 - Semáforo: verde `#2F9E6B`, ámbar `#E0A100`, rojo `#D64545` (sólo en índice y severidades).
 - Tipografía: Inter (Google Fonts vía `next/font`).
 
-Navegación empresa (3 ítems): **Inicio · Academia · Agenda**. Consultor: **Agenda · Disponibilidad** (los casos se abren desde cada cita). Admin: **Resumen · Preguntas · Ajustes · Usuarios**.
+Navegación empresa (3 ítems): **Inicio · Academia · Agenda**. Consultor: **Agenda · Disponibilidad** (los casos se abren desde cada cita).
 
 ### 6.1 Rutas
 
@@ -140,7 +140,6 @@ Navegación empresa (3 ítems): **Inicio · Academia · Agenda**. Consultor: **A
 - `/academia`, `/academia/[slug]`
 - `/agenda` (empresa: reservar/ver cita) — elegir día → elegir hora → confirmar
 - `/consultor`, `/consultor/disponibilidad`, `/consultor/casos/[appointmentId]`
-- `/admin`, `/admin/preguntas`, `/admin/ajustes`, `/admin/usuarios`
 
 ## 7. Manejo de errores
 
@@ -157,7 +156,7 @@ Navegación empresa (3 ítems): **Inicio · Academia · Agenda**. Consultor: **A
 
 ## 9. Despliegue
 
-- Local: `npm run db:migrate && npm run db:seed && npm run dev` (seed crea preguntas, settings, un consultor y un admin de prueba).
+- Local: `npm run db:migrate && npm run db:seed && npm run dev` (seed crea preguntas, settings, y un consultor de prueba; no crea administradores).
 - Vercel: variables `DATABASE_URL`, `DATABASE_AUTH_TOKEN`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `AI_GATEWAY_API_KEY`, `AI_MODEL`, `BLOB_READ_WRITE_TOKEN`, `RESEND_API_KEY`, `MAIL_FROM`, `CRON_SECRET`. Migraciones contra Turso con `drizzle-kit migrate`.
 
 ## 10. Fases
@@ -168,5 +167,5 @@ Navegación empresa (3 ítems): **Inicio · Academia · Agenda**. Consultor: **A
 4. Comunicar: resultado, PDF, correo.
 5. Escalar: agenda + derivación.
 6. Academia.
-7. Paneles consultor y admin.
+7. Panel del consultor y CLI de administración.
 8. Despliegue Vercel + E2E.

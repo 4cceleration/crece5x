@@ -1,6 +1,6 @@
-import { and, asc, avg, count, eq, gt } from 'drizzle-orm'
+import { and, asc, avg, count, desc, eq, gt } from 'drizzle-orm'
 import type { Db } from '@/db/client'
-import { appointment, company, consultation, question, user } from '@/db/schema'
+import { appointment, auditLog, company, consultation, question, user } from '@/db/schema'
 import type { Settings } from '@/domain/settings'
 import type { Question, Role } from '@/domain/types'
 
@@ -37,43 +37,75 @@ export async function setUserRole(db: Db, userId: string, role: Role): Promise<v
   await db.update(user).set({ role, updatedAt: new Date() }).where(eq(user.id, userId))
 }
 
-const num = (v: FormDataEntryValue | null, fallback: number): number => {
-  if (v === null || String(v).trim() === '') return fallback
-  // Acepta "1.750.905" (miles con punto) y "0,7" (decimal con coma)
-  const s = String(v).trim()
-  const normalized = s.includes(',') ? s.replace(/\./g, '').replace(',', '.') : /^\d{1,3}(\.\d{3})+$/.test(s) ? s.replace(/\./g, '') : s
+// Números en formato colombiano: "1.750.905" (miles con punto) y "0,7" (decimal con coma)
+export function parseNumber(raw: string): number {
+  const s = raw.trim()
+  const normalized = s.includes(',')
+    ? s.replace(/\./g, '').replace(',', '.')
+    : /^\d{1,3}(\.\d{3})+$/.test(s)
+      ? s.replace(/\./g, '')
+      : s
   const n = Number(normalized)
-  return Number.isFinite(n) ? n : fallback
+  if (s === '' || !Number.isFinite(n)) throw new Error(`"${raw}" no es un número válido`)
+  return n
 }
 
-export function settingsFromForm(fd: FormData, current: Settings): Settings {
-  const diagnostic = Math.min(1, Math.max(0, num(fd.get('blend.diagnostic'), current.blend.diagnostic)))
-  return {
-    smmlv: num(fd.get('smmlv'), current.smmlv),
-    group1: {
-      assetsSmmlv: num(fd.get('group1.assetsSmmlv'), current.group1.assetsSmmlv),
-      employees: num(fd.get('group1.employees'), current.group1.employees),
-    },
-    group3: {
-      assetsSmmlv: num(fd.get('group3.assetsSmmlv'), current.group3.assetsSmmlv),
-      revenueSmmlv: num(fd.get('group3.revenueSmmlv'), current.group3.revenueSmmlv),
-      employees: num(fd.get('group3.employees'), current.group3.employees),
-    },
-    dimensionWeights: {
-      D1: num(fd.get('dimensionWeights.D1'), current.dimensionWeights.D1),
-      D2: num(fd.get('dimensionWeights.D2'), current.dimensionWeights.D2),
-      D3: num(fd.get('dimensionWeights.D3'), current.dimensionWeights.D3),
-      D4: num(fd.get('dimensionWeights.D4'), current.dimensionWeights.D4),
-      D5: num(fd.get('dimensionWeights.D5'), current.dimensionWeights.D5),
-    },
-    severityPenalty: {
-      critica: num(fd.get('severityPenalty.critica'), current.severityPenalty.critica),
-      alta: num(fd.get('severityPenalty.alta'), current.severityPenalty.alta),
-      media: num(fd.get('severityPenalty.media'), current.severityPenalty.media),
-      baja: num(fd.get('severityPenalty.baja'), current.severityPenalty.baja),
-    },
-    blend: { diagnostic, analysis: Math.round((1 - diagnostic) * 100) / 100 },
-    consultantThreshold: num(fd.get('consultantThreshold'), current.consultantThreshold),
-    appointmentMinutes: num(fd.get('appointmentMinutes'), current.appointmentMinutes),
+// Claves editables desde la CLI, con su rango permitido
+export const SETTING_KEYS: Record<string, { min: number; max: number; help: string }> = {
+  smmlv: { min: 1, max: 1e9, help: 'Salario mínimo mensual (COP)' },
+  'group1.assetsSmmlv': { min: 1, max: 1e7, help: 'Grupo 1: activos mínimos en SMMLV' },
+  'group1.employees': { min: 1, max: 1e6, help: 'Grupo 1: empleados mínimos' },
+  'group3.assetsSmmlv': { min: 1, max: 1e7, help: 'Grupo 3: activos máximos en SMMLV' },
+  'group3.revenueSmmlv': { min: 1, max: 1e7, help: 'Grupo 3: ingresos máximos en SMMLV' },
+  'group3.employees': { min: 1, max: 1e6, help: 'Grupo 3: empleados máximos' },
+  'dimensionWeights.D1': { min: 0, max: 100, help: 'Peso: estados financieros' },
+  'dimensionWeights.D2': { min: 0, max: 100, help: 'Peso: políticas contables' },
+  'dimensionWeights.D3': { min: 0, max: 100, help: 'Peso: reconocimiento y medición' },
+  'dimensionWeights.D4': { min: 0, max: 100, help: 'Peso: revelaciones' },
+  'dimensionWeights.D5': { min: 0, max: 100, help: 'Peso: cierre contable' },
+  'severityPenalty.critica': { min: 0, max: 100, help: 'Penalización hallazgo crítico' },
+  'severityPenalty.alta': { min: 0, max: 100, help: 'Penalización hallazgo alto' },
+  'severityPenalty.media': { min: 0, max: 100, help: 'Penalización hallazgo medio' },
+  'severityPenalty.baja': { min: 0, max: 100, help: 'Penalización hallazgo bajo' },
+  'blend.diagnostic': { min: 0, max: 1, help: 'Peso del diagnóstico en el índice (el análisis es 1 − este valor)' },
+  consultantThreshold: { min: 0, max: 100, help: 'Índice bajo el cual se deriva a consultor' },
+  appointmentMinutes: { min: 15, max: 240, help: 'Duración de la cita (min)' },
+}
+
+export function setSetting(current: Settings, key: string, raw: string): Settings {
+  const spec = SETTING_KEYS[key]
+  if (!spec) throw new Error(`Clave desconocida: ${key}. Use "ajustes ver" para ver las claves.`)
+  const value = parseNumber(raw)
+  if (value < spec.min || value > spec.max) throw new Error(`${key} debe estar entre ${spec.min} y ${spec.max}`)
+  const next = structuredClone(current)
+  if (key === 'blend.diagnostic') {
+    next.blend = { diagnostic: value, analysis: Math.round((1 - value) * 100) / 100 }
+    return next
   }
+  const [a, b] = key.split('.')
+  if (b) (next as unknown as Record<string, Record<string, number>>)[a][b] = value
+  else (next as unknown as Record<string, number>)[a] = value
+  return next
+}
+
+export function flattenSettings(s: Settings): Record<string, number> {
+  const out: Record<string, number> = {}
+  for (const key of Object.keys(SETTING_KEYS)) {
+    const [a, b] = key.split('.')
+    const top = (s as unknown as Record<string, unknown>)[a]
+    out[key] = b ? (top as Record<string, number>)[b] : (top as number)
+  }
+  return out
+}
+
+export async function getQuestion(db: Db, id: string) {
+  return db.query.question.findFirst({ where: eq(question.id, id) })
+}
+
+export async function findUserByEmail(db: Db, email: string) {
+  return db.query.user.findFirst({ where: eq(user.email, email.trim().toLowerCase()) })
+}
+
+export async function recentAudit(db: Db, limit = 20) {
+  return db.select().from(auditLog).orderBy(desc(auditLog.at)).limit(limit)
 }

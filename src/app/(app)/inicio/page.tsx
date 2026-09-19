@@ -1,13 +1,13 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { db } from '@/db'
 import { requireCompany } from '@/lib/session'
-import { latestConsultation } from '@/services/consultations'
+import { getOwnedConsultation, latestConsultation, startConsultation, stepPath } from '@/services/consultations'
 import { upcomingForCompany } from '@/services/agenda'
 import { formatDateTime } from '@/domain/dates'
 import { startConsultationAction } from '../consulta/actions'
 import { Score } from '@/ui/score'
 import { ButtonLink, buttonClass } from '@/ui/button'
-import { SubmitButton } from '@/ui/submit-button'
 import { Icon } from '@/ui/icons'
 
 export default async function InicioPage() {
@@ -40,20 +40,8 @@ export default async function InicioPage() {
     )
   }
 
-  return (
-    <section className="animate-enter space-y-6 pt-10">
-      <h1 className="text-4xl font-semibold tracking-tight">Hola, {firstName}</h1>
-      <p className="max-w-prose text-lg text-muted">Su consulta NIIF toma unos 15 minutos.</p>
-      <form action={startConsultationAction}>
-        <SubmitButton className="gap-2">
-          {last ? 'Continuar consulta' : 'Iniciar consulta'}
-          <Icon name="siguiente" size={18} />
-        </SubmitButton>
-      </form>
-      <p className="text-sm text-muted">
-        ¿Prefiere hablar con alguien? <Link href="/agenda" className="underline underline-offset-4">Agende un consultor</Link>
-      </p>
-      {appointmentLine}
-    </section>
-  )
+  // Sin resultado todavía: directo al formulario de la consulta (la abierta o una nueva), sin botón intermedio
+  const id = await startConsultation(db, companyId)
+  const open = await getOwnedConsultation(db, id, companyId)
+  redirect(stepPath(id, open?.status ?? 'clasificar'))
 }

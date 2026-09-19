@@ -5,11 +5,10 @@ import { QUESTION_BANK } from './questions'
 import { DEFAULT_SETTINGS } from '@/domain/settings'
 import { createUserWithPassword } from '@/services/users'
 
-export const DEMO_ADMIN = { email: 'admin@crece.local', password: 'Admin12345!' }
 export const DEMO_CONSULTANT = { email: 'consultor@crece.local', password: 'Consultor123!' }
 
+// La semilla no crea administradores: la administración se hace con la CLI (npm run admin)
 export type SeedOptions = {
-  admin?: { email: string; password: string }
   demoConsultant?: boolean
 }
 
@@ -21,7 +20,6 @@ export async function seedDatabase(db: Db, opts: SeedOptions = {}): Promise<void
 
   await db.insert(setting).values({ key: 'app', value: DEFAULT_SETTINGS }).onConflictDoNothing()
 
-  await createUserWithPassword(db, { ...(opts.admin ?? DEMO_ADMIN), name: 'Administración CRECE', role: 'admin' })
   if (opts.demoConsultant === false) return
 
   const consultantId = await createUserWithPassword(db, { ...DEMO_CONSULTANT, name: 'Laura Consultora', role: 'consultor' })

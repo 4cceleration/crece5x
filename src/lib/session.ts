@@ -3,7 +3,7 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { cache } from 'react'
 import { db } from '@/db'
-import type { Role } from '@/domain/types'
+import { WEB_ROLES, type Role } from '@/domain/types'
 import { getCompanyIdForUser } from '@/services/companies'
 import { auth } from './auth'
 
@@ -16,19 +16,21 @@ export type CurrentUser = {
 
 export function homeFor(role: Role): string {
   if (role === 'consultor') return '/consultor'
-  if (role === 'admin') return '/admin'
   return '/inicio'
 }
 
 export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const currentSession = await auth.api.getSession({ headers: await headers() })
   if (!currentSession?.user) return null
+  // Cuentas con otro rol (p. ej. un admin antiguo) no tienen acceso web
+  const role = currentSession.user.role as string
+  if (!WEB_ROLES.includes(role as Role)) return null
 
   return {
     id: currentSession.user.id,
     name: currentSession.user.name,
     email: currentSession.user.email,
-    role: currentSession.user.role as Role,
+    role: role as Role,
   }
 })
 
