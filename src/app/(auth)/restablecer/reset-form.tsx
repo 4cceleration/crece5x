@@ -1,13 +1,13 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { useActionState } from "react";
-import { resetPasswordAction } from "../actions";
-import { Field } from "@/ui/field";
-import { SubmitButton } from "@/ui/submit-button";
+import Link from 'next/link'
+import { useActionState } from 'react'
+import { resetPasswordAction } from '../actions'
+import { Field } from '@/ui/field'
+import { SubmitButton } from '@/ui/submit-button'
 
 export function ResetForm({ token }: { token: string }) {
-  const [state, action] = useActionState(resetPasswordAction, null);
+  const [state, action] = useActionState(resetPasswordAction, null)
   return (
     <form action={action} className="space-y-5">
       <input type="hidden" name="token" value={token} />
@@ -21,7 +21,7 @@ export function ResetForm({ token }: { token: string }) {
       />
       {state?.error && (
         <p role="alert" className="text-sm text-bad">
-          {state.error}{" "}
+          {state.error}{' '}
           <Link href="/recuperar" className="underline underline-offset-4">
             Solicitar otro enlace
           </Link>
@@ -31,5 +31,5 @@ export function ResetForm({ token }: { token: string }) {
         Guardar contraseña
       </SubmitButton>
     </form>
-  );
+  )
 }
