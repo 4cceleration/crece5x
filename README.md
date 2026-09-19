@@ -15,7 +15,7 @@ npm run dev
 
 - App: http://localhost:3000
 - Consultor demo: `consultor@crece.local` / `Consultor123!`
-- Base de datos: `local.db` (SQLite)
+- Base de datos: PostgreSQL. En local, PGlite en `.data/pglite` (sin servidor; detenga `npm run dev` antes de usar la CLI o migrar contra la base local). En Vercel, Neon
 - Correos: se guardan en `.data/emails/` (abra el `.html`)
 - Archivos subidos: `.data/uploads/`
 - IA: con `AI_MODEL` vacío se usa un analista simulado
@@ -52,10 +52,11 @@ npm run admin -- ajustes cambiar smmlv 1.750.905
 npm run admin -- usuarios listar
 npm run admin -- usuarios rol correo@empresa.com consultor
 npm run admin -- usuarios crear-consultor --nombre "Laura Pérez" --correo laura@empresa.com
+npm run admin -- usuarios clave laura@empresa.com
 npm run admin -- auditoria --limite 50
 ```
 
-Contra producción, anteponga las variables de Turso: `DATABASE_URL=libsql://… DATABASE_AUTH_TOKEN=… npm run admin -- resumen`.
+Contra producción, use la conexión de Neon: `DATABASE_URL=<DATABASE_URL_UNPOOLED> npm run admin -- resumen`.
 
 ## Diseño
 
@@ -72,35 +73,20 @@ El E2E usa Chromium sin interfaz (la primera vez: `npx playwright install chromi
 
 ## Desplegar en Vercel
 
-1. **Base de datos (Turso, compatible con SQLite)**
-   ```bash
-   turso db create crece
-   turso db show crece --url          # → DATABASE_URL (libsql://…)
-   turso db tokens create crece       # → DATABASE_AUTH_TOKEN
-   ```
-2. **Migrar y sembrar Turso** desde su máquina:
-   ```bash
-   DATABASE_URL=libsql://… DATABASE_AUTH_TOKEN=… npm run db:migrate
-   DATABASE_URL=libsql://… DATABASE_AUTH_TOKEN=… \
-   SEED_DEMO_CONSULTANT=false npm run db:seed
-   ```
-3. **Proyecto en Vercel**: `vercel link`, luego crear un Blob store **privado** y conectarlo al proyecto (agrega `BLOB_READ_WRITE_TOKEN`).
-4. **Variables de entorno** (Production y Preview):
+Producción: **https://crece5x.vercel.app** (proyecto `crece5x`).
 
-   | Variable | Valor |
-   |---|---|
-   | `DATABASE_URL`, `DATABASE_AUTH_TOKEN` | de Turso |
-   | `BETTER_AUTH_SECRET` | `openssl rand -base64 32` |
-   | `BETTER_AUTH_URL` | `https://su-dominio` |
-   | `RESEND_API_KEY`, `MAIL_FROM` | de Resend, con dominio verificado |
-   | `CRON_SECRET` | texto aleatorio |
-   | `AI_MODEL` | vacío hasta elegir proveedor; luego `proveedor/modelo` del AI Gateway |
-   | `AI_GATEWAY_API_KEY` | opcional en Vercel (usa OIDC); necesaria en local |
-   | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | opcionales; URI de redirección `https://su-dominio/api/auth/callback/google` |
-
-   `vercel.json` programa el recordatorio de citas todos los días a las 13:00 UTC (8:00 en Bogotá). Vercel envía `Authorization: Bearer $CRON_SECRET` al cron; sin `CRON_SECRET` el endpoint responde 401.
-
-5. `vercel deploy --prod`
+- **Base de datos**: Neon (Marketplace de Vercel), conectada al proyecto; crea `DATABASE_URL` y `DATABASE_URL_UNPOOLED`.
+  Migrar y sembrar desde su máquina con la conexión directa:
+  ```bash
+  vercel env pull .data/vercel-prod.env --environment=production
+  DATABASE_URL=<DATABASE_URL_UNPOOLED> npm run db:migrate
+  DATABASE_URL=<DATABASE_URL_UNPOOLED> SEED_DEMO_CONSULTANT=false npm run db:seed
+  ```
+- **Archivos**: Vercel Blob privado `crece5x-archivos` (`BLOB_READ_WRITE_TOKEN`).
+- **IA**: `AI_MODEL=groq/openai/gpt-oss-120b` con `GROQ_API_KEY`.
+- **Correo**: Resend (`RESEND_API_KEY`, `MAIL_FROM` con dominio verificado).
+- **Otras**: `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL=https://crece5x.vercel.app`, `CRON_SECRET`. En despliegues de vista previa la URL sale de `VERCEL_URL`.
+- Desplegar: `vercel deploy --prod`.
 
 ## Elegir el proveedor de IA
 

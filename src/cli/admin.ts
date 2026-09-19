@@ -22,7 +22,7 @@ import {
 } from '@/services/admin'
 import { audit } from '@/services/audit'
 import { getSettings, saveSettings } from '@/services/settings'
-import { createUserWithPassword } from '@/services/users'
+import { createUserWithPassword, setPassword } from '@/services/users'
 
 const HELP = `crece5x · administración
 
@@ -34,6 +34,7 @@ const HELP = `crece5x · administración
   npm run admin -- usuarios listar
   npm run admin -- usuarios rol <correo> <empresa|consultor>
   npm run admin -- usuarios crear-consultor --nombre "Nombre" --correo correo@dominio [--clave ...]
+  npm run admin -- usuarios clave <correo> [--clave ...]
   npm run admin -- auditoria [--limite 20]
 
 Usa la base de datos de DATABASE_URL (${process.env.DATABASE_URL ?? 'file:local.db'}).`
@@ -156,6 +157,18 @@ async function run(argv: string[]) {
       await log('crear_consultor', 'user', id)
       console.log(`Consultor creado: ${email}`)
       if (!values.clave) console.log(`Contraseña temporal: ${password}  (compártala por un canal seguro; puede cambiarla con "¿Olvidaste tu contraseña?")`)
+      return
+    }
+
+    case 'usuarios clave': {
+      const email = args[0] ?? fail('Uso: usuarios clave <correo> [--clave ...]')
+      const u = (await findUserByEmail(db, email)) ?? fail(`No existe el usuario ${email}`)
+      const password = values.clave ?? randomBytes(9).toString('base64url')
+      if (password.length < 8) fail('--clave necesita al menos 8 caracteres')
+      if (!(await setPassword(db, u.id, password))) fail(`${email} no tiene cuenta con contraseña (p. ej. entra con Google)`)
+      await log('cambiar_clave', 'user', u.id)
+      console.log(`Contraseña de ${u.email} actualizada.`)
+      if (!values.clave) console.log(`Contraseña temporal: ${password}`)
       return
     }
 
