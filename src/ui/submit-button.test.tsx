@@ -20,8 +20,8 @@ describe('SubmitButton', () => {
     expect(html).toContain('aria-busy="false"')
     expect(html).not.toContain('disabled=""')
     expect(html).toContain('max-w-0 opacity-0')
-    expect(html).toContain('<span class="col-start-1 row-start-1">Entrar</span>')
-    expect(html).toContain('<span class="col-start-1 row-start-1 invisible">Entrando…</span>')
+    expect(html).toContain('<span class="col-start-1 row-start-1 inline-flex items-center gap-2">Entrar</span>')
+    expect(html).toContain('<span class="col-start-1 row-start-1 inline-flex items-center gap-2 invisible">Entrando…</span>')
   })
 
   it('al enviar se deshabilita, abre el spinner y cambia al texto pendiente', () => {
@@ -29,13 +29,13 @@ describe('SubmitButton', () => {
     expect(html).toContain('aria-busy="true"')
     expect(html).toContain('disabled=""')
     expect(html).toContain('max-w-6 opacity-100')
-    expect(html).toContain('<span class="col-start-1 row-start-1 invisible">Entrar</span>')
-    expect(html).toContain('<span class="col-start-1 row-start-1">Entrando…</span>')
+    expect(html).toContain('<span class="col-start-1 row-start-1 inline-flex items-center gap-2 invisible">Entrar</span>')
+    expect(html).toContain('<span class="col-start-1 row-start-1 inline-flex items-center gap-2">Entrando…</span>')
   })
 
   it('sin pendingLabel mantiene el texto visible mientras envía', () => {
     const html = render(true)
-    expect(html).toContain('<span class="col-start-1 row-start-1">Entrar</span>')
+    expect(html).toContain('<span class="col-start-1 row-start-1 inline-flex items-center gap-2">Entrar</span>')
     expect(html).toContain('max-w-6 opacity-100')
   })
 })
