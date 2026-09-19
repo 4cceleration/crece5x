@@ -6,7 +6,7 @@ import { z } from 'zod'
 import { db } from '@/db'
 import { auth } from '@/lib/auth'
 import { homeFor } from '@/lib/session'
-import { createCompanyForUser } from '@/services/companies'
+import { createCompanyForUser, getCompanyIdForUser } from '@/services/companies'
 import { getUserRole } from '@/services/users'
 
 export type FormState = { error: string } | null
@@ -34,9 +34,15 @@ export async function registerAction(_: FormState, formData: FormData): Promise<
       body: { name, email: email.toLowerCase(), password },
       headers: await headers(),
     })
-    await createCompanyForUser(db, { userId: result.user.id, name: company, nit })
+    await createCompanyForUser(db, {
+      userId: result.user.id,
+      name: company,
+      nit,
+    })
   } catch {
-    return { error: 'No pudimos crear la cuenta. Puede que el correo ya esté registrado.' }
+    return {
+      error: 'No pudimos crear la cuenta. Puede que el correo ya esté registrado.',
+    }
   }
 
   redirect('/inicio')
@@ -65,4 +71,70 @@ export async function signInAction(_: FormState, formData: FormData): Promise<Fo
 export async function signOutAction() {
   await auth.api.signOut({ headers: await headers() })
   redirect('/entrar')
+}
+
+export type ResetState = { error?: string; sent?: boolean } | null
+
+export async function requestResetAction(_: ResetState, formData: FormData): Promise<ResetState> {
+  const email = String(formData.get('email') ?? '')
+    .trim()
+    .toLowerCase()
+  if (!z.email().safeParse(email).success) return { error: 'Escriba un correo válido.' }
+  try {
+    await auth.api.requestPasswordReset({
+      body: { email, redirectTo: '/restablecer' },
+      headers: await headers(),
+    })
+  } catch (e) {
+    console.error('No se pudo solicitar el restablecimiento', e)
+  }
+  // Misma respuesta exista o no la cuenta, para no revelar qué correos están registrados
+  return { sent: true }
+}
+
+export async function resetPasswordAction(_: ResetState, formData: FormData): Promise<ResetState> {
+  const token = String(formData.get('token') ?? '')
+  const newPassword = String(formData.get('password') ?? '')
+  if (!token) return { error: 'El enlace no es válido. Solicite uno nuevo.' }
+  if (newPassword.length < 8) return { error: 'La contraseña necesita al menos 8 caracteres.' }
+  try {
+    await auth.api.resetPassword({
+      body: { token, newPassword },
+      headers: await headers(),
+    })
+  } catch {
+    return { error: 'El enlace venció o ya se usó. Solicite uno nuevo.' }
+  }
+  redirect('/entrar?restablecida=1')
+}
+
+export async function googleSignInAction() {
+  const result = await auth.api.signInSocial({
+    body: {
+      provider: 'google',
+      callbackURL: '/inicio',
+      newUserCallbackURL: '/empresa',
+      errorCallbackURL: '/entrar?error=google',
+    },
+    headers: await headers(),
+  })
+  redirect(result.url ?? '/entrar?error=google')
+}
+
+const companySchema = z.object({
+  company: z.string().trim().min(2),
+  nit: z.string().trim().min(5),
+  consent: z.literal('on'),
+})
+
+// Completa la empresa de quien entró con Google (el registro por correo ya la pide)
+export async function completeCompanyAction(_: FormState, formData: FormData): Promise<FormState> {
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!session?.user) redirect('/entrar')
+  const parsed = companySchema.safeParse(Object.fromEntries(formData))
+  if (!parsed.success) return { error: 'Revise los datos y autorice el tratamiento de datos.' }
+  if (!(await getCompanyIdForUser(db, session.user.id))) {
+    await createCompanyForUser(db, { userId: session.user.id, name: parsed.data.company, nit: parsed.data.nit })
+  }
+  redirect('/inicio')
 }

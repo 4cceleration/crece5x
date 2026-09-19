@@ -8,15 +8,16 @@
  *   animate-spinner  giro continuo (800 ms): con <Spinner /> de src/ui/spinner.tsx
  *   duration-fast | duration-base | duration-slow   150 | 200 | 250 ms
  *   ease-out-soft    easing base; todo `transition-*` ya lo usa por defecto, con duration-fast
+ *   glass            superficie de vidrio; úsese sobre <Backdrop /> (src/ui/backdrop.tsx)
  * Botones: Button, ButtonLink y buttonClass() ya traen estado presionado, foco y transición.
  */
 @source inline("animate-enter animate-fade animate-spinner duration-fast duration-base duration-slow ease-out-soft");
 
 @theme {
-  --color-brand: #F26B1D;
-  --color-brand-strong: #C2490F;
-  --color-brand-deep: #A93E0C;
-  --color-brand-soft: #FFF4EC;
+  --color-brand: #3F9B6E;
+  --color-brand-strong: #2E7D5B;
+  --color-brand-deep: #276A4D;
+  --color-brand-soft: #EEF6F1;
   --color-ink: #14213D;
   --color-muted: #5B6477;
   --color-surface: #F7F7F5;
@@ -24,6 +25,7 @@
   --color-warn: #E0A100;
   --color-bad: #D64545;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-inter), ui-sans-serif, sans-serif;
 
   --transition-duration-fast: 150ms;
   --transition-duration-base: 200ms;
@@ -49,9 +51,22 @@
 
 html { color-scheme: light; }
 body { background: #ffffff; color: var(--color-ink); }
+/* Títulos con la fuente de marca; el texto corrido sigue en Inter */
+h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
 /* En la capa base para que utilidades como outline-hidden (campos) la puedan reemplazar */
 @layer base {
   :focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+}
+
+/* Vidrio: superficie translúcida con desenfoque. Úsese sobre <Backdrop /> para que se note */
+@utility glass {
+  background-color: rgb(255 255 255 / 0.62);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.75),
+    0 1px 2px rgb(20 33 61 / 0.04),
+    0 16px 40px -16px rgb(20 33 61 / 0.14);
 }
 
 @media (prefers-reduced-motion: reduce) {

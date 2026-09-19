@@ -124,7 +124,7 @@ Principios:
 - Sin landing: `/` redirige a `/entrar` o a `/inicio` según sesión.
 
 Paleta:
-- Naranja acento (índice, progreso, foco): `#F26B1D`; naranja de botón `#C2490F` con texto blanco (contraste 4.9:1), hover `#A93E0C`; fondo suave `#FFF4EC`.
+- Verde (sin naranja en ninguna parte): acento `#3F9B6E` (índice, progreso, foco); botón `#2E7D5B` con texto blanco (contraste 5.0:1), hover `#276A4D`; fondo suave `#EEF6F1`. Redondeo de 6px; checkbox redondo; etiquetas flotantes en los campos.
 - Azul tinta (texto/estructura): `#14213D`, secundario `#5B6477`.
 - Fondo `#FFFFFF`, superficie `#F7F7F5`.
 - Semáforo: verde `#2F9E6B`, ámbar `#E0A100`, rojo `#D64545` (sólo en índice y severidades).

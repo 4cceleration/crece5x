@@ -42,6 +42,6 @@ export async function requireUser(roles?: Role[]): Promise<CurrentUser> {
 export async function requireCompany(): Promise<{ user: CurrentUser; companyId: string }> {
   const currentUser = await requireUser(['empresa'])
   const companyId = await getCompanyIdForUser(db, currentUser.id)
-  if (!companyId) redirect('/entrar')
+  if (!companyId) redirect('/empresa')
   return { user: currentUser, companyId }
 }
