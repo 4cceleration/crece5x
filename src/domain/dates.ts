@@ -16,3 +16,7 @@ export function formatTime(d: Date): string {
 export function localDayKey(d: Date, offsetMin = BOGOTA_OFFSET_MIN): string {
   return new Date(d.getTime() + offsetMin * 60_000).toISOString().slice(0, 10)
 }
+
+export function formatLongDate(d: Date): string {
+  return new Intl.DateTimeFormat('es-CO', { timeZone: TZ, weekday: 'long', day: 'numeric', month: 'long' }).format(d)
+}

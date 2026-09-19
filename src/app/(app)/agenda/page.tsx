@@ -3,9 +3,10 @@ import { db } from '@/db'
 import { requireCompany } from '@/lib/session'
 import { openSlots, upcomingForCompany } from '@/services/agenda'
 import { uniqueTimes } from '@/domain/slots'
-import { formatDateTime, formatDay, formatTime, localDayKey } from '@/domain/dates'
+import { formatDateTime, formatDay, formatLongDate, formatTime, localDayKey } from '@/domain/dates'
 import { bookAction, cancelAction } from './actions'
 import { buttonClass } from '@/ui/button'
+import { Icon } from '@/ui/icons'
 import { SubmitButton } from '@/ui/submit-button'
 
 const option =
@@ -26,16 +27,58 @@ export default async function AgendaPage({
 
   const upcoming = await upcomingForCompany(db, companyId)
   if (upcoming) {
+    const minutes = Math.round((upcoming.endsAt.getTime() - upcoming.startsAt.getTime()) / 60_000)
+    const initials = upcoming.consultantName
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase())
+      .join('')
     return (
-      <section className="space-y-6 pt-6">
-        <p className="text-muted">Su cita</p>
-        <h1 className="text-3xl font-semibold first-letter:uppercase">{formatDateTime(upcoming.startsAt)}</h1>
-        <p className="text-muted">Con {upcoming.consultantName}. Le enviamos la invitación a su correo.</p>
-        <div className="flex flex-wrap items-center gap-6">
-          <a href={`/agenda/${upcoming.id}/ics`} className={buttonClass('primary')}>Agregar a mi calendario</a>
-          <form action={cancelAction.bind(null, upcoming.id)}>
-            <button className={buttonClass('link')}>Cancelar cita</button>
-          </form>
+      <section className="animate-enter pt-6">
+        <h1 className="sr-only">Su cita</h1>
+        <div className="glass max-w-xl rounded-lg p-6 sm:p-8">
+          <div className="flex items-center gap-4">
+            <span
+              aria-hidden
+              className="flex size-14 shrink-0 items-center justify-center rounded-full bg-brand-soft font-display text-lg font-semibold text-brand-strong"
+            >
+              {initials}
+            </span>
+            <div className="min-w-0">
+              <p className="truncate font-display text-2xl font-semibold tracking-tight">{upcoming.consultantName}</p>
+              <p className="text-sm text-muted">Consultor NIIF</p>
+            </div>
+          </div>
+
+          <dl className="mt-6 grid grid-cols-1 gap-5 border-t border-ink/10 pt-6 sm:grid-cols-2">
+            <div className="flex items-start gap-3">
+              <Icon name="agenda" size={22} className="mt-0.5 text-brand-strong" />
+              <div>
+                <dt className="text-xs uppercase tracking-wide text-muted">Fecha</dt>
+                <dd className="font-medium first-letter:uppercase">{formatLongDate(upcoming.startsAt)}</dd>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Icon name="disponibilidad" size={22} className="mt-0.5 text-brand-strong" />
+              <div>
+                <dt className="text-xs uppercase tracking-wide text-muted">Hora</dt>
+                <dd className="font-medium">
+                  {formatTime(upcoming.startsAt)} · {minutes} min
+                </dd>
+              </div>
+            </div>
+          </dl>
+
+          <div className="mt-8 flex flex-wrap items-center gap-6">
+            <a href={`/agenda/${upcoming.id}/ics`} className={buttonClass('primary', 'gap-2')}>
+              <Icon name="agenda" size={18} />
+              Agregar a mi calendario
+            </a>
+            <form action={cancelAction.bind(null, upcoming.id)}>
+              <button className={buttonClass('link')}>Cancelar cita</button>
+            </form>
+          </div>
         </div>
       </section>
     )

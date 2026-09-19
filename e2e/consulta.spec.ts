@@ -47,7 +47,7 @@ test('consulta completa: registro → clasificar → revisar → examinar → re
   await page.locator('main ul a').first().click()
   await page.locator('main ul a').first().click()
   await page.getByRole('button', { name: 'Confirmar cita' }).click()
-  await expect(page.getByText('Su cita')).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Agregar a mi calendario' })).toBeVisible()
   await expect(page.getByText('Laura Consultora', { exact: false })).toBeVisible()
 
   expect(existsSync('.data/e2e-emails')).toBe(true)
