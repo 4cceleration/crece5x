@@ -44,8 +44,8 @@ export default async function ClasificarPage({
     <>
       <form action={classifyAction.bind(null, id)} className="space-y-6">
         <h1 className="text-3xl font-semibold">¿Qué tamaño tiene su empresa?</h1>
-        <Field label="Activos totales (COP)" name="assets" inputMode="numeric" required defaultValue={input?.assets} />
-        <Field label="Ingresos del último año (COP)" name="revenue" inputMode="numeric" required defaultValue={input?.revenue} />
+        <Field label="Activos totales" suffix="COP" name="assets" inputMode="numeric" required defaultValue={input?.assets} />
+        <Field label="Ingresos del último año" suffix="COP" name="revenue" inputMode="numeric" required defaultValue={input?.revenue} />
         <Field label="Número de empleados" name="employees" type="number" min={0} required defaultValue={input?.employees} />
         <div className="space-y-3 pt-2">
           <Check name="issuesSecurities" label="Emite acciones o bonos en la bolsa de valores" defaultChecked={input?.issuesSecurities} />
