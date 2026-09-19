@@ -35,9 +35,9 @@ export default async function AgendaPage({
       .map((w) => w[0]?.toUpperCase())
       .join('')
     return (
-      <section className="animate-enter pt-6">
+      <section className="animate-enter flex min-h-[calc(100dvh-14rem)] items-center justify-center">
         <h1 className="sr-only">Su cita</h1>
-        <div className="glass max-w-xl rounded-lg p-6 sm:p-8">
+        <div className="glass w-full max-w-xl rounded-lg p-6 sm:p-8">
           <div className="flex items-center gap-4">
             <span
               aria-hidden
