@@ -61,7 +61,7 @@ Regla parametrizada en `settings` (valores por defecto a validar por un contador
 
 Pipeline en tres capas:
 
-1. **Extracción** — Excel → tablas con SheetJS; PDF → texto con `unpdf`. El texto se envía al modelo con `generateObject` y un esquema Zod: estados detectados, partidas principales por período (activo corriente/no corriente, pasivo corriente/no corriente, patrimonio, ingresos, costos, gastos, utilidad neta, efectivo inicial/final, flujos por actividad), notas presentes.
+1. **Extracción** — Excel → tablas con SheetJS; PDF → texto con `unpdf`. El texto se envía al modelo con `generateText` + `Output.object` y un esquema Zod: estados detectados, partidas principales por período (activo corriente/no corriente, pasivo corriente/no corriente, patrimonio, ingresos, costos, gastos, utilidad neta, efectivo inicial/final, flujos por actividad), notas presentes.
 2. **Chequeos determinísticos (código, sin IA)** — activo = pasivo + patrimonio (tolerancia 0.5%), subtotales corriente + no corriente = total en activo y pasivo, efectivo final del flujo = efectivo del ESF, efectivo inicial + flujos = efectivo final, presencia de los estados obligatorios según grupo (Grupo 1–2: ESF, ERI, flujo, cambios en el patrimonio, notas; Grupo 3: ESF, ERI, notas), existencia de comparativo. Cada falla es un hallazgo con severidad fija.
 3. **Criterio IA** — con los datos extraídos y el grupo, el modelo devuelve hallazgos `{titulo, detalle, seccionNiif, severidad, recomendacion}` sobre presentación, revelaciones y señales de tratamientos no NIIF.
 
@@ -84,7 +84,7 @@ Todo reporte incluye: "Este reporte es orientativo y no constituye una opinión 
 | 7 | Reportes | Vista de resultado, PDF con `@react-pdf/renderer`, historial |
 | 8 | Agenda | Disponibilidad semanal del consultor, reserva en 3 pasos (día → hora → confirmar) con consultor asignado automáticamente (el de menor carga), cancelación, `.ics`, recordatorio diario por Vercel Cron |
 | 9 | Notificaciones | Interfaz `Mailer`: reporte, confirmación y recordatorio de cita, aviso al consultor |
-| 10 | Academia | Guías MDX por sección NIIF Pymes, glosario, ruta según brechas, progreso |
+| 10 | Academia | Guías en markdown (módulo TS) por sección NIIF Pymes, glosario, ruta según brechas, progreso |
 | 11 | Portal empresa | Inicio con índice actual y una acción principal |
 | 12 | Panel consultor | Citas, casos, reporte del cliente, notas |
 | 13 | Administración | Resumen (métricas simples), preguntas y pesos, ajustes (umbrales, reglas), usuarios (roles, crear consultor). El contenido de la Academia vive en el código |
