@@ -1,13 +1,9 @@
-import { mkdtempSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
-import { migrate } from 'drizzle-orm/libsql/migrator'
 import { createDb, type Db } from '@/db/client'
+import { runMigrations } from '@/db/run-migrations'
 
-// Archivo temporal (no :memory:): con libsql cada transacción abre otra conexión
+// Postgres en memoria (PGlite) por prueba: rápido, aislado y con el mismo SQL que Neon
 export async function makeTestDb(): Promise<Db> {
-  const dir = mkdtempSync(join(tmpdir(), 'crece-'))
-  const db = createDb(`file:${join(dir, 'test.db')}`)
-  await migrate(db, { migrationsFolder: 'drizzle' })
+  const db = createDb('memory://')
+  await runMigrations(db, 'memory://')
   return db
 }

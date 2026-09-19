@@ -10,6 +10,7 @@ seedDatabase(db, { demoConsultant })
     console.log('Semilla aplicada.')
     if (demoConsultant) console.log(`Consultor demo: ${DEMO_CONSULTANT.email} / ${DEMO_CONSULTANT.password}`)
     console.log('Administración: npm run admin -- ayuda')
+    process.exit(0)
   })
   .catch((e) => {
     console.error(e)

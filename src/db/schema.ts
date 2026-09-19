@@ -1,4 +1,4 @@
-import { index, integer, primaryKey, real, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { boolean, doublePrecision, index, integer, jsonb, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core'
 import type { Extracted } from '@/ai/schemas'
 import type { ClassificationInput } from '@/domain/classify'
 import type { Ratios } from '@/domain/ratios'
@@ -8,23 +8,23 @@ export type ConsultationStatus = 'clasificar' | 'revisar' | 'examinar' | 'result
 export type AnalysisStatus = 'pendiente' | 'procesando' | 'listo' | 'error'
 export type AppointmentStatus = 'reservada' | 'cancelada' | 'realizada'
 
-const ts = (name: string) => integer(name, { mode: 'timestamp_ms' })
+const ts = (name: string) => timestamp(name, { withTimezone: true, mode: 'date' })
 const uuid = () => text('id').primaryKey().$defaultFn(() => crypto.randomUUID())
 const createdAt = () => ts('created_at').notNull().$defaultFn(() => new Date())
 
 // ── Better Auth ────────────────────────────────────────────────
-export const user = sqliteTable('user', {
+export const user = pgTable('user', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
   email: text('email').notNull().unique(),
-  emailVerified: integer('email_verified', { mode: 'boolean' }).notNull().default(false),
+  emailVerified: boolean('email_verified').notNull().default(false),
   image: text('image'),
   role: text('role').$type<Role>().notNull().default('empresa'),
   createdAt: createdAt(),
   updatedAt: ts('updated_at').notNull().$defaultFn(() => new Date()),
 })
 
-export const session = sqliteTable('session', {
+export const session = pgTable('session', {
   id: text('id').primaryKey(),
   expiresAt: ts('expires_at').notNull(),
   token: text('token').notNull().unique(),
@@ -35,7 +35,7 @@ export const session = sqliteTable('session', {
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
 })
 
-export const account = sqliteTable('account', {
+export const account = pgTable('account', {
   id: text('id').primaryKey(),
   accountId: text('account_id').notNull(),
   providerId: text('provider_id').notNull(),
@@ -51,7 +51,7 @@ export const account = sqliteTable('account', {
   updatedAt: ts('updated_at').notNull().$defaultFn(() => new Date()),
 })
 
-export const verification = sqliteTable('verification', {
+export const verification = pgTable('verification', {
   id: text('id').primaryKey(),
   identifier: text('identifier').notNull(),
   value: text('value').notNull(),
@@ -61,7 +61,7 @@ export const verification = sqliteTable('verification', {
 })
 
 // ── Empresas ───────────────────────────────────────────────────
-export const company = sqliteTable('company', {
+export const company = pgTable('company', {
   id: uuid(),
   nit: text('nit').notNull(),
   name: text('name').notNull(),
@@ -70,7 +70,7 @@ export const company = sqliteTable('company', {
   createdAt: createdAt(),
 })
 
-export const companyMember = sqliteTable(
+export const companyMember = pgTable(
   'company_member',
   {
     companyId: text('company_id').notNull().references(() => company.id, { onDelete: 'cascade' }),
@@ -80,7 +80,7 @@ export const companyMember = sqliteTable(
 )
 
 // ── Consulta ───────────────────────────────────────────────────
-export const consultation = sqliteTable(
+export const consultation = pgTable(
   'consultation',
   {
     id: uuid(),
@@ -88,19 +88,19 @@ export const consultation = sqliteTable(
     status: text('status').$type<ConsultationStatus>().notNull().default('clasificar'),
     group: integer('niif_group').$type<Group>(),
     groupReason: text('group_reason'),
-    classificationInput: text('classification_input', { mode: 'json' }).$type<ClassificationInput>(),
-    flags: text('flags', { mode: 'json' }).$type<Partial<Flags>>().notNull().$defaultFn(() => ({})),
-    diagnosticScore: real('diagnostic_score'),
-    analysisScore: real('analysis_score'),
-    finalScore: real('final_score'),
-    needsConsultant: integer('needs_consultant', { mode: 'boolean' }),
+    classificationInput: jsonb('classification_input').$type<ClassificationInput>(),
+    flags: jsonb('flags').$type<Partial<Flags>>().notNull().$defaultFn(() => ({})),
+    diagnosticScore: doublePrecision('diagnostic_score'),
+    analysisScore: doublePrecision('analysis_score'),
+    finalScore: doublePrecision('final_score'),
+    needsConsultant: boolean('needs_consultant'),
     createdAt: createdAt(),
     completedAt: ts('completed_at'),
   },
   (t) => [index('consultation_company_idx').on(t.companyId)],
 )
 
-export const question = sqliteTable('question', {
+export const question = pgTable('question', {
   id: text('id').primaryKey(),
   dimension: text('dimension').$type<Dimension>().notNull(),
   text: text('text').notNull(),
@@ -109,14 +109,14 @@ export const question = sqliteTable('question', {
   fix: text('fix').notNull(),
   weight: integer('weight').notNull(),
   requiresFlag: text('requires_flag').$type<Flag>(),
-  groups: text('groups', { mode: 'json' }).$type<Group[]>().notNull(),
+  groups: jsonb('groups').$type<Group[]>().notNull(),
   niifSection: text('niif_section').notNull(),
   lesson: text('lesson').notNull(),
   order: integer('sort_order').notNull(),
-  active: integer('active', { mode: 'boolean' }).notNull().default(true),
+  active: boolean('active').notNull().default(true),
 })
 
-export const answer = sqliteTable(
+export const answer = pgTable(
   'answer',
   {
     consultationId: text('consultation_id').notNull().references(() => consultation.id, { onDelete: 'cascade' }),
@@ -126,7 +126,7 @@ export const answer = sqliteTable(
   (t) => [primaryKey({ columns: [t.consultationId, t.questionId] })],
 )
 
-export const upload = sqliteTable('upload', {
+export const upload = pgTable('upload', {
   id: uuid(),
   consultationId: text('consultation_id').notNull().references(() => consultation.id, { onDelete: 'cascade' }),
   fileName: text('file_name').notNull(),
@@ -136,17 +136,17 @@ export const upload = sqliteTable('upload', {
   createdAt: createdAt(),
 })
 
-export const analysis = sqliteTable('analysis', {
+export const analysis = pgTable('analysis', {
   id: uuid(),
   consultationId: text('consultation_id').notNull().unique().references(() => consultation.id, { onDelete: 'cascade' }),
   status: text('status').$type<AnalysisStatus>().notNull().default('pendiente'),
-  extracted: text('extracted', { mode: 'json' }).$type<Extracted>(),
-  ratios: text('ratios', { mode: 'json' }).$type<Ratios>(),
+  extracted: jsonb('extracted').$type<Extracted>(),
+  ratios: jsonb('ratios').$type<Ratios>(),
   error: text('error'),
   updatedAt: ts('updated_at').notNull().$defaultFn(() => new Date()),
 })
 
-export const finding = sqliteTable(
+export const finding = pgTable(
   'finding',
   {
     id: uuid(),
@@ -163,7 +163,7 @@ export const finding = sqliteTable(
 )
 
 // ── Agenda ─────────────────────────────────────────────────────
-export const availability = sqliteTable('availability', {
+export const availability = pgTable('availability', {
   id: uuid(),
   consultantId: text('consultant_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   weekday: integer('weekday').notNull(),
@@ -171,7 +171,7 @@ export const availability = sqliteTable('availability', {
   endMinute: integer('end_minute').notNull(),
 })
 
-export const appointment = sqliteTable(
+export const appointment = pgTable(
   'appointment',
   {
     id: uuid(),
@@ -189,7 +189,7 @@ export const appointment = sqliteTable(
 )
 
 // ── Academia, ajustes y auditoría ──────────────────────────────
-export const lessonProgress = sqliteTable(
+export const lessonProgress = pgTable(
   'lesson_progress',
   {
     userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
@@ -199,12 +199,12 @@ export const lessonProgress = sqliteTable(
   (t) => [primaryKey({ columns: [t.userId, t.lessonSlug] })],
 )
 
-export const setting = sqliteTable('setting', {
+export const setting = pgTable('setting', {
   key: text('key').primaryKey(),
-  value: text('value', { mode: 'json' }).$type<unknown>().notNull(),
+  value: jsonb('value').$type<unknown>().notNull(),
 })
 
-export const auditLog = sqliteTable('audit_log', {
+export const auditLog = pgTable('audit_log', {
   id: uuid(),
   userId: text('user_id'),
   action: text('action').notNull(),

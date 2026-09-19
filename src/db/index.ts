@@ -1,10 +1,19 @@
-import { createDb, type Db } from './client'
+import { createDb, DEFAULT_DATABASE_URL, type Db } from './client'
 
 const globalForDb = globalThis as unknown as { crecDb?: Db }
 
-export const db: Db =
-  globalForDb.crecDb ?? createDb(process.env.DATABASE_URL ?? 'file:local.db', process.env.DATABASE_AUTH_TOKEN)
+function instance(): Db {
+  if (!globalForDb.crecDb) globalForDb.crecDb = createDb(process.env.DATABASE_URL || DEFAULT_DATABASE_URL)
+  return globalForDb.crecDb
+}
 
-if (process.env.NODE_ENV !== 'production') globalForDb.crecDb = db
+// La conexión se abre en el primer uso (no al importar): el build no toca la base y PGlite no choca con otro proceso
+export const db: Db = new Proxy({} as Db, {
+  get(_target, prop) {
+    const real = instance()
+    const value = Reflect.get(real, prop, real)
+    return typeof value === 'function' ? value.bind(real) : value
+  },
+})
 
 export type { Db }

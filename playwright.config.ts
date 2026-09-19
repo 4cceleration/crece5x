@@ -11,8 +11,7 @@ export default defineConfig({
     reuseExistingServer: false,
     timeout: 240_000,
     env: {
-      DATABASE_URL: 'file:.data/e2e.db',
-      DATABASE_AUTH_TOKEN: '',
+      DATABASE_URL: 'pglite:.data/e2e-pglite',
       MAIL_DIR: '.data/e2e-emails',
       UPLOAD_DIR: '.data/e2e-uploads',
       BETTER_AUTH_URL: 'http://localhost:3100',
