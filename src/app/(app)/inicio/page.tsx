@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { db } from '@/db'
 import { requireCompany } from '@/lib/session'
 import { latestConsultation } from '@/services/consultations'
+import { upcomingForCompany } from '@/services/agenda'
+import { formatDateTime } from '@/domain/dates'
 import { startConsultationAction } from '../consulta/actions'
 import { Score } from '@/ui/score'
 import { ButtonLink, buttonClass } from '@/ui/button'
@@ -10,6 +12,12 @@ import { SubmitButton } from '@/ui/submit-button'
 export default async function InicioPage() {
   const { user, companyId } = await requireCompany()
   const last = await latestConsultation(db, companyId)
+  const upcoming = await upcomingForCompany(db, companyId)
+  const appointmentLine = upcoming && (
+    <p className="text-sm text-muted">
+      Su cita: <Link href="/agenda" className="text-ink underline underline-offset-4">{formatDateTime(upcoming.startsAt)}</Link>
+    </p>
+  )
   const firstName = user.name.split(' ')[0]
 
   if (last?.status === 'resultado' && last.finalScore !== null) {
@@ -23,6 +31,7 @@ export default async function InicioPage() {
             <button className={buttonClass('link')}>Nueva consulta</button>
           </form>
         </div>
+        {appointmentLine}
       </section>
     )
   }
@@ -37,6 +46,7 @@ export default async function InicioPage() {
       <p className="text-sm text-muted">
         ¿Prefiere hablar con alguien? <Link href="/agenda" className="underline underline-offset-4">Agende un consultor</Link>
       </p>
+      {appointmentLine}
     </section>
   )
 }

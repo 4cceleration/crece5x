@@ -16,7 +16,8 @@ export function fileMailer(dir: string): Mailer {
   return {
     async send(m) {
       await mkdir(dir, { recursive: true })
-      const base = `${Date.now()}-${slug(m.subject)}`
+      // El destinatario evita que dos correos con el mismo asunto (p. ej. cancelación a empresa y consultor) se pisen
+      const base = `${Date.now()}-${slug(m.subject)}-${slug(m.to[0] ?? 'sin-destinatario')}`
       await writeFile(join(dir, `${base}.html`), `<!-- Para: ${m.to.join(', ')} -->\n${m.html}`)
       for (const a of m.attachments ?? []) await writeFile(join(dir, `${base}-${a.filename}`), a.content)
     },
