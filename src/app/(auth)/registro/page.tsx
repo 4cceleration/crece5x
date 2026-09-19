@@ -10,7 +10,7 @@ export default function RegistroPage() {
   const [state, action] = useActionState(registerAction, null)
 
   return (
-    <form action={action} className="space-y-5">
+    <form action={action} className="animate-enter space-y-5">
       <h1 className="text-3xl font-semibold">Crear cuenta</h1>
       <Field label="Tu nombre" name="name" autoComplete="name" required />
       <Field label="Empresa" name="company" autoComplete="organization" required />
@@ -30,7 +30,7 @@ export default function RegistroPage() {
         required
       />
       {state?.error && (
-        <p role="alert" className="text-sm text-bad">
+        <p role="alert" className="animate-fade text-sm text-bad">
           {state.error}
         </p>
       )}

@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+/*
+ * Movimiento: breve y funcional (150–250 ms); se desactiva con prefers-reduced-motion (al final).
+ * Clases para pantallas y otros agentes (siempre incluidas en el CSS):
+ *   animate-enter    entrada de contenido (fade + sube 8 px, 250 ms): en el contenedor principal de cada pantalla
+ *   animate-fade     aparición suave (fade, 200 ms): errores, ayudas y contenido que aparece
+ *   animate-spinner  giro continuo (800 ms): con <Spinner /> de src/ui/spinner.tsx
+ *   duration-fast | duration-base | duration-slow   150 | 200 | 250 ms
+ *   ease-out-soft    easing base; todo `transition-*` ya lo usa por defecto, con duration-fast
+ * Botones: Button, ButtonLink y buttonClass() ya traen estado presionado, foco y transición.
+ */
+@source inline("animate-enter animate-fade animate-spinner duration-fast duration-base duration-slow ease-out-soft");
+
 @theme {
   --color-brand: #F26B1D;
   --color-brand-strong: #C2490F;
@@ -12,8 +24,43 @@
   --color-warn: #E0A100;
   --color-bad: #D64545;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --transition-duration-fast: 150ms;
+  --transition-duration-base: 200ms;
+  --transition-duration-slow: 250ms;
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --default-transition-duration: var(--transition-duration-fast);
+  --default-transition-timing-function: var(--ease-out-soft);
+
+  --animate-enter: fade-slide-up var(--transition-duration-slow) var(--ease-out-soft) backwards;
+  --animate-fade: fade-in var(--transition-duration-base) var(--ease-out-soft) backwards;
+  --animate-spinner: spin-round 800ms linear infinite;
+
+  @keyframes fade-slide-up {
+    from { opacity: 0; transform: translateY(0.5rem); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+  }
+  @keyframes spin-round {
+    to { transform: rotate(360deg); }
+  }
 }
 
 html { color-scheme: light; }
 body { background: #ffffff; color: var(--color-ink); }
-:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+/* En la capa base para que utilidades como outline-hidden (campos) la puedan reemplazar */
+@layer base {
+  :focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

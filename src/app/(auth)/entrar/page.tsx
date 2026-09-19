@@ -10,7 +10,7 @@ export default function EntrarPage() {
   const [state, action] = useActionState(signInAction, null)
 
   return (
-    <form action={action} className="space-y-5">
+    <form action={action} className="animate-enter space-y-5">
       <h1 className="text-3xl font-semibold">Entrar</h1>
       <Field label="Correo" name="email" type="email" autoComplete="email" required />
       <Field
@@ -21,7 +21,7 @@ export default function EntrarPage() {
         required
       />
       {state?.error && (
-        <p role="alert" className="text-sm text-bad">
+        <p role="alert" className="animate-fade text-sm text-bad">
           {state.error}
         </p>
       )}
