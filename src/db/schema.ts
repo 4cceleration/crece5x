@@ -133,6 +133,8 @@ export const upload = pgTable('upload', {
   storageKey: text('storage_key').notNull(),
   mime: text('mime').notNull(),
   size: integer('size').notNull(),
+  // Texto reconocido en el navegador (OCR) cuando el PDF viene escaneado
+  text: text('text'),
   createdAt: createdAt(),
 })
 

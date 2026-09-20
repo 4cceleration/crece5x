@@ -87,6 +87,8 @@ export async function uploadAction(id: string, fd: FormData) {
       name: file.name,
       size: file.size,
       bytes: Buffer.from(await file.arrayBuffer()),
+      // Texto que el navegador ya reconoció si el PDF venía escaneado
+      text: (fd.get(`texto:${file.name}`) as string | null)?.trim() || null,
     })
     if (!r.ok) redirect(`/consulta/${id}/examinar?error=${encodeURIComponent(`${file.name}: ${r.error}`)}`)
     await audit(db, { userId: user.id, action: 'subir_archivo', entity: 'upload', entityId: r.id })

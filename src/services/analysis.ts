@@ -41,7 +41,8 @@ export async function runAnalysis(
 
     const parts: string[] = []
     for (const f of files) {
-      parts.push(`# Archivo: ${f.fileName}\n${await fileToText(await deps.storage.read(f.storageKey), f.mime)}`)
+      const content = f.text?.trim() || (await fileToText(await deps.storage.read(f.storageKey), f.mime))
+      parts.push(`# Archivo: ${f.fileName}\n${content}`)
     }
     const text = parts.join('\n\n')
     if (text.replace(/\s/g, '').length < 50) {

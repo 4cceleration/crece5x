@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import * as XLSX from 'xlsx'
 import { fileToText } from './extract-text'
 import { Document, Page, Text, renderToBuffer } from '@react-pdf/renderer'
@@ -23,22 +23,11 @@ describe('PDF', () => {
 
   it('usa el texto del PDF cuando lo trae', async () => {
     const pdf = await pdfOf('TOTAL ACTIVO 1.000.000 '.repeat(20))
-    const ocr = vi.fn()
-    const text = await fileToText(pdf, 'application/pdf', { ocr })
-    expect(text).toContain('TOTAL ACTIVO')
-    expect(ocr).not.toHaveBeenCalled()
+    expect(await fileToText(pdf, 'application/pdf')).toContain('TOTAL ACTIVO')
   })
 
-  it('pasa por OCR cuando el PDF casi no tiene texto (escaneado)', async () => {
+  it('un PDF escaneado no trae texto: lo reconoce el navegador antes de subirlo', async () => {
     const pdf = await pdfOf('.')
-    const ocr = vi.fn().mockResolvedValue('## Página 1\nTOTAL ACTIVO 1.000.000')
-    expect(await fileToText(pdf, 'application/pdf', { ocr })).toContain('TOTAL ACTIVO')
-    expect(ocr).toHaveBeenCalledOnce()
-  })
-
-  it('si el OCR falla, devuelve lo que haya sin romper', async () => {
-    const pdf = await pdfOf('.')
-    const ocr = vi.fn().mockRejectedValue(new Error('sin idioma'))
-    expect(await fileToText(pdf, 'application/pdf', { ocr })).toBeDefined()
+    expect((await fileToText(pdf, 'application/pdf')).replace(/\s/g, '').length).toBeLessThan(200)
   })
 })
