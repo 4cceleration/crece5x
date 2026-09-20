@@ -45,7 +45,7 @@ export async function runAnalysis(
     }
     const text = parts.join('\n\n')
     if (text.replace(/\s/g, '').length < 50) {
-      throw new Error('No encontramos texto en los archivos. Si el PDF es escaneado, súbalo en Excel o en PDF digital.')
+      throw new Error('No pudimos leer texto en los archivos, ni siquiera con reconocimiento de imágenes. Intente con un PDF digital o un Excel.')
     }
 
     const group = (c.group ?? 2) as Group

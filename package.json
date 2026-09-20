@@ -19,6 +19,7 @@
   "dependencies": {
     "@ai-sdk/groq": "^4.0.46",
     "@electric-sql/pglite": "^0.5.8",
+    "@napi-rs/canvas": "^1.0.9",
     "@phosphor-icons/react": "^2.1.10",
     "@react-pdf/renderer": "^4.9.0",
     "@vercel/blob": "^2.8.0",
@@ -33,6 +34,7 @@
     "react-markdown": "^10.1.0",
     "resend": "^6.28.1",
     "server-only": "^0.0.1",
+    "tesseract.js": "^7.0.0",
     "unpdf": "^1.8.1",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zod": "^4.6.5"
