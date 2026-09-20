@@ -5,6 +5,7 @@ import { GROUP_NAMES } from '@/domain/classify'
 import { needsConsultant } from '@/domain/derivation'
 import { diagnosticFindings } from '@/domain/findings'
 import { learningPath } from '@/domain/learning-path'
+import type { Extracted } from '@/ai/schemas'
 import type { Ratios } from '@/domain/ratios'
 import { finalIndex, LIGHT_LABEL, scoreAnalysis, scoreDiagnostic, trafficLight } from '@/domain/scoring'
 import { DIMENSIONS, SEVERITY_ORDER, type Dimension, type Group, type Light, type NewFinding } from '@/domain/types'
@@ -29,6 +30,8 @@ export type ResultData = {
   dimensions: { key: Dimension; name: string; score: number | null }[]
   findings: (NewFinding & { id: string })[]
   ratios: Ratios | null
+  /** Cifras extraídas de los estados financieros (para las gráficas); null si no hubo análisis */
+  financials: Extracted | null
   analysisStatus: AnalysisStatus | null
   analysisError: string | null
   needsConsultant: boolean
@@ -123,6 +126,7 @@ export async function getResultData(db: Db, id: string): Promise<ResultData | nu
     dimensions: DIMENSIONS.map((d) => ({ key: d.key, name: d.name, score: diag.dimensions[d.key] })),
     findings,
     ratios: a?.status === 'listo' ? (a.ratios ?? null) : null,
+    financials: a?.status === 'listo' ? (a.extracted ?? null) : null,
     analysisStatus: a?.status ?? null,
     analysisError: a?.status === 'error' ? a.error : null,
     needsConsultant: c.needsConsultant ?? false,

@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import type { ResultData } from '@/services/report'
-import { RATIO_LABELS } from '@/domain/ratios'
 import { trafficLight } from '@/domain/scoring'
 import { SEVERITY_LABEL, type Severity } from '@/domain/types'
+import { FinancialCharts } from './charts/financial-charts'
 import { Score } from '@/ui/score'
 import { Icon } from '@/ui/icons'
 import { buttonClass } from '@/ui/button'
@@ -171,25 +171,7 @@ export function ResultView({
         )}
       </section>
 
-      {data.ratios && (
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold">Indicadores</h2>
-          <dl className="glass grid grid-cols-2 gap-6 rounded-lg p-6 sm:grid-cols-3">
-            {RATIO_LABELS.map((r) => {
-              const v = data.ratios![r.key]
-              if (v === null) return null
-              return (
-                <div key={r.key}>
-                  <dt className="text-sm text-muted">{r.label}</dt>
-                  <dd className="font-display text-2xl font-semibold tabular-nums">
-                    {r.percent ? `${Math.round(v * 100)} %` : v.toFixed(2)}
-                  </dd>
-                </div>
-              )
-            })}
-          </dl>
-        </section>
-      )}
+      {data.financials && <FinancialCharts financials={data.financials} ratios={data.ratios} />}
 
       <footer className="space-y-3 text-sm text-muted">
         {data.analysisError && (
