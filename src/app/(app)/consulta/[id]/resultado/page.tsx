@@ -6,7 +6,7 @@ import { getOwnedConsultation, stepPath } from '@/services/consultations'
 import { getResultData } from '@/services/report'
 import { isMockAnalyst } from '@/ai/analyst'
 import { ResultView } from '@/components/result-view'
-import { sendReportAction } from '../../actions'
+import { explainChartAction, sendReportAction } from '../../actions'
 import { ButtonLink, buttonClass } from '@/ui/button'
 import { Magnetic } from '@/ui/magnetic'
 
@@ -35,6 +35,7 @@ export default async function ResultadoPage({
       <ResultView
         data={data}
         locked={{ sendAction: sendReportAction.bind(null, id), sent: enviado === '1', error: error === 'correo' }}
+        explainAction={explainChartAction.bind(null, id)}
         mockNote={isMockAnalyst()}
         actions={
           <>

@@ -20,6 +20,13 @@ Identifica hasta 8 hallazgos NUEVOS sobre políticas, reconocimiento, medición 
 - Severidad: "critica" solo si las cifras no son confiables; "alta" si un tratamiento contradice la norma; "media" para revelaciones incompletas; "baja" para mejoras menores.
 - Escribe en español claro, para el gerente de una pyme. Frases cortas.`
 
+const EXPLAIN_SYSTEM = `Eres asesor financiero de pymes colombianas y le explicas una gráfica al gerente, que no es contador.
+Recibes el título de la gráfica y exactamente los datos que la empresa está viendo (cifras en pesos colombianos).
+- Explica qué muestra la gráfica, qué dice de esta empresa y qué conviene mirar o hacer.
+- Usa solo los datos recibidos. No inventes cifras ni compares con sectores que no te dieron.
+- Español claro, trato de usted, frases cortas. Nada de tecnicismos sin explicar.
+- Máximo 3 párrafos breves, sin títulos, sin listas y sin markdown.`
+
 // `model`: id del AI Gateway ('proveedor/modelo') o un modelo ya resuelto (p. ej. Groq)
 export function gatewayAnalyst(model: LanguageModel): Analyst {
   return {
@@ -40,6 +47,14 @@ export function gatewayAnalyst(model: LanguageModel): Analyst {
         output: Output.object({ schema: judgeSchema }),
       })
       return output.findings
+    },
+    async explain({ title, facts, group, companyName }) {
+      const { text } = await generateText({
+        model,
+        system: EXPLAIN_SYSTEM,
+        prompt: JSON.stringify({ grafica: title, empresa: companyName, grupo_niif: group, datos: facts }),
+      })
+      return text.trim()
     },
   }
 }

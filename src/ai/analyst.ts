@@ -7,6 +7,8 @@ import { resolveModel } from './model'
 export interface Analyst {
   extract(text: string): Promise<Extracted>
   judge(i: { text: string; extracted: Extracted; group: Group; alreadyFound?: string[] }): Promise<AiFinding[]>
+  /** Explica en lenguaje llano la gráfica que la empresa tiene en pantalla */
+  explain(i: { title: string; facts: unknown; group: Group; companyName: string }): Promise<string>
 }
 
 export function isMockAnalyst(): boolean {

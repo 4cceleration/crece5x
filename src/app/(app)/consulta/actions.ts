@@ -19,7 +19,8 @@ import { appUrl, getMailer } from '@/mail/mailer'
 import { renderReportPdf } from '@/report/report-pdf'
 import { removeUpload, saveUpload } from '@/services/uploads'
 import { runAnalysis } from '@/services/analysis'
-import { finalizeConsultation, sendReport } from '@/services/report'
+import { finalizeConsultation, getResultData, sendReport } from '@/services/report'
+import { buildChartData, chartFacts, CHART_TITLES, isChartKey } from '@/domain/charts'
 import { audit } from '@/services/audit'
 
 async function owned(id: string) {
@@ -94,6 +95,22 @@ export async function uploadAction(id: string, fd: FormData) {
     await audit(db, { userId: user.id, action: 'subir_archivo', entity: 'upload', entityId: r.id })
   }
   redirect(`/consulta/${id}/examinar`)
+}
+
+// La explicación se pide al abrir el diálogo de una gráfica: el modelo solo ve los datos de esa gráfica
+export async function explainChartAction(id: string, key: string): Promise<string> {
+  await owned(id)
+  if (!isChartKey(key)) throw new Error('Gráfica desconocida')
+  const data = await getResultData(db, id)
+  if (!data?.financials) throw new Error('Todavía no hay cifras para explicar')
+  const charts = buildChartData(data.financials, data.ratios)
+  if (!charts) throw new Error('Todavía no hay cifras para explicar')
+  return getAnalyst().explain({
+    title: CHART_TITLES[key],
+    facts: chartFacts(charts, key),
+    group: data.group,
+    companyName: data.companyName,
+  })
 }
 
 export async function removeUploadAction(id: string, uploadId: string) {

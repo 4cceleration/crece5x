@@ -27,4 +27,7 @@ export const mockAnalyst: Analyst = {
   async judge() {
     return structuredClone(MOCK_FINDINGS)
   },
+  async explain({ title }) {
+    return `Explicación de demostración de "${title}". Configure AI_MODEL para que el análisis la redacte con sus cifras.`
+  },
 }

@@ -5,6 +5,12 @@ const es = (n: number, decimals = 0) =>
 export function formatCompactCOP(value: number): string {
   const sign = value < 0 ? '-' : ''
   const n = Math.abs(value)
+  // Un billón (10^12) en cifras grandes: "$ 3.180.232 M" no se lee y desborda las tarjetas
+  if (n >= 1_000_000_000_000) {
+    const billions = n / 1_000_000_000_000
+    const text = es(billions, 1)
+    return `${sign}$ ${text} ${text === '1,0' ? 'billón' : 'billones'}`
+  }
   if (n >= 1_000_000) {
     const millions = n / 1_000_000
     return `${sign}$ ${es(millions, millions < 10 ? 1 : 0)} M`

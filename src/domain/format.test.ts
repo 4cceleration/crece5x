@@ -10,6 +10,12 @@ describe('formatCompactCOP', () => {
     expect(formatCompactCOP(-90_000_000)).toBe('-$ 90 M')
     expect(formatCompactCOP(0)).toBe('$ 0')
   })
+
+  it('pasa a billones para que la cifra no desborde', () => {
+    expect(formatCompactCOP(3_180_232_000_000)).toBe('$ 3,2 billones')
+    expect(formatCompactCOP(1_000_000_000_000)).toBe('$ 1,0 billón')
+    expect(formatCompactCOP(-2_500_000_000_000)).toBe('-$ 2,5 billones')
+  })
 })
 
 describe('porcentajes', () => {

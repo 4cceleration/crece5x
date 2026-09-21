@@ -42,6 +42,19 @@ test('consulta completa: registro → clasificar → revisar → examinar → re
   await expect(page.locator('main')).toContainText('94')
   await expect(page.locator('main')).toContainText('de 100')
   await expect(page.locator('ol[aria-label="Escala del índice"] li[aria-current="true"]')).toContainText('Saludable')
+  // Gráficas de las cifras extraídas
+  await expect(page.getByRole('heading', { name: 'Comparativo por año' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Estructura financiera' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Flujo de efectivo' })).toBeVisible()
+
+  // El botón "?" de cada gráfica pide la explicación al análisis y la muestra en un diálogo
+  await page.getByRole('button', { name: /Explicar la gráfica Sus cifras/ }).click()
+  const dialog = page.getByRole('dialog')
+  await expect(dialog).toBeVisible()
+  await expect(dialog).toContainText('Explicación de demostración')
+  await dialog.getByRole('button', { name: 'Entendido' }).click()
+  await expect(dialog).toBeHidden()
+
   // El plan de acción está bloqueado en pantalla: se envía al correo a pedido
   await expect(page.getByText('No se evidencia el cálculo del impuesto diferido')).toHaveCount(0)
   await page.getByRole('button', { name: 'Enviármelo al correo' }).click()

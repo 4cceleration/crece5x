@@ -3,6 +3,7 @@ import type { ResultData } from '@/services/report'
 import { trafficLight } from '@/domain/scoring'
 import { SEVERITY_LABEL, type Severity } from '@/domain/types'
 import { FinancialCharts } from './charts/financial-charts'
+import type { ExplainAction } from './charts/chart-card'
 import { Score } from '@/ui/score'
 import { Icon } from '@/ui/icons'
 import { buttonClass } from '@/ui/button'
@@ -89,6 +90,7 @@ export function ResultView({
   pdfHref,
   mockNote = false,
   locked,
+  explainAction,
 }: {
   data: ResultData
   actions?: React.ReactNode
@@ -97,6 +99,8 @@ export function ResultView({
   mockNote?: boolean
   /** Empresa: plan de acción bloqueado en pantalla y enviado por correo a pedido */
   locked?: { sendAction: () => Promise<void>; sent: boolean; error: boolean }
+  /** Si viene, cada gráfica trae un botón "?" que pide la explicación al análisis */
+  explainAction?: ExplainAction
 }) {
   const top = data.findings.slice(0, 5)
   const rest = data.findings.slice(5)
@@ -171,7 +175,7 @@ export function ResultView({
         )}
       </section>
 
-      {data.financials && <FinancialCharts financials={data.financials} ratios={data.ratios} />}
+      {data.financials && <FinancialCharts financials={data.financials} ratios={data.ratios} explainAction={explainAction} />}
 
       <footer className="space-y-3 text-sm text-muted">
         {data.analysisError && (
