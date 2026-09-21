@@ -6,7 +6,7 @@ import { BOGOTA_OFFSET_MIN, formatDateTime } from '@/domain/dates'
 import { buildIcs } from '@/domain/ics'
 import type { Mailer } from '@/mail/mailer'
 import { appointmentEmail } from '@/mail/templates'
-import { companyEmails } from './companies'
+import { companyNotificationEmails } from './companies'
 import { getSettings } from './settings'
 
 // Ventana de reserva: días hacia adelante que se ofrecen en el calendario y se aceptan al confirmar
@@ -127,7 +127,8 @@ export async function notifyAppointment(
   const base = { when, companyName: d.companyName, consultantName: d.consultantName }
 
   const toCompany = appointmentEmail({ ...base, kind, url: `${baseUrl}/agenda` })
-  await mailer.send({ to: await companyEmails(db, d.appointment.companyId), ...toCompany, attachments: ics })
+  const to = await companyNotificationEmails(db, d.appointment.companyId)
+  if (to.length > 0) await mailer.send({ to, ...toCompany, attachments: ics })
 
   if (kind === 'recordatorio') return
   const toConsultant = appointmentEmail({

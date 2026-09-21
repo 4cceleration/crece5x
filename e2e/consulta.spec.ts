@@ -8,8 +8,8 @@ test('consulta completa: registro → clasificar → revisar → examinar → re
   await page.getByLabel('Tu nombre').fill('Ana Contadora')
   await page.getByLabel('Empresa').fill('Panadería La Espiga SAS')
   await page.getByLabel('NIT').fill('900123456')
-  await page.getByLabel('Correo').fill(email)
-  await page.getByLabel('Contraseña').fill('Clave12345!')
+  await page.getByLabel('Correo', { exact: true }).fill(email)
+  await page.getByLabel('Contraseña', { exact: true }).fill('Clave12345!')
   await page.getByLabel(/Autorizo el tratamiento/).check()
   await page.getByRole('button', { name: 'Crear cuenta' }).click()
 

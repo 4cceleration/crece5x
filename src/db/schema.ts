@@ -20,8 +20,23 @@ export const user = pgTable('user', {
   emailVerified: boolean('email_verified').notNull().default(false),
   image: text('image'),
   role: text('role').$type<Role>().notNull().default('empresa'),
+  // Preferencias de correo: los avisos de la consulta vienen aceptados; el marketing se pide aparte
+  notifyByEmail: boolean('notify_by_email').notNull().default(true),
+  marketingEmails: boolean('marketing_emails').notNull().default(false),
+  marketingConsentAt: ts('marketing_consent_at'),
   createdAt: createdAt(),
   updatedAt: ts('updated_at').notNull().$defaultFn(() => new Date()),
+})
+
+// Cambio de correo pendiente: el código de seis dígitos se envía a la dirección nueva
+export const emailChange = pgTable('email_change', {
+  id: uuid(),
+  userId: text('user_id').notNull().unique().references(() => user.id, { onDelete: 'cascade' }),
+  newEmail: text('new_email').notNull(),
+  codeHash: text('code_hash').notNull(),
+  expiresAt: ts('expires_at').notNull(),
+  attempts: integer('attempts').notNull().default(0),
+  createdAt: createdAt(),
 })
 
 export const session = pgTable('session', {

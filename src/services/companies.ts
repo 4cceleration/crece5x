@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { and, eq } from 'drizzle-orm'
 import type { Db } from '@/db/client'
 import { company, companyMember, user } from '@/db/schema'
 
@@ -30,6 +30,17 @@ export async function companyEmails(db: Db, companyId: string): Promise<string[]
     .from(companyMember)
     .innerJoin(user, eq(user.id, companyMember.userId))
     .where(eq(companyMember.companyId, companyId))
+
+  return rows.map((row) => row.email)
+}
+
+/** Solo quienes aceptaron los avisos: citas y recordatorios, no lo que la persona pide en pantalla */
+export async function companyNotificationEmails(db: Db, companyId: string): Promise<string[]> {
+  const rows = await db
+    .select({ email: user.email })
+    .from(companyMember)
+    .innerJoin(user, eq(user.id, companyMember.userId))
+    .where(and(eq(companyMember.companyId, companyId), eq(user.notifyByEmail, true)))
 
   return rows.map((row) => row.email)
 }

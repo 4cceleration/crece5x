@@ -8,6 +8,7 @@ import { auth } from '@/lib/auth'
 import { homeFor } from '@/lib/session'
 import { WEB_ROLES } from '@/domain/types'
 import { createCompanyForUser, getCompanyIdForUser } from '@/services/companies'
+import { setEmailPreferences } from '@/services/profile'
 import { getUserRole } from '@/services/users'
 
 export type FormState = { error: string } | null
@@ -19,6 +20,9 @@ const registerSchema = z.object({
   email: z.email(),
   password: z.string().min(8),
   consent: z.literal('on'),
+  // Casillas opcionales: llegan solo si quedaron marcadas
+  notifications: z.literal('on').optional(),
+  marketing: z.literal('on').optional(),
 })
 
 export async function registerAction(_: FormState, formData: FormData): Promise<FormState> {
@@ -29,7 +33,7 @@ export async function registerAction(_: FormState, formData: FormData): Promise<
     }
   }
 
-  const { name, company, nit, email, password } = parsed.data
+  const { name, company, nit, email, password, notifications, marketing } = parsed.data
   try {
     const result = await auth.api.signUpEmail({
       body: { name, email: email.toLowerCase(), password },
@@ -39,6 +43,10 @@ export async function registerAction(_: FormState, formData: FormData): Promise<
       userId: result.user.id,
       name: company,
       nit,
+    })
+    await setEmailPreferences(db, result.user.id, {
+      notifyByEmail: notifications === 'on',
+      marketingEmails: marketing === 'on',
     })
   } catch {
     return {

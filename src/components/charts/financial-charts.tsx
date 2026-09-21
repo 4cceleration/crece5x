@@ -2,6 +2,7 @@ import type { Extracted } from '@/ai/schemas'
 import type { Ratios } from '@/domain/ratios'
 import { buildChartData, CHART_TITLES, type Flow, type Kpi, type Meter as MeterData, type Stack, type Trend } from '@/domain/charts'
 import { formatCompactCOP, formatPercent, formatSignedPercent } from '@/domain/format'
+import { Icon } from '@/ui/icons'
 import { ChartCard, type ExplainAction } from './chart-card'
 
 // Paleta categórica validada para cada tema (banda de luminosidad, saturación y separación para
@@ -164,9 +165,15 @@ function StackedBar({ stack }: { stack: Stack }) {
   )
 }
 
-// Medidor: valor sobre una pista, con marca del valor de referencia
-function Meter({ label, value, max, reference, display, good, hint }: MeterData) {
+// Medidor: valor sobre una pista, con la marca de la referencia y, en palabras, si la cumple o no.
+// El color no va solo: siempre lo acompaña el texto, para quien no distingue verde de ámbar.
+function Meter({ label, value, max, reference, display, good, direction, hint }: MeterData) {
   const pct = (n: number) => `${Math.min(100, Math.max(0, (n / max) * 100))}%`
+  const veredicto = good
+    ? 'Cumple la referencia'
+    : direction === 'max'
+      ? 'Por encima de la referencia'
+      : 'Por debajo de la referencia'
   return (
     <div className="space-y-1.5">
       <div className="flex items-baseline justify-between gap-3">
@@ -174,9 +181,16 @@ function Meter({ label, value, max, reference, display, good, hint }: MeterData)
         <span className={`font-display whitespace-nowrap text-lg font-semibold tabular-nums ${good ? 'text-ok' : 'text-warn'}`}>{display}</span>
       </div>
       <div className="relative h-2 rounded-full bg-ink/8">
-        <div className="h-2 rounded-full" style={{ width: pct(value), background: SERIES[0] }} />
+        <div
+          className="h-2 rounded-full"
+          style={{ width: pct(value), background: good ? 'var(--color-ok)' : 'var(--color-warn)' }}
+        />
         <span className="absolute top-[-3px] h-3.5 w-0.5 rounded-full bg-ink/40" style={{ left: pct(reference) }} aria-hidden />
       </div>
+      <p className={`flex items-center gap-1 text-xs font-medium ${good ? 'text-ok' : 'text-warn'}`}>
+        <Icon name={good ? 'check' : 'alerta'} size={14} />
+        {veredicto}
+      </p>
       <p className="text-xs text-muted">{hint}</p>
     </div>
   )

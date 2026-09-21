@@ -11,10 +11,12 @@ const NAV: Record<Role, { href: string; label: string; icon: IconName }[]> = {
     { href: '/analitica', label: 'Analítica', icon: 'analitica' },
     { href: '/academia', label: 'Academia', icon: 'academia' },
     { href: '/agenda', label: 'Agenda', icon: 'agenda' },
+    { href: '/perfil', label: 'Perfil', icon: 'persona' },
   ],
   consultor: [
     { href: '/consultor', label: 'Agenda', icon: 'agenda' },
     { href: '/consultor/disponibilidad', label: 'Disponibilidad', icon: 'disponibilidad' },
+    { href: '/perfil', label: 'Perfil', icon: 'persona' },
   ],
 }
 

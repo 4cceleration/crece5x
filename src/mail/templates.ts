@@ -75,3 +75,13 @@ ${button(d.url, 'Crear nueva contraseña')}
 <p style="margin-top:24px;font-size:14px;color:#5B6477">Si no la pidió, ignore este correo: su contraseña no cambia.</p>`
   return { subject: 'Restablecer su contraseña de crece5x', html: layout(body) }
 }
+
+export function emailChangeCodeEmail(d: { name: string; code: string; minutes: number }): { subject: string; html: string } {
+  const body = `
+<p style="font-size:22px;font-weight:600;margin:0 0 8px">Confirme su correo nuevo</p>
+<p style="margin:0 0 24px;color:#5B6477">Hola, ${esc(d.name)}. Escriba este código en su perfil para terminar el cambio de correo.</p>
+<p style="font-size:34px;font-weight:600;letter-spacing:8px;margin:0 0 24px">${esc(d.code)}</p>
+<p style="margin:0;color:#5B6477">El código vence en ${d.minutes} minutos.</p>
+<p style="margin-top:24px;font-size:14px;color:#5B6477">Si no pidió el cambio, ignore este correo: su cuenta sigue con el correo de siempre.</p>`
+  return { subject: `Su código de crece5x: ${d.code}`, html: layout(body) }
+}

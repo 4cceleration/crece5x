@@ -1,5 +1,5 @@
 import type { Extracted, Period } from '@/ai/schemas'
-import { formatPercent } from './format'
+import { formatCompactCOP, formatPercent } from './format'
 import type { Ratios } from './ratios'
 
 // Un solo armado de datos para las gráficas: lo pinta la vista y lo explica el modelo,
@@ -49,6 +49,8 @@ export type Meter = {
   reference: number
   display: string
   good: boolean
+  /** 'max': la referencia es un techo (endeudamiento); 'min': es un piso (márgenes) */
+  direction: 'max' | 'min'
   hint: string
 }
 
@@ -167,6 +169,7 @@ function meters(ratios: Ratios | null): Meter[] {
       reference: 1.5,
       display: ratios.currentRatio.toFixed(2).replace('.', ','),
       good: ratios.currentRatio >= 1.5,
+      direction: 'min',
       hint: 'Referencia: 1,5 veces el pasivo corriente',
     })
   }
@@ -178,6 +181,7 @@ function meters(ratios: Ratios | null): Meter[] {
       reference: 1,
       display: ratios.quickRatio.toFixed(2).replace('.', ','),
       good: ratios.quickRatio >= 1,
+      direction: 'min',
       hint: 'Referencia: 1 vez el pasivo corriente',
     })
   }
@@ -189,6 +193,7 @@ function meters(ratios: Ratios | null): Meter[] {
       reference: 0.6,
       display: formatPercent(ratios.debtRatio),
       good: ratios.debtRatio <= 0.6,
+      direction: 'max',
       hint: 'Referencia: hasta 60 % del activo',
     })
   }
@@ -200,6 +205,7 @@ function meters(ratios: Ratios | null): Meter[] {
       reference: 0.05,
       display: formatPercent(ratios.netMargin, 1),
       good: ratios.netMargin >= 0.05,
+      direction: 'min',
       hint: 'Referencia: 5 % de los ingresos',
     })
   }
@@ -211,6 +217,7 @@ function meters(ratios: Ratios | null): Meter[] {
       reference: 0.05,
       display: formatPercent(ratios.roa, 1),
       good: ratios.roa >= 0.05,
+      direction: 'min',
       hint: 'Referencia: 5 % del activo',
     })
   }
@@ -231,6 +238,10 @@ export function buildChartData(financials: Extracted, ratios: Ratios | null): Ch
   }
 }
 
+// Las cifras van escritas como se ven en pantalla ("$ 3,2 billones"), no en unidades completas:
+// así la explicación no suelta números de trece dígitos que nadie lee.
+const money = (v: number | null) => (v === null ? null : formatCompactCOP(v))
+
 /** Lo que ve la empresa en una gráfica, tal cual, para que el modelo explique eso y no otra cosa */
 export function chartFacts(data: ChartData, key: ChartKey): Record<string, unknown> {
   switch (key) {
@@ -239,28 +250,37 @@ export function chartFacts(data: ChartData, key: ChartKey): Record<string, unkno
         periodo: data.periodLabel,
         cifras: data.kpis.map((k) => ({
           concepto: k.label,
-          valor: k.value,
-          valor_anterior: k.previous,
+          valor: money(k.value),
+          valor_anterior: money(k.previous),
           periodo_anterior: k.previousLabel,
           variacion_porcentual: k.change === null ? null : Math.round(k.change * 1000) / 10,
         })),
       }
     case 'tendencia':
-      return { series: data.trends.map((t) => ({ concepto: t.label, por_periodo: t.bars })) }
+      return {
+        series: data.trends.map((t) => ({
+          concepto: t.label,
+          por_periodo: t.bars.map((b) => ({ periodo: b.period, valor: money(b.value) })),
+        })),
+      }
     case 'estructura':
       return {
         periodo: data.periodLabel,
         composicion: data.stacks.map((s) => ({
           titulo: s.title,
-          total: s.total,
-          partes: s.segments.map((g) => ({ concepto: g.label, valor: g.value, participacion_porcentual: Math.round((g.value / s.total) * 1000) / 10 })),
+          total: money(s.total),
+          partes: s.segments.map((g) => ({
+            concepto: g.label,
+            valor: money(g.value),
+            participacion_porcentual: Math.round((g.value / s.total) * 1000) / 10,
+          })),
         })),
       }
     case 'flujo':
       return {
         periodo: data.periodLabel,
-        flujos: data.flows.map((f) => ({ concepto: f.label, valor: f.value })),
-        efectivo_al_cierre: data.closingCash,
+        flujos: data.flows.map((f) => ({ concepto: f.label, valor: money(f.value) })),
+        efectivo_al_cierre: money(data.closingCash),
       }
     case 'indicadores':
       return {
@@ -268,6 +288,7 @@ export function chartFacts(data: ChartData, key: ChartKey): Record<string, unkno
           indicador: m.label,
           valor: m.display,
           referencia: m.hint,
+          la_referencia_es: m.direction === 'max' ? 'un techo' : 'un piso',
           cumple_la_referencia: m.good,
         })),
       }

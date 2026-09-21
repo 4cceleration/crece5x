@@ -26,6 +26,12 @@ export function RegisterForm() {
         required
       />
       <Check name="consent" label="Autorizo el tratamiento de mis datos según la Ley 1581 de 2012." required />
+      <Check
+        name="notifications"
+        label="Quiero recibir avisos de mi consulta: resultados, citas y recordatorios."
+        defaultChecked
+      />
+      <Check name="marketing" label="Quiero recibir novedades y contenidos de crece5x." />
       {state?.error && (
         <p role="alert" className="animate-fade text-sm text-bad">
           {state.error}
