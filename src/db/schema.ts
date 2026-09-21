@@ -1,7 +1,8 @@
-import { boolean, doublePrecision, index, integer, jsonb, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core'
+import { boolean, doublePrecision, index, integer, jsonb, pgTable, primaryKey, text, timestamp, unique } from 'drizzle-orm/pg-core'
 import type { Extracted } from '@/ai/schemas'
 import type { ClassificationInput } from '@/domain/classify'
 import type { Ratios } from '@/domain/ratios'
+import type { PlanKey } from '@/domain/plans'
 import type { AnswerValue, Dimension, FindingSource, Flag, Flags, Group, Role, Severity } from '@/domain/types'
 
 export type ConsultationStatus = 'clasificar' | 'revisar' | 'examinar' | 'resultado'
@@ -81,6 +82,9 @@ export const company = pgTable('company', {
   nit: text('nit').notNull(),
   name: text('name').notNull(),
   country: text('country').notNull().default('CO'),
+  // Maqueta de planes: la empresa se cambia sola desde /planes, todavía sin cobro
+  plan: text('plan').$type<PlanKey>().notNull().default('gratis'),
+  planSince: ts('plan_since'),
   consentAt: ts('consent_at').notNull(),
   createdAt: createdAt(),
 })
@@ -162,6 +166,19 @@ export const analysis = pgTable('analysis', {
   error: text('error'),
   updatedAt: ts('updated_at').notNull().$defaultFn(() => new Date()),
 })
+
+// La explicación de una gráfica se guarda: volver a tocar "?" no gasta otro análisis
+export const chartExplanation = pgTable(
+  'chart_explanation',
+  {
+    id: uuid(),
+    consultationId: text('consultation_id').notNull().references(() => consultation.id, { onDelete: 'cascade' }),
+    chartKey: text('chart_key').notNull(),
+    text: text('text').notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [unique().on(t.consultationId, t.chartKey)],
+)
 
 export const finding = pgTable(
   'finding',

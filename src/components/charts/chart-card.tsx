@@ -1,9 +1,13 @@
 'use client'
+import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import type { ChartKey } from '@/domain/charts'
 import { Spinner } from '@/ui/spinner'
 
 export type ExplainAction = (key: ChartKey) => Promise<string>
+
+const ASK =
+  'flex size-8 shrink-0 items-center justify-center rounded-full bg-ink/5 font-semibold text-muted transition-colors hover:bg-brand-soft hover:text-brand-strong'
 
 type State = { kind: 'idle' } | { kind: 'cargando' } | { kind: 'listo'; text: string } | { kind: 'error'; message: string }
 
@@ -12,12 +16,15 @@ export function ChartCard({
   title,
   chartKey,
   explainAction,
+  upgrade,
   children,
   className = '',
 }: {
   title: string
   chartKey: ChartKey
   explainAction?: ExplainAction
+  /** Sin permiso para la explicación: el "?" lleva a ver los planes */
+  upgrade?: { href: string; label: string }
   children: React.ReactNode
   className?: string
 }) {
@@ -50,16 +57,22 @@ export function ChartCard({
     <section className={`glass flex flex-col gap-5 rounded-lg p-6 text-left ${className}`}>
       <header className="flex items-start justify-between gap-3">
         <h2 className="text-lg font-semibold">{title}</h2>
-        {explainAction && (
+        {explainAction ? (
           <button
             type="button"
             onClick={open}
             aria-label={`Explicar la gráfica ${title}`}
             title={`Explicar la gráfica ${title}`}
-            className="flex size-8 shrink-0 items-center justify-center rounded-full bg-ink/5 font-semibold text-muted transition-colors hover:bg-brand-soft hover:text-brand-strong"
+            className={ASK}
           >
             ?
           </button>
+        ) : (
+          upgrade && (
+            <Link href={upgrade.href} aria-label={`${upgrade.label}: ${title}`} title={upgrade.label} className={ASK}>
+              ?
+            </Link>
+          )
         )}
       </header>
 

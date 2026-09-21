@@ -42,12 +42,28 @@ test('consulta completa: registro → clasificar → revisar → examinar → re
   await expect(page.locator('main')).toContainText('94')
   await expect(page.locator('main')).toContainText('de 100')
   await expect(page.locator('ol[aria-label="Escala del índice"] li[aria-current="true"]')).toContainText('Saludable')
-  // Gráficas de las cifras extraídas
+  // En el plan gratis el plan de acción está bloqueado en pantalla: se envía al correo a pedido
+  await expect(page.getByText('No se evidencia el cálculo del impuesto diferido')).toHaveCount(0)
+  await page.getByRole('button', { name: 'Enviármelo al correo' }).click()
+  await expect(page.getByText('Enviado. Revise su correo.')).toBeVisible()
+
+  // En el plan gratis se ven las cifras del cierre, no el resto de la analítica, y el "?" lleva a los planes
+  await expect(page.getByRole('heading', { name: /Sus cifras/ })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Comparativo por año' })).toHaveCount(0)
+  await expect(page.getByText('El resto de su analítica está en Reporte NIIF')).toBeVisible()
+  await expect(page.getByRole('link', { name: /explicaciones con IA están en el plan Monitoreo/ })).toBeVisible()
+
+  // Con Monitoreo se abre todo: gráficas, plan de acción en pantalla y explicación con IA
+  const resultado = page.url()
+  await page.goto('/planes')
+  await page.getByRole('button', { name: 'Probar Monitoreo' }).click()
+  await expect(page.getByText('Listo, está probando el plan Monitoreo.')).toBeVisible()
+  await page.goto(resultado)
+
   await expect(page.getByRole('heading', { name: 'Comparativo por año' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Estructura financiera' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Flujo de efectivo' })).toBeVisible()
 
-  // El botón "?" de cada gráfica pide la explicación al análisis y la muestra en un diálogo
   await page.getByRole('button', { name: /Explicar la gráfica Sus cifras/ }).click()
   const dialog = page.getByRole('dialog')
   await expect(dialog).toBeVisible()
@@ -55,10 +71,8 @@ test('consulta completa: registro → clasificar → revisar → examinar → re
   await dialog.getByRole('button', { name: 'Entendido' }).click()
   await expect(dialog).toBeHidden()
 
-  // El plan de acción está bloqueado en pantalla: se envía al correo a pedido
-  await expect(page.getByText('No se evidencia el cálculo del impuesto diferido')).toHaveCount(0)
-  await page.getByRole('button', { name: 'Enviármelo al correo' }).click()
-  await expect(page.getByText('Enviado. Revise su correo.')).toBeVisible()
+
+  await expect(page.getByText('No se evidencia el cálculo del impuesto diferido')).toBeVisible()
 
   await page.getByRole('link', { name: 'Agendar con un consultor' }).click()
   await page.locator('main table a').first().click() // día en el calendario

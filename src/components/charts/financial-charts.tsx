@@ -223,29 +223,49 @@ export function FinancialCharts({
   financials,
   ratios,
   explainAction,
+  upgrade,
+  preview = false,
+  previewNote,
 }: {
   financials: Extracted
   ratios: Ratios | null
   explainAction?: ExplainAction
+  /** Sin explicación con IA: el "?" lleva a los planes */
+  upgrade?: { href: string; label: string }
+  /** Solo las cifras del último cierre; el resto queda para los planes de pago */
+  preview?: boolean
+  previewNote?: React.ReactNode
 }) {
   const data = buildChartData(financials, ratios)
   if (!data) return null
+  const card = { explainAction, upgrade }
+
+  if (preview) {
+    return (
+      <div className="space-y-6">
+        <ChartCard title={`${CHART_TITLES.cifras} · ${data.periodLabel}`} chartKey="cifras" {...card}>
+          <KpiGrid kpis={data.kpis} />
+        </ChartCard>
+        {previewNote}
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
-      <ChartCard title={`${CHART_TITLES.cifras} · ${data.periodLabel}`} chartKey="cifras" explainAction={explainAction}>
+      <ChartCard title={`${CHART_TITLES.cifras} · ${data.periodLabel}`} chartKey="cifras" {...card}>
         <KpiGrid kpis={data.kpis} />
       </ChartCard>
 
       {data.trends.length > 0 && (
-        <ChartCard title={CHART_TITLES.tendencia} chartKey="tendencia" explainAction={explainAction}>
+        <ChartCard title={CHART_TITLES.tendencia} chartKey="tendencia" {...card}>
           <TrendGrid trends={data.trends} />
         </ChartCard>
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         {data.stacks.length > 0 && (
-          <ChartCard title={CHART_TITLES.estructura} chartKey="estructura" explainAction={explainAction}>
+          <ChartCard title={CHART_TITLES.estructura} chartKey="estructura" {...card}>
             <div className="space-y-6">
               {data.stacks.map((s) => (
                 <StackedBar key={s.title} stack={s} />
@@ -255,14 +275,14 @@ export function FinancialCharts({
         )}
 
         {data.flows.length > 0 && (
-          <ChartCard title={CHART_TITLES.flujo} chartKey="flujo" explainAction={explainAction}>
+          <ChartCard title={CHART_TITLES.flujo} chartKey="flujo" {...card}>
             <CashFlow flows={data.flows} closingCash={data.closingCash} />
           </ChartCard>
         )}
       </div>
 
       {data.meters.length > 0 && (
-        <ChartCard title={CHART_TITLES.indicadores} chartKey="indicadores" explainAction={explainAction}>
+        <ChartCard title={CHART_TITLES.indicadores} chartKey="indicadores" {...card}>
           <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-3">
             {data.meters.map((m) => (
               <Meter key={m.label} {...m} />

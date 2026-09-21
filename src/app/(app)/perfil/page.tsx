@@ -2,6 +2,9 @@ import { notFound } from 'next/navigation'
 import { db } from '@/db'
 import { requireUser } from '@/lib/session'
 import { getProfile } from '@/services/profile'
+import { getCompanyPlan } from '@/services/plans'
+import { PLANS } from '@/domain/plans'
+import { getCompanyIdForUser } from '@/services/companies'
 import { OTP_LENGTH, OTP_MINUTES } from '@/domain/otp'
 import {
   cancelEmailChangeAction,
@@ -12,7 +15,7 @@ import {
 } from './actions'
 import { Check, Field } from '@/ui/field'
 import { SubmitButton } from '@/ui/submit-button'
-import { buttonClass } from '@/ui/button'
+import { ButtonLink, buttonClass } from '@/ui/button'
 import { Icon } from '@/ui/icons'
 
 const OK_MESSAGES: Record<string, string> = {
@@ -36,6 +39,8 @@ export default async function PerfilPage({ searchParams }: { searchParams: Promi
   const user = await requireUser()
   const profile = await getProfile(db, user.id)
   if (!profile) notFound()
+  const companyId = user.role === 'empresa' ? await getCompanyIdForUser(db, user.id) : null
+  const plan = companyId ? await getCompanyPlan(db, companyId) : null
 
   return (
     <div className="animate-enter space-y-6 pt-6">
@@ -55,6 +60,22 @@ export default async function PerfilPage({ searchParams }: { searchParams: Promi
           <Icon name="alerta" size={20} />
           {error}
         </p>
+      )}
+
+      {plan && (
+        <Card title="Su plan">
+          <p className="text-sm text-muted">
+            Está en <span className="text-ink">{PLANS[plan.plan].name}</span>.{' '}
+            {plan.left === null
+              ? 'Con análisis sin límite.'
+              : plan.left === 1
+                ? 'Le queda 1 análisis con IA.'
+                : `Le quedan ${plan.left} análisis con IA.`}
+          </p>
+          <ButtonLink href="/planes" variant="ghost">
+            Ver los planes
+          </ButtonLink>
+        </Card>
       )}
 
       <Card title="Correo">

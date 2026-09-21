@@ -21,6 +21,9 @@ import { removeUpload, saveUpload } from '@/services/uploads'
 import { runAnalysis } from '@/services/analysis'
 import { finalizeConsultation, getResultData, sendReport } from '@/services/report'
 import { buildChartData, chartFacts, CHART_TITLES, isChartKey } from '@/domain/charts'
+import { planFor } from '@/domain/plans'
+import { companyCan, getCompanyPlan } from '@/services/plans'
+import { explainOnce } from '@/services/explanations'
 import { audit } from '@/services/audit'
 
 async function owned(id: string) {
@@ -97,20 +100,27 @@ export async function uploadAction(id: string, fd: FormData) {
   redirect(`/consulta/${id}/examinar`)
 }
 
-// La explicación se pide al abrir el diálogo de una gráfica: el modelo solo ve los datos de esa gráfica
+// La explicación se pide al abrir el diálogo de una gráfica: el modelo solo ve los datos de esa gráfica,
+// se escribe una sola vez y de ahí en adelante se relee (tocar "?" otra vez no gasta otro análisis)
 export async function explainChartAction(id: string, key: string): Promise<string> {
-  await owned(id)
+  const { companyId } = await owned(id)
   if (!isChartKey(key)) throw new Error('Gráfica desconocida')
+  if (!(await companyCan(db, companyId, 'explicacion-ia'))) {
+    throw new Error(`Las explicaciones con IA están en el plan ${planFor('explicacion-ia').name}`)
+  }
   const data = await getResultData(db, id)
   if (!data?.financials) throw new Error('Todavía no hay cifras para explicar')
   const charts = buildChartData(data.financials, data.ratios)
   if (!charts) throw new Error('Todavía no hay cifras para explicar')
-  return getAnalyst().explain({
-    title: CHART_TITLES[key],
-    facts: chartFacts(charts, key),
-    group: data.group,
-    companyName: data.companyName,
-  })
+
+  return explainOnce(db, id, key, () =>
+    getAnalyst().explain({
+      title: CHART_TITLES[key],
+      facts: chartFacts(charts, key),
+      group: data.group,
+      companyName: data.companyName,
+    }),
+  )
 }
 
 export async function removeUploadAction(id: string, uploadId: string) {
@@ -125,7 +135,10 @@ async function finish(id: string) {
 }
 
 export async function analyzeAction(id: string) {
-  const { user } = await owned(id)
+  const { user, companyId } = await owned(id)
+  // El cupo de análisis depende del plan: el gratis alcanza para uno
+  const { canAnalyze } = await getCompanyPlan(db, companyId)
+  if (!canAnalyze) redirect(`/consulta/${id}/examinar?error=cupo`)
   await runAnalysis(db, id, { analyst: getAnalyst(), storage: getStorage() })
   await audit(db, { userId: user.id, action: 'analizar', entity: 'consultation', entityId: id })
   await finish(id)

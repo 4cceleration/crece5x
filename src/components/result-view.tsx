@@ -3,6 +3,7 @@ import type { ResultData } from '@/services/report'
 import { trafficLight } from '@/domain/scoring'
 import { SEVERITY_LABEL, type Severity } from '@/domain/types'
 import { FinancialCharts } from './charts/financial-charts'
+import { AnalyticsUpsell } from './plan-upsell'
 import type { ExplainAction } from './charts/chart-card'
 import { Score } from '@/ui/score'
 import { Icon } from '@/ui/icons'
@@ -91,6 +92,8 @@ export function ResultView({
   mockNote = false,
   locked,
   explainAction,
+  upgrade,
+  chartsPreview = false,
 }: {
   data: ResultData
   actions?: React.ReactNode
@@ -101,6 +104,10 @@ export function ResultView({
   locked?: { sendAction: () => Promise<void>; sent: boolean; error: boolean }
   /** Si viene, cada gráfica trae un botón "?" que pide la explicación al análisis */
   explainAction?: ExplainAction
+  /** Sin explicación con IA: el "?" lleva a los planes */
+  upgrade?: { href: string; label: string }
+  /** Solo las cifras del último cierre; el resto de la analítica es de los planes de pago */
+  chartsPreview?: boolean
 }) {
   const top = data.findings.slice(0, 5)
   const rest = data.findings.slice(5)
@@ -175,7 +182,14 @@ export function ResultView({
         )}
       </section>
 
-      {data.financials && <FinancialCharts financials={data.financials} ratios={data.ratios} explainAction={explainAction} />}
+      {data.financials && <FinancialCharts
+          financials={data.financials}
+          ratios={data.ratios}
+          explainAction={explainAction}
+          upgrade={upgrade}
+          preview={chartsPreview}
+          previewNote={<AnalyticsUpsell />}
+        />}
 
       <footer className="space-y-3 text-sm text-muted">
         {data.analysisError && (
