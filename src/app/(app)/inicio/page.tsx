@@ -9,6 +9,7 @@ import { startConsultationAction } from '../consulta/actions'
 import { Score } from '@/ui/score'
 import { ButtonLink, buttonClass } from '@/ui/button'
 import { Icon } from '@/ui/icons'
+import { Magnetic } from '@/ui/magnetic'
 
 export default async function InicioPage() {
   const { user, companyId } = await requireCompany()
@@ -31,10 +32,12 @@ export default async function InicioPage() {
         <div className="glass space-y-8 rounded-lg p-6 sm:p-8">
           <Score value={last.finalScore} />
           <div className="flex flex-col items-center gap-4">
-            <ButtonLink href={`/consulta/${last.id}/resultado`} className="w-full max-w-sm gap-2">
-              Ver resultado
-              <Icon name="siguiente" size={18} />
-            </ButtonLink>
+            <Magnetic>
+              <ButtonLink href={`/consulta/${last.id}/resultado`} className="w-full max-w-sm gap-2">
+                Ver resultado
+                <Icon name="siguiente" size={18} />
+              </ButtonLink>
+            </Magnetic>
             <form action={startConsultationAction}>
               <button className={buttonClass('link')}>Nueva consulta</button>
             </form>

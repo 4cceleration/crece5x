@@ -12,7 +12,7 @@ import { Icon } from '@/ui/icons'
 import { SubmitButton } from '@/ui/submit-button'
 
 const chip =
-  'flex h-12 items-center justify-center rounded-md bg-white/80 font-medium tabular-nums ring-1 ring-ink/10 transition-[background-color,box-shadow] hover:bg-brand-soft hover:ring-brand'
+  'flex h-12 items-center justify-center rounded-md bg-white/80 font-medium tabular-nums ring-1 ring-ink/10 transition-[background-color,box-shadow,translate,scale] duration-base ease-spring hover:-translate-y-0.5 hover:bg-brand-soft hover:ring-brand active:translate-y-0 active:scale-97'
 
 const ERRORS: Record<string, string> = {
   ocupado: 'Ese horario acaba de ocuparse. Elija otro.',

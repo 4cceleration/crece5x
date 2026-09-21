@@ -11,7 +11,7 @@
  *   glass            superficie de vidrio; úsese sobre <Backdrop /> (src/ui/backdrop.tsx)
  * Botones: Button, ButtonLink y buttonClass() ya traen estado presionado, foco y transición.
  */
-@source inline("animate-enter animate-fade animate-spinner duration-fast duration-base duration-slow ease-out-soft");
+@source inline("animate-enter animate-fade animate-spinner animate-draw animate-pop duration-fast duration-base duration-slow ease-out-soft ease-spring");
 
 @theme {
   --color-brand: #3F9B6E;
@@ -32,12 +32,17 @@
   --transition-duration-base: 200ms;
   --transition-duration-slow: 250ms;
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Rebote corto tipo resorte, para el retorno de los elementos magnéticos y las pulsaciones */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --default-transition-duration: var(--transition-duration-fast);
   --default-transition-timing-function: var(--ease-out-soft);
 
   --animate-enter: fade-slide-up var(--transition-duration-slow) var(--ease-out-soft) backwards;
   --animate-fade: fade-in var(--transition-duration-base) var(--ease-out-soft) backwards;
   --animate-spinner: spin-round 800ms linear infinite;
+  /* Dibujo del anillo del índice y aparición con rebote de un elemento que confirma algo */
+  --animate-draw: draw-ring 900ms var(--ease-out-soft) backwards;
+  --animate-pop: pop-in 320ms var(--ease-spring) backwards;
 
   @keyframes fade-slide-up {
     from { opacity: 0; transform: translateY(0.5rem); }
@@ -47,6 +52,12 @@
   }
   @keyframes spin-round {
     to { transform: rotate(360deg); }
+  }
+  @keyframes draw-ring {
+    from { stroke-dashoffset: var(--ring-length); }
+  }
+  @keyframes pop-in {
+    from { opacity: 0; scale: 0.8; }
   }
 }
 

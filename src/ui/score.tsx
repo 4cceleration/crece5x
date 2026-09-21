@@ -1,4 +1,5 @@
 import { LIGHT_LABEL, trafficLight } from '@/domain/scoring'
+import { CountUp } from './count-up'
 import type { Light } from '@/domain/types'
 
 const RING = { verde: 'text-ok', ambar: 'text-warn', rojo: 'text-bad' } as const
@@ -35,12 +36,13 @@ export function Score({ value, size = 'lg' }: { value: number; size?: 'lg' | 'md
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={offset}
-            className={`stroke-current ${RING[light]} transition-[stroke-dashoffset] duration-slow`}
+            style={{ '--ring-length': `${circumference}` } as React.CSSProperties}
+            className={`animate-draw stroke-current ${RING[light]}`}
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className={`font-display font-semibold leading-none tracking-tight ${size === 'lg' ? 'text-6xl' : 'text-4xl'}`}>
-            {value}
+            <CountUp value={value} />
           </span>
           <span className="mt-1 text-xs text-muted">de 100</span>
         </div>

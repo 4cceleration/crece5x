@@ -65,7 +65,7 @@ function LockedFindings({
           Le enviamos el plan de acción completo con el reporte en PDF a su correo.
         </p>
         {sent ? (
-          <p role="status" className="flex items-center gap-2 font-medium text-brand-strong">
+          <p role="status" className="animate-pop flex items-center gap-2 font-medium text-brand-strong">
             <Icon name="check" size={20} />
             Enviado. Revise su correo.
           </p>

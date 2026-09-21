@@ -8,6 +8,7 @@ import { isMockAnalyst } from '@/ai/analyst'
 import { ResultView } from '@/components/result-view'
 import { sendReportAction } from '../../actions'
 import { ButtonLink, buttonClass } from '@/ui/button'
+import { Magnetic } from '@/ui/magnetic'
 
 export default async function ResultadoPage({
   params,
@@ -37,7 +38,9 @@ export default async function ResultadoPage({
         mockNote={isMockAnalyst()}
         actions={
           <>
-            <ButtonLink href={primary.href}>{primary.label}</ButtonLink>
+            <Magnetic>
+              <ButtonLink href={primary.href}>{primary.label}</ButtonLink>
+            </Magnetic>
             <Link href={secondary.href} className={buttonClass('link')}>{secondary.label}</Link>
           </>
         }
