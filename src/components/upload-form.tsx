@@ -1,20 +1,25 @@
 'use client'
-import { useState, useTransition } from 'react'
+import { useRef, useState, useTransition } from 'react'
 import { Icon } from '@/ui/icons'
 
 type Status = { kind: 'idle' } | { kind: 'ocr'; file: string; page: number; pages: number } | { kind: 'subiendo' }
 
 export function UploadForm({ action }: { action: (fd: FormData) => Promise<void> }) {
   const [status, setStatus] = useState<Status>({ kind: 'idle' })
+  const [dragging, setDragging] = useState(false)
   const [pending, startTransition] = useTransition()
   const busy = pending || status.kind !== 'idle'
+  // El navegador dispara dragleave al pasar sobre los hijos: se cuenta cuántas veces entró
+  const depth = useRef(0)
 
   const label =
     status.kind === 'ocr'
       ? `Leyendo ${status.file} (página ${status.page} de ${status.pages})…`
       : busy
         ? 'Subiendo…'
-        : 'Elegir archivos'
+        : dragging
+          ? 'Suelte los archivos aquí'
+          : 'Arrastre sus archivos o elíjalos'
 
   // Se arma el envío a mano: el texto del OCR debe ir junto a los archivos, sin depender de un re-render
   async function onPick(list: FileList | null) {
@@ -41,10 +46,39 @@ export function UploadForm({ action }: { action: (fd: FormData) => Promise<void>
     })
   }
 
+  function endDrag() {
+    depth.current = 0
+    setDragging(false)
+  }
+
   return (
     <label
       aria-busy={busy}
-      className="flex h-36 cursor-pointer flex-col items-center justify-center gap-1 rounded-md border border-dashed border-ink/20 bg-white/60 transition-colors hover:border-brand hover:bg-brand-soft"
+      onDragEnter={(e) => {
+        if (busy) return
+        e.preventDefault()
+        depth.current += 1
+        setDragging(true)
+      }}
+      onDragOver={(e) => {
+        if (busy) return
+        // Sin esto el navegador abre el archivo en lugar de soltarlo aquí
+        e.preventDefault()
+        e.dataTransfer.dropEffect = 'copy'
+      }}
+      onDragLeave={() => {
+        depth.current -= 1
+        if (depth.current <= 0) endDrag()
+      }}
+      onDrop={(e) => {
+        e.preventDefault()
+        endDrag()
+        if (busy) return
+        onPick(e.dataTransfer.files)
+      }}
+      className={`flex h-36 cursor-pointer flex-col items-center justify-center gap-1 rounded-md border border-dashed transition-colors ${
+        dragging ? 'border-brand-strong bg-brand-soft' : 'border-ink/20 bg-white/60 hover:border-brand hover:bg-brand-soft'
+      }`}
     >
       <Icon name="subir" size={28} className="mb-1 text-brand-strong" />
       <span className="font-medium">{label}</span>
