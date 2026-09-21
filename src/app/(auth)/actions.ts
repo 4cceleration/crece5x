@@ -11,7 +11,8 @@ import { createCompanyForUser, getCompanyIdForUser } from '@/services/companies'
 import { setEmailPreferences } from '@/services/profile'
 import { getUserRole } from '@/services/users'
 
-export type FormState = { error: string } | null
+// Al volver con error se devuelve lo que ya había escrito: solo la contraseña se pide de nuevo
+export type FormState = { error: string; values?: Record<string, string> } | null
 
 const registerSchema = z.object({
   name: z.string().trim().min(2),
@@ -25,11 +26,27 @@ const registerSchema = z.object({
   marketing: z.literal('on').optional(),
 })
 
+// Todo menos la contraseña, para volver a pintar el formulario tal como lo dejó
+const typed = (formData: FormData): Record<string, string> =>
+  Object.fromEntries([...formData.entries()].filter(([k, v]) => k !== 'password' && typeof v === 'string')) as Record<string, string>
+
+// El aviso dice qué campo revisar: "revise los datos" obliga a adivinar
+const FIELD_ERRORS: Record<string, string> = {
+  name: 'Escriba su nombre completo.',
+  company: 'Escriba el nombre de la empresa.',
+  nit: 'El NIT debe tener al menos 5 dígitos.',
+  email: 'Escriba un correo válido.',
+  password: 'La contraseña necesita al menos 8 caracteres.',
+  consent: 'Debe autorizar el tratamiento de sus datos para crear la cuenta.',
+}
+
 export async function registerAction(_: FormState, formData: FormData): Promise<FormState> {
   const parsed = registerSchema.safeParse(Object.fromEntries(formData))
   if (!parsed.success) {
+    const field = String(parsed.error.issues[0]?.path[0] ?? '')
     return {
-      error: 'Revise los datos. La contraseña necesita 8 caracteres y debe autorizar el tratamiento de datos.',
+      error: FIELD_ERRORS[field] ?? 'Revise los datos del formulario.',
+      values: typed(formData),
     }
   }
 
@@ -51,6 +68,7 @@ export async function registerAction(_: FormState, formData: FormData): Promise<
   } catch {
     return {
       error: 'No pudimos crear la cuenta. Puede que el correo ya esté registrado.',
+      values: typed(formData),
     }
   }
 
@@ -71,13 +89,13 @@ export async function signInAction(_: FormState, formData: FormData): Promise<Fo
     })
     userId = result.user.id
   } catch {
-    return { error: 'Correo o contraseña incorrectos.' }
+    return { error: 'Correo o contraseña incorrectos.', values: { email } }
   }
 
   const role = await getUserRole(db, userId)
   if (!WEB_ROLES.includes(role)) {
     await auth.api.signOut({ headers: await headers() })
-    return { error: 'Esta cuenta no tiene acceso web.' }
+    return { error: 'Esta cuenta no tiene acceso web.', values: { email } }
   }
   redirect(homeFor(role))
 }

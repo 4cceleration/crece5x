@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useActionState } from 'react'
 import { resetPasswordAction } from '../actions'
-import { Field } from '@/ui/field'
+import { PasswordField } from '@/ui/password-field'
 import { SubmitButton } from '@/ui/submit-button'
 
 export function ResetForm({ token }: { token: string }) {
@@ -11,15 +11,7 @@ export function ResetForm({ token }: { token: string }) {
   return (
     <form action={action} className="space-y-5">
       <input type="hidden" name="token" value={token} />
-      <Field
-        label="Nueva contraseña"
-        icon="contrasena"
-        name="password"
-        type="password"
-        autoComplete="new-password"
-        minLength={8}
-        required
-      />
+      <PasswordField label="Nueva contraseña" icon="contrasena" name="password" autoComplete="new-password" minLength={8} required />
       {state?.error && (
         <p role="alert" className="animate-fade text-sm text-bad">
           {state.error}{' '}

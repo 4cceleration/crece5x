@@ -14,6 +14,7 @@ import {
   savePreferencesAction,
 } from './actions'
 import { Check, Field } from '@/ui/field'
+import { PasswordField } from '@/ui/password-field'
 import { SubmitButton } from '@/ui/submit-button'
 import { ButtonLink, buttonClass } from '@/ui/button'
 import { Icon } from '@/ui/icons'
@@ -116,29 +117,20 @@ export default async function PerfilPage({ searchParams }: { searchParams: Promi
 
       <Card title="Contraseña">
         <form action={changePasswordAction} className="space-y-5">
-          <Field
-            label="Contraseña actual"
-            icon="contrasena"
-            name="currentPassword"
-            type="password"
-            autoComplete="current-password"
-            required
-          />
-          <Field
+          <PasswordField label="Contraseña actual" icon="contrasena" name="currentPassword" autoComplete="current-password" required />
+          <PasswordField
             label="Contraseña nueva"
             icon="contrasena"
             name="newPassword"
-            type="password"
             autoComplete="new-password"
             minLength={8}
             required
             hint="Al menos 8 caracteres."
           />
-          <Field
+          <PasswordField
             label="Repita la contraseña nueva"
             icon="contrasena"
             name="repeatPassword"
-            type="password"
             autoComplete="new-password"
             minLength={8}
             required

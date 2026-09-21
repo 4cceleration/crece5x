@@ -24,10 +24,27 @@ test('perfil: cambio de correo con código, contraseña y preferencias', async (
   await page.goto('/registro')
   await page.getByLabel('Tu nombre').fill('Ana Contadora')
   await page.getByLabel('Empresa').fill('Panadería La Espiga SAS')
-  await page.getByLabel('NIT').fill('900123456')
+  await page.getByLabel('NIT').fill('900') // corto a propósito
   await page.getByLabel('Correo', { exact: true }).fill(email)
   await page.getByLabel('Contraseña', { exact: true }).fill('Clave12345!')
   await page.getByLabel(/Autorizo el tratamiento/).check()
+  await page.getByRole('button', { name: 'Crear cuenta' }).click()
+
+  // El error dice qué revisar y no borra lo demás: solo la contraseña se pide otra vez
+  await expect(page.getByText('El NIT debe tener al menos 5 dígitos.')).toBeVisible()
+  await expect(page.getByLabel('Tu nombre')).toHaveValue('Ana Contadora')
+  await expect(page.getByLabel('Empresa')).toHaveValue('Panadería La Espiga SAS')
+  await expect(page.getByLabel('Correo', { exact: true })).toHaveValue(email)
+  await expect(page.getByLabel(/Autorizo el tratamiento/)).toBeChecked()
+  await expect(page.getByLabel('Contraseña', { exact: true })).toHaveValue('')
+
+  // El ojo muestra la contraseña
+  await page.getByLabel('Contraseña', { exact: true }).fill('Clave12345!')
+  await page.getByRole('button', { name: 'Mostrar la contraseña' }).click()
+  await expect(page.getByLabel('Contraseña', { exact: true })).toHaveAttribute('type', 'text')
+  await page.getByRole('button', { name: 'Ocultar la contraseña' }).click()
+
+  await page.getByLabel('NIT').fill('900123456')
   // Los avisos vienen aceptados y el marketing no
   await expect(page.getByLabel(/Quiero recibir avisos de mi consulta/)).toBeChecked()
   await expect(page.getByLabel(/Quiero recibir novedades/)).not.toBeChecked()

@@ -10,9 +10,17 @@ export function Field({
   hint,
   icon,
   suffix,
+  trailing,
   className = '',
   ...props
-}: ComponentProps<'input'> & { label: string; hint?: string; icon?: IconName; suffix?: string }) {
+}: ComponentProps<'input'> & {
+  label: string
+  hint?: string
+  icon?: IconName
+  suffix?: string
+  /** Control dentro del campo, a la derecha (p. ej. mostrar la contraseña) */
+  trailing?: React.ReactNode
+}) {
   const labelX = icon ? 'left-10 -translate-x-7 peer-[:placeholder-shown:not(:focus)]:translate-x-0' : 'left-3'
   return (
     <label className="block space-y-2">
@@ -20,13 +28,14 @@ export function Field({
         <input
           {...props}
           placeholder=" "
-          className={`peer h-14 w-full rounded-md bg-card ${icon ? 'pl-11' : 'pl-4'} ${suffix ? 'pr-16' : 'pr-4'} text-ink outline-hidden ring-1 ring-ink/15 transition-shadow duration-base hover:ring-ink/30 focus:ring-brand ${className}`}
+          className={`peer h-14 w-full rounded-md bg-card ${icon ? 'pl-11' : 'pl-4'} ${suffix ? 'pr-16' : trailing ? 'pr-14' : 'pr-4'} text-ink outline-hidden ring-1 ring-ink/15 transition-shadow duration-base hover:ring-ink/30 focus:ring-brand ${className}`}
         />
         {suffix && (
           <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium tracking-wide text-muted transition-[color] duration-base peer-focus:text-brand-strong">
             {suffix}
           </span>
         )}
+        {trailing && <span className="absolute right-2 top-1/2 -translate-y-1/2">{trailing}</span>}
         {icon && (
           <Icon
             name={icon}
