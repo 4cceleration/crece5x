@@ -10,9 +10,9 @@ import { buttonClass } from '@/ui/button'
 import { SubmitButton } from '@/ui/submit-button'
 
 const SEV_PILL: Record<Severity, string> = {
-  critica: 'bg-bad text-white',
+  critica: 'bg-bad text-on-accent',
   alta: 'bg-bad/12 text-bad',
-  media: 'bg-warn/15 text-[#8A6400]',
+  media: 'bg-warn/15 text-warn-ink',
   baja: 'bg-ink/8 text-muted',
 }
 const BAR = { verde: 'bg-ok', ambar: 'bg-warn', rojo: 'bg-bad' } as const

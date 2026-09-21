@@ -3,10 +3,12 @@ import { signOutAction } from '@/app/(auth)/actions'
 import type { Role } from '@/domain/types'
 import { Icon, type IconName } from './icons'
 import { NavLink } from './nav-link'
+import { ThemeToggle } from './theme-toggle'
 
 const NAV: Record<Role, { href: string; label: string; icon: IconName }[]> = {
   empresa: [
     { href: '/inicio', label: 'Inicio', icon: 'inicio' },
+    { href: '/analitica', label: 'Analítica', icon: 'analitica' },
     { href: '/academia', label: 'Academia', icon: 'academia' },
     { href: '/agenda', label: 'Agenda', icon: 'agenda' },
   ],
@@ -30,6 +32,7 @@ export function Nav({ role }: { role: Role }) {
               <span className="max-sm:sr-only">{item.label}</span>
             </NavLink>
           ))}
+          <ThemeToggle />
           <form action={signOutAction}>
             <button className="flex items-center gap-1.5 rounded-md px-3 py-2 text-muted transition-[color] hover:text-ink focus-visible:-outline-offset-2">
               <Icon name="salir" size={18} />

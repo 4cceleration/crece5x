@@ -5,7 +5,7 @@ export function GoogleButton() {
   return (
     <>
       <form action={googleSignInAction}>
-        <button className="inline-flex h-12 w-full items-center justify-center gap-3 rounded-md bg-white font-medium text-ink ring-1 ring-ink/15 transition-shadow hover:ring-ink/30">
+        <button className="inline-flex h-12 w-full items-center justify-center gap-3 rounded-md bg-card font-medium text-ink ring-1 ring-ink/15 transition-shadow hover:ring-ink/30">
           <svg viewBox="0 0 24 24" aria-hidden className="size-5">
             <path
               fill="#4285F4"

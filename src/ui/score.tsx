@@ -3,7 +3,7 @@ import { CountUp } from './count-up'
 import type { Light } from '@/domain/types'
 
 const RING = { verde: 'text-ok', ambar: 'text-warn', rojo: 'text-bad' } as const
-const ACTIVE = { verde: 'bg-ok text-white', ambar: 'bg-warn text-ink', rojo: 'bg-bad text-white' } as const
+const ACTIVE = { verde: 'bg-ok text-on-accent', ambar: 'bg-warn text-on-warn', rojo: 'bg-bad text-on-accent' } as const
 
 // Escala del semáforo, de peor a mejor, con sus rangos
 const SCALE: { light: Light; range: string }[] = [

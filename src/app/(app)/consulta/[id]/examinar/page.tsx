@@ -54,7 +54,7 @@ export default async function ExaminarPage({
         <UploadForm action={uploadAction.bind(null, id)} />
         {error && <p className="text-sm text-bad">{error}</p>}
         {files.length > 0 && (
-          <ul className="divide-y divide-ink/10 rounded-md bg-white/70 ring-1 ring-ink/10">
+          <ul className="divide-y divide-ink/10 rounded-md bg-card/70 ring-1 ring-ink/10">
             {files.map((f) => (
               <li key={f.id} className="flex items-center justify-between gap-3 px-4 py-3">
                 <span className="flex min-w-0 items-center gap-2">

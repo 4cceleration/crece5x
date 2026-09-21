@@ -20,7 +20,7 @@ export function Field({
         <input
           {...props}
           placeholder=" "
-          className={`peer h-14 w-full rounded-md bg-white ${icon ? 'pl-11' : 'pl-4'} ${suffix ? 'pr-16' : 'pr-4'} text-ink outline-hidden ring-1 ring-ink/15 transition-shadow duration-base hover:ring-ink/30 focus:ring-brand ${className}`}
+          className={`peer h-14 w-full rounded-md bg-card ${icon ? 'pl-11' : 'pl-4'} ${suffix ? 'pr-16' : 'pr-4'} text-ink outline-hidden ring-1 ring-ink/15 transition-shadow duration-base hover:ring-ink/30 focus:ring-brand ${className}`}
         />
         {suffix && (
           <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium tracking-wide text-muted transition-[color] duration-base peer-focus:text-brand-strong">
@@ -34,7 +34,7 @@ export function Field({
           />
         )}
         <span
-          className={`pointer-events-none absolute ${labelX} top-1/2 origin-left -translate-y-[calc(50%+1.75rem)] scale-75 bg-[linear-gradient(to_bottom,var(--notch-bg,var(--color-canvas))_50%,#fff_50%)] px-1 text-base text-muted transition-[translate,scale,color] duration-base peer-focus:text-brand-strong peer-[:placeholder-shown:not(:focus)]:-translate-y-1/2 peer-[:placeholder-shown:not(:focus)]:scale-100 peer-[:placeholder-shown:not(:focus)]:bg-none peer-[:placeholder-shown:not(:focus)]:bg-transparent`}
+          className={`pointer-events-none absolute ${labelX} top-1/2 origin-left -translate-y-[calc(50%+1.75rem)] scale-75 bg-[linear-gradient(to_bottom,var(--notch-bg,var(--color-canvas))_50%,var(--color-card)_50%)] px-1 text-base text-muted transition-[translate,scale,color] duration-base peer-focus:text-brand-strong peer-[:placeholder-shown:not(:focus)]:-translate-y-1/2 peer-[:placeholder-shown:not(:focus)]:scale-100 peer-[:placeholder-shown:not(:focus)]:bg-none peer-[:placeholder-shown:not(:focus)]:bg-transparent`}
         >
           {label}
         </span>
@@ -57,7 +57,7 @@ export function Check({ label, ...props }: ComponentProps<'input'> & { label: st
         <svg
           viewBox="0 0 20 20"
           aria-hidden
-          className="pointer-events-none absolute inset-0 size-5 text-white peer-checked:[&_path]:opacity-100 peer-checked:[&_path]:[stroke-dashoffset:0]"
+          className="pointer-events-none absolute inset-0 size-5 text-on-accent peer-checked:[&_path]:opacity-100 peer-checked:[&_path]:[stroke-dashoffset:0]"
         >
           <path
             d="M6 10.5l2.5 2.5L14 7.5"

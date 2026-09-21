@@ -16,7 +16,7 @@ const DAYS = [
 const HOURS = Array.from({ length: 14 }, (_, i) => i + 6) // 6:00 a 19:00
 
 const select =
-  'h-10 w-full min-w-24 rounded-md px-3 text-ink bg-white ring-1 ring-ink/15 outline-hidden transition-shadow duration-base hover:ring-ink/30 focus:ring-brand'
+  'h-10 w-full min-w-24 rounded-md px-3 text-ink bg-card ring-1 ring-ink/15 outline-hidden transition-shadow duration-base hover:ring-ink/30 focus:ring-brand'
 
 export default async function DisponibilidadPage({ searchParams }: { searchParams: Promise<{ ok?: string }> }) {
   const user = await requireUser(['consultor'])

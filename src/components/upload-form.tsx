@@ -77,7 +77,7 @@ export function UploadForm({ action }: { action: (fd: FormData) => Promise<void>
         onPick(e.dataTransfer.files)
       }}
       className={`flex h-36 cursor-pointer flex-col items-center justify-center gap-1 rounded-md border border-dashed transition-colors ${
-        dragging ? 'border-brand-strong bg-brand-soft' : 'border-ink/20 bg-white/60 hover:border-brand hover:bg-brand-soft'
+        dragging ? 'border-brand-strong bg-brand-soft' : 'border-ink/20 bg-card/60 hover:border-brand hover:bg-brand-soft'
       }`}
     >
       <Icon name="subir" size={28} className="mb-1 text-brand-strong" />

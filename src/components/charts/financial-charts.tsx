@@ -4,9 +4,10 @@ import { buildChartData, CHART_TITLES, type Flow, type Kpi, type Meter as MeterD
 import { formatCompactCOP, formatPercent, formatSignedPercent } from '@/domain/format'
 import { ChartCard, type ExplainAction } from './chart-card'
 
-// Paleta categórica validada (banda de luminosidad, saturación y separación para daltonismo).
-// Máximo tres series: una cuarta no pasa la separación exigida, así que los datos se agrupan antes.
-const SERIES = ['#12805A', '#5FBF93', '#3A6FB0'] as const
+// Paleta categórica validada para cada tema (banda de luminosidad, saturación y separación para
+// daltonismo); los valores viven en globals.css. Máximo tres series: una cuarta no pasa la
+// separación exigida, así que los datos se agrupan antes de pintarlos.
+const SERIES = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)'] as const
 
 type Bar = { label: string; value: number; color: string; hint: string }
 
@@ -115,7 +116,8 @@ function TrendGrid({ trends }: { trends: Trend[] }) {
               bars={t.bars.map((b) => ({
                 label: b.period,
                 value: b.value,
-                color: colorOf(b.period),
+                // Una cifra negativa se lee en rojo, aunque el color del año sea otro
+                color: b.value < 0 ? 'var(--color-bad)' : colorOf(b.period),
                 hint: `${t.label} ${b.period}: ${formatCompactCOP(b.value)}`,
               }))}
             />
@@ -187,8 +189,8 @@ function CashFlow({ flows, closingCash }: { flows: Flow[]; closingCash: number |
         bars={flows.map((f) => ({
           label: f.label,
           value: f.value,
-          // Verde lo que suma efectivo, azul lo que sale: es polaridad, no un semáforo de bueno y malo
-          color: f.value >= 0 ? SERIES[0] : SERIES[2],
+          // Verde lo que suma efectivo y rojo lo que sale
+          color: f.value >= 0 ? SERIES[0] : 'var(--color-bad)',
           hint: `${f.label}: ${formatCompactCOP(f.value)}`,
         }))}
       />
@@ -198,7 +200,7 @@ function CashFlow({ flows, closingCash }: { flows: Flow[]; closingCash: number |
           <span className="font-medium tabular-nums">{formatCompactCOP(closingCash)}</span>
         </p>
       )}
-      <p className="text-xs text-muted">En verde lo que entró de efectivo y en azul lo que salió.</p>
+      <p className="text-xs text-muted">En verde lo que entró de efectivo y en rojo lo que salió.</p>
     </div>
   )
 }

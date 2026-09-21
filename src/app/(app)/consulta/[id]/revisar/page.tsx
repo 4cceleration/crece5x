@@ -10,7 +10,7 @@ import { InfoTip } from '@/ui/info-tip'
 import { StepCard, backLinkClass } from '@/components/step-card'
 
 const option =
-  'flex h-16 items-center justify-center gap-2.5 rounded-md bg-white/80 text-lg font-medium text-ink ring-1 ring-ink/10 transition-[background-color,box-shadow,translate,scale] duration-base ease-spring hover:-translate-y-0.5 hover:bg-brand-soft hover:ring-brand active:translate-y-0 active:scale-97 focus-visible:bg-brand-soft'
+  'flex h-16 items-center justify-center gap-2.5 rounded-md bg-card/80 text-lg font-medium text-ink ring-1 ring-ink/10 transition-[background-color,box-shadow,translate,scale] duration-base ease-spring hover:-translate-y-0.5 hover:bg-brand-soft hover:ring-brand active:translate-y-0 active:scale-97 focus-visible:bg-brand-soft'
 
 const ICON_COLOR: Record<AnswerValue, string> = {
   si: 'text-ok',

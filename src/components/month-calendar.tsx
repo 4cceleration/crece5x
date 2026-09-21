@@ -68,7 +68,7 @@ export function MonthCalendar({
                     {isAvailable ? (
                       <Link
                         href={hrefFor(c.key)}
-                        className="flex aspect-square items-center justify-center rounded-md bg-brand-soft font-semibold text-brand-deep ring-1 ring-brand/30 transition-[background-color,color,scale] duration-base ease-spring hover:scale-105 hover:bg-brand-strong hover:text-white active:scale-95"
+                        className="flex aspect-square items-center justify-center rounded-md bg-brand-soft font-semibold text-brand-deep ring-1 ring-brand/30 transition-[background-color,color,scale] duration-base ease-spring hover:scale-105 hover:bg-brand-strong hover:text-on-accent active:scale-95"
                       >
                         {c.day}
                       </Link>

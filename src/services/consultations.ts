@@ -26,6 +26,14 @@ export async function getOwnedConsultation(db: Db, id: string, companyId: string
   })
 }
 
+/** La última consulta terminada: la que tiene cifras para la analítica */
+export async function latestCompletedConsultation(db: Db, companyId: string) {
+  return db.query.consultation.findFirst({
+    where: and(eq(consultation.companyId, companyId), eq(consultation.status, 'resultado')),
+    orderBy: desc(consultation.completedAt),
+  })
+}
+
 export async function latestConsultation(db: Db, companyId: string) {
   return db.query.consultation.findFirst({
     where: eq(consultation.companyId, companyId),

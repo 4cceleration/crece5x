@@ -13,7 +13,7 @@ export function InfoTip({ text, label = '¿Qué significa?' }: { text: string; l
       </button>
       <div
         role="tooltip"
-        className="pointer-events-none invisible absolute right-0 top-full z-20 mt-2 w-72 translate-y-1 rounded-md bg-ink px-4 py-3 text-left text-sm leading-relaxed text-white opacity-0 shadow-lg transition-[opacity,translate,visibility] duration-base group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100"
+        className="pointer-events-none invisible absolute right-0 top-full z-20 mt-2 w-72 translate-y-1 rounded-md bg-ink px-4 py-3 text-left text-sm leading-relaxed text-canvas opacity-0 shadow-lg transition-[opacity,translate,visibility] duration-base group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100"
       >
         <p className="mb-1 font-semibold">{label}</p>
         {text}

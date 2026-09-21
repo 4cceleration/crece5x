@@ -37,7 +37,7 @@ export default async function ClasificarPage({
             <li
               key={g}
               aria-current={g === current ? 'true' : undefined}
-              className={`rounded-md px-2 py-3 ${g === current ? 'bg-brand-strong text-white' : 'bg-ink/5 text-muted'}`}
+              className={`rounded-md px-2 py-3 ${g === current ? 'bg-brand-strong text-on-accent' : 'bg-ink/5 text-muted'}`}
             >
               <span className="block font-display text-lg font-semibold">Grupo {g}</span>
               <span className={`block text-xs ${g === current ? 'opacity-90' : ''}`}>{SHORT[g]}</span>
