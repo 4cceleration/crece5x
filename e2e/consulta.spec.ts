@@ -47,7 +47,7 @@ test('consulta completa: registro → clasificar → revisar → examinar → re
   await page.getByRole('button', { name: 'Enviármelo al correo' }).click()
   await expect(page.getByText('Enviado. Revise su correo.')).toBeVisible()
 
-  await page.getByRole('link', { name: 'Hablar con un consultor' }).click()
+  await page.getByRole('link', { name: 'Agendar con un consultor' }).click()
   await page.locator('main table a').first().click() // día en el calendario
   await page.locator('main ul a').first().click() // hora
   await page.getByRole('button', { name: 'Confirmar cita' }).click()

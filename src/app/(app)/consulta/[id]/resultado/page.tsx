@@ -26,9 +26,9 @@ export default async function ResultadoPage({
   const data = await getResultData(db, id)
   if (!data) notFound()
 
-  const agenda = { href: '/agenda', label: data.needsConsultant ? 'Agendar con un consultor' : 'Hablar con un consultor' }
-  const ruta = { href: '/academia', label: 'Ver mi ruta de aprendizaje' }
-  const [primary, secondary] = data.needsConsultant ? [agenda, ruta] : [ruta, agenda]
+  // Agendar con un consultor es siempre la acción principal; la ruta de aprendizaje queda como secundaria
+  const primary = { href: '/agenda', label: 'Agendar con un consultor' }
+  const secondary = { href: '/academia', label: 'Ver mi ruta de aprendizaje' }
 
   return (
     <>
