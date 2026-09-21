@@ -4,11 +4,10 @@ import { db } from '@/db'
 import { requireCompany } from '@/lib/session'
 import { getOwnedConsultation } from '@/services/consultations'
 import { GROUP_NAMES } from '@/domain/classify'
+import { getSettings } from '@/services/settings'
 import { classifyAction } from '../../actions'
-import { Check, Field } from '@/ui/field'
-import { MoneyField } from '@/ui/money-field'
+import { ClassifyForm } from './classify-form'
 import { ButtonLink, buttonClass } from '@/ui/button'
-import { SubmitButton } from '@/ui/submit-button'
 import { Icon } from '@/ui/icons'
 import { StepCard } from '@/components/step-card'
 
@@ -61,46 +60,15 @@ export default async function ClasificarPage({
     )
   }
 
+  const settings = await getSettings(db)
+
   return (
-    <StepCard
-      eyebrow="Clasificar"
-      title="¿Qué tamaño tiene su empresa?"
-      subtitle="Con esto sabemos qué marco NIIF le aplica."
-    >
-      <form action={classifyAction.bind(null, id)} className="space-y-5 text-left">
-        <MoneyField label="Activos totales" suffix="COP" name="assets" required defaultValue={input?.assets} />
-        <MoneyField
-          label="Ingresos del último año"
-          suffix="COP"
-          name="revenue"
-          required
-          defaultValue={input?.revenue}
-        />
-        <Field
-          label="Número de empleados"
-          name="employees"
-          type="number"
-          min={0}
-          required
-          defaultValue={input?.employees}
-        />
-        <div className="space-y-3 pt-1">
-          <Check
-            name="issuesSecurities"
-            label="Emite acciones o bonos en la bolsa de valores"
-            defaultChecked={input?.issuesSecurities}
-          />
-          <Check
-            name="publicInterest"
-            label="Es entidad de interés público (banca, seguros, fondos)"
-            defaultChecked={input?.publicInterest}
-          />
-        </div>
-        <SubmitButton className="w-full gap-2" pendingLabel="Clasificando…">
-          Clasificar
-          <Icon name="siguiente" size={18} />
-        </SubmitButton>
-      </form>
+    <StepCard eyebrow="Clasificar" title="¿Qué tamaño tiene su empresa?">
+      <ClassifyForm
+        action={classifyAction.bind(null, id)}
+        settings={{ smmlv: settings.smmlv, group1: settings.group1, group3: settings.group3 }}
+        defaults={input}
+      />
     </StepCard>
   )
 }

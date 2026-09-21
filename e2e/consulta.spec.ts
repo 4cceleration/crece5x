@@ -17,8 +17,12 @@ test('consulta completa: registro → clasificar → revisar → examinar → re
   await expect(page).toHaveURL(/\/consulta\/.+\/clasificar$/)
   await page.getByLabel('Activos totales').fill('800000000')
   await page.getByLabel('Ingresos del último año').fill('1500000000')
-  await page.getByLabel('Número de empleados').fill('25')
-  await page.getByRole('button', { name: 'Clasificar' }).click()
+  await page.getByLabel('Número de empleados').fill('24')
+  // El grupo se calcula en vivo y el botón lo confirma
+  await page.getByRole('button', { name: 'Sumar 1' }).click()
+  await expect(page.getByLabel('Número de empleados')).toHaveValue('25')
+  await expect(page.getByText('NIIF para Pymes.', { exact: false })).toBeVisible()
+  await page.getByRole('button', { name: /Confirmar Grupo 2/ }).click()
   await expect(page.getByRole('heading', { name: 'Grupo 2' })).toBeVisible()
   await page.getByRole('link', { name: 'Continuar' }).click()
 
