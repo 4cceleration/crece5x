@@ -7,13 +7,14 @@ import {
   getOwnedConsultation,
   saveAnswer,
   saveClassification,
+  setAudience,
   setEeff,
   setFlag,
   startConsultation,
   stepPath,
   undoLast,
 } from '@/services/consultations'
-import type { AnswerValue, Flag } from '@/domain/types'
+import { AUDIENCES, type Audience, type AnswerValue, type Flag } from '@/domain/types'
 import { INVITE_DAYS, isEeff } from '@/domain/eeff'
 import { accountantInviteEmail } from '@/mail/templates'
 import { getCompany } from '@/services/companies'
@@ -71,7 +72,23 @@ export async function flagAction(id: string, flag: Flag, fd: FormData) {
   await goNext(id)
 }
 
-// Primera pantalla de la consulta: formal pregunta después qué tiene del último cierre; empírica queda lista
+// Primera pantalla de la consulta: quién va a responder. Después sigue donde iba (en una nueva, la contabilidad)
+export async function audienceAction(id: string, fd: FormData) {
+  const { c } = await owned(id)
+  const value = fd.get('value') as Audience
+  if (AUDIENCES.includes(value)) await setAudience(db, id, value)
+  redirect(stepPath(id, c.status))
+}
+
+// Vuelve a preguntar quién responde; las respuestas se conservan porque las preguntas son las mismas
+export async function changeAudienceAction(id: string) {
+  const { c } = await owned(id)
+  if (c.status === 'resultado') redirect(stepPath(id, c.status))
+  await setAudience(db, id, null)
+  redirect(`/consulta/${id}/clasificar`)
+}
+
+// Segunda pantalla: formal pregunta después qué tiene del último cierre; empírica queda lista
 export async function accountingAction(id: string, fd: FormData) {
   await owned(id)
   if (fd.get('value') === 'empirica') {

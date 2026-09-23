@@ -14,7 +14,7 @@ import type { AnswerValue } from '@/domain/types'
 import type { Eeff } from '@/domain/eeff'
 import { createUserWithPassword } from './users'
 import { createCompanyForUser } from './companies'
-import { completeReviewIfDone, loadDiagnosticState, saveAnswer, saveClassification, setEeff, setFlag, startConsultation } from './consultations'
+import { completeReviewIfDone, loadDiagnosticState, saveAnswer, saveClassification, setAudience, setEeff, setFlag, startConsultation } from './consultations'
 import { saveUpload } from './uploads'
 import { runAnalysis, saveFiguresAnalysis } from './analysis'
 import { analysesUsed } from './plans'
@@ -26,10 +26,11 @@ let mailDir: string
 
 async function answerAll(value: AnswerValue, eeff: Eeff) {
   await setEeff(db, id, eeff)
+  await setAudience(db, id, 'contador')
   for (const f of FLAG_QUESTIONS) await setFlag(db, id, f.key, true)
   for (;;) {
     const s = await loadDiagnosticState(db, id)
-    const step = nextStep(s.questions, s.flags, s.answers, s.group)
+    const step = nextStep(s)
     if (step.kind !== 'question') break
     await saveAnswer(db, id, step.question.id, value)
   }

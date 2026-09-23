@@ -5,7 +5,7 @@ import type { Ratios } from '@/domain/ratios'
 import type { PlanKey } from '@/domain/plans'
 import type { Eeff } from '@/domain/eeff'
 import type { Figures } from '@/domain/figures'
-import type { AnswerValue, Dimension, FindingSource, Flag, Flags, Group, Role, Severity } from '@/domain/types'
+import type { AnswerValue, Audience, Dimension, FindingSource, Flag, Flags, Group, Role, Severity } from '@/domain/types'
 
 export type ConsultationStatus = 'clasificar' | 'revisar' | 'examinar' | 'resultado'
 export type AnalysisStatus = 'pendiente' | 'procesando' | 'listo' | 'error'
@@ -118,6 +118,8 @@ export const consultation = pgTable(
     // "Los tiene mi contador": desde cuándo espera los archivos y cuántos recordatorios se le enviaron
     waitingSince: ts('waiting_since'),
     waitingReminders: integer('waiting_reminders').notNull().default(0),
+    // Quién responde las preguntas (null = todavía no lo eligió): cambia cómo se dicen, no qué se mide
+    audience: text('audience').$type<Audience>(),
     diagnosticScore: doublePrecision('diagnostic_score'),
     analysisScore: doublePrecision('analysis_score'),
     finalScore: doublePrecision('final_score'),
@@ -133,6 +135,9 @@ export const question = pgTable('question', {
   dimension: text('dimension').$type<Dimension>().notNull(),
   text: text('text').notNull(),
   help: text('help').notNull(),
+  // La misma pregunta para el empresario; si falta, se muestra la del contador
+  simpleText: text('simple_text'),
+  simpleHelp: text('simple_help'),
   gap: text('gap').notNull(),
   fix: text('fix').notNull(),
   weight: integer('weight').notNull(),

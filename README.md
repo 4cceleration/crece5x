@@ -38,6 +38,12 @@ npm run dev
 
 No hay panel web de administración: la administración se hace con la CLI (ver abajo).
 
+## Consulta: contador o empresario
+
+La consulta empieza preguntando quién va a responder y después cómo lleva la contabilidad (formal o empírica). El **contador** ve las preguntas técnicas; el **empresario**, las mismas en palabras sencillas (`simpleText` y `simpleHelp` en `src/db/questions.ts`). El puntaje, los hallazgos y el reporte son los mismos para los dos, y la elección se puede cambiar en Clasificar sin perder respuestas.
+
+Revisar es un solo recorrido con una sola barra de progreso: cada pregunta de Sí/No («¿Maneja inventarios?») va justo antes de las preguntas que abre. Si se cambian los textos del banco, `npm run db:seed` los actualiza en la base.
+
 ## Administración (CLI)
 
 Por seguridad no hay pantallas de administración en la web. Quien administra necesita acceso a la base de datos (`DATABASE_URL` y `DATABASE_AUTH_TOKEN`); cada cambio queda en `audit_log` con el usuario del sistema que lo hizo.

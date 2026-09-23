@@ -23,23 +23,22 @@ export default async function RevisarPage({ params }: { params: Promise<{ id: st
   const { companyId } = await requireCompany()
   const c = await getOwnedConsultation(db, id, companyId)
   if (!c) notFound()
-  if (c.group === null || c.eeff === null) redirect(`/consulta/${id}/clasificar`)
+  // Quién responde y la contabilidad se eligen en Clasificar, antes de las preguntas
+  if (c.group === null || c.eeff === null || c.audience === null) redirect(`/consulta/${id}/clasificar`)
 
   const s = await loadDiagnosticState(db, id)
-  const step = nextStep(s.questions, s.flags, s.answers, s.group)
+  const step = nextStep(s)
   if (step.kind === 'done') redirect(`/consulta/${id}/examinar`)
-  const canGoBack = previousTarget(s.questions, s.flags, s.answers, s.group) !== null
-
+  const canGoBack = previousTarget(s) !== null
   const isFlag = step.kind === 'flag'
   const key = isFlag ? step.flag : step.question.id
-  const title = isFlag ? step.text : step.question.text
-  const help = isFlag ? null : step.question.help
+  const help = isFlag ? null : step.help
   const options: AnswerValue[] = isFlag ? ['si', 'no'] : ['si', 'parcial', 'no', 'nose']
 
   return (
     <div data-step={key}>
       <StepCard
-        title={title}
+        title={step.text}
         progress={step.position / step.total}
         back={
           canGoBack ? (

@@ -9,12 +9,18 @@ export type Light = 'verde' | 'ambar' | 'rojo'
 // Solo roles con acceso web. La administración se hace con la CLI (npm run admin), nunca desde la web
 export type Role = 'empresa' | 'consultor'
 export const WEB_ROLES: Role[] = ['empresa', 'consultor']
+// Quién responde la consulta: el contador lee las preguntas técnicas; el empresario, las mismas en palabras sencillas
+export type Audience = 'contador' | 'empresario'
+export const AUDIENCES: Audience[] = ['contador', 'empresario']
 
 export type Question = {
   id: string
   dimension: Dimension
   text: string
   help: string
+  /** La misma pregunta para el empresario; null = se muestra la del contador */
+  simpleText: string | null
+  simpleHelp: string | null
   gap: string
   fix: string
   weight: number

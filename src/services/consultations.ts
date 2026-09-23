@@ -2,9 +2,9 @@ import { and, asc, desc, eq, ne } from 'drizzle-orm'
 import type { Db } from '@/db/client'
 import { answer, consultation, question, type ConsultationStatus } from '@/db/schema'
 import { classify, type ClassificationInput } from '@/domain/classify'
-import { nextStep, previousTarget } from '@/domain/flow'
+import { nextStep, previousTarget, type DiagnosticState } from '@/domain/flow'
 import type { Eeff } from '@/domain/eeff'
-import type { AnswerValue, Flag, Flags, Group, Question } from '@/domain/types'
+import type { AnswerValue, Audience, Flag, Flags, Group, Question } from '@/domain/types'
 import { getSettings } from './settings'
 
 export function stepPath(id: string, status: ConsultationStatus): string {
@@ -57,13 +57,18 @@ export async function getActiveQuestions(db: Db): Promise<Question[]> {
   return db.select().from(question).where(eq(question.active, true)).orderBy(asc(question.order))
 }
 
-export async function loadDiagnosticState(db: Db, id: string) {
+export async function loadDiagnosticState(db: Db, id: string): Promise<DiagnosticState> {
   const c = await db.query.consultation.findFirst({ where: eq(consultation.id, id) })
   if (!c) throw new Error('Consulta no encontrada')
   const questions = await getActiveQuestions(db)
   const rows = await db.select().from(answer).where(eq(answer.consultationId, id))
   const answers: Record<string, AnswerValue> = Object.fromEntries(rows.map((r) => [r.questionId, r.value]))
-  return { questions, answers, flags: c.flags, group: (c.group ?? 2) as Group }
+  return { questions, answers, flags: c.flags, group: (c.group ?? 2) as Group, audience: c.audience ?? null }
+}
+
+/** `null` vuelve a preguntar quién va a responder */
+export async function setAudience(db: Db, id: string, audience: Audience | null): Promise<void> {
+  await db.update(consultation).set({ audience }).where(eq(consultation.id, id))
 }
 
 /** `null` vuelve a preguntar cómo lleva la contabilidad */
@@ -91,7 +96,7 @@ export async function saveAnswer(db: Db, id: string, questionId: string, value: 
 
 export async function undoLast(db: Db, id: string): Promise<void> {
   const s = await loadDiagnosticState(db, id)
-  const target = previousTarget(s.questions, s.flags, s.answers, s.group)
+  const target = previousTarget(s)
   if (!target) return
   if (target.kind === 'answer') {
     await db.delete(answer).where(and(eq(answer.consultationId, id), eq(answer.questionId, target.questionId)))
@@ -104,7 +109,7 @@ export async function undoLast(db: Db, id: string): Promise<void> {
 
 export async function completeReviewIfDone(db: Db, id: string): Promise<boolean> {
   const s = await loadDiagnosticState(db, id)
-  if (nextStep(s.questions, s.flags, s.answers, s.group).kind !== 'done') return false
+  if (nextStep(s).kind !== 'done') return false
   await db
     .update(consultation)
     .set({ status: 'examinar' })

@@ -13,8 +13,9 @@ test('consulta completa: registro → clasificar → revisar → examinar → re
   await page.getByLabel(/Autorizo el tratamiento/).check()
   await page.getByRole('button', { name: 'Crear cuenta' }).click()
 
-  // Tras registrarse entra directo a la consulta: primero cómo lleva la contabilidad
+  // Tras registrarse entra directo a la consulta: primero quién responde, luego cómo lleva la contabilidad
   await expect(page).toHaveURL(/\/consulta\/.+\/clasificar$/)
+  await page.getByRole('button', { name: /^Empresario/ }).click()
   await page.getByRole('button', { name: /Contabilidad formal/ }).click()
   await page.getByRole('button', { name: /Estados financieros completos/ }).click()
   await page.getByLabel('Activos totales').fill('800000000')
@@ -28,7 +29,12 @@ test('consulta completa: registro → clasificar → revisar → examinar → re
   await expect(page.getByRole('heading', { name: 'Grupo 2' })).toBeVisible()
   await page.getByRole('link', { name: 'Continuar' }).click()
 
-  // Banderas y preguntas: "Sí" a todo, una por pantalla
+  // El empresario ve las mismas preguntas en palabras sencillas
+  await expect(
+    page.getByRole('heading', { name: '¿Al cierre de cada año tiene un balance que muestre lo que la empresa tiene y lo que debe?' }),
+  ).toBeVisible()
+
+  // Un solo recorrido, con las de Sí/No intercaladas: "Sí" a todo, una por pantalla
   for (let i = 0; i < 60 && !page.url().includes('/examinar'); i++) {
     const before = await page.locator('[data-step]').getAttribute('data-step')
     await page.getByRole('button', { name: 'Sí', exact: true }).click()

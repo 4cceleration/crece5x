@@ -10,12 +10,13 @@ import {
   loadDiagnosticState,
   saveAnswer,
   saveClassification,
+  setAudience,
   setEeff,
   setFlag,
   startConsultation,
   undoLast,
 } from './consultations'
-import { FLAG_QUESTIONS, nextStep } from '@/domain/flow'
+import { nextStep } from '@/domain/flow'
 
 let db: Db
 let companyId: string
@@ -48,18 +49,26 @@ describe('consultations', () => {
     expect(c).toMatchObject({ group: 2, status: 'revisar' })
   })
 
-  it('recorre el diagnóstico completo, permite deshacer y pasa a examinar', async () => {
+  it('guarda quién responde y deja volver a elegirlo', async () => {
+    const id = await startConsultation(db, companyId)
+    await setAudience(db, id, 'empresario')
+    expect((await loadDiagnosticState(db, id)).audience).toBe('empresario')
+    await setAudience(db, id, null)
+    expect((await loadDiagnosticState(db, id)).audience).toBeNull()
+  })
+
+  it('recorre el diagnóstico en un solo recorrido, permite deshacer y pasa a examinar', async () => {
     const id = await startConsultation(db, companyId)
     await saveClassification(db, id, input)
     await setEeff(db, id, 'contador')
     expect(await getOwnedConsultation(db, id, companyId)).toMatchObject({ eeff: 'contador', waitingSince: expect.any(Date) })
-    for (const f of FLAG_QUESTIONS) await setFlag(db, id, f.key, f.key !== 'arrendamientos')
+    await setAudience(db, id, 'contador')
 
     let s = await loadDiagnosticState(db, id)
-    let step = nextStep(s.questions, s.flags, s.answers, s.group)
-    expect(step.kind).toBe('question')
+    let step = nextStep(s)
+    // 5 de Sí/No + 32 preguntas del Grupo 2
+    expect(step).toMatchObject({ kind: 'question', position: 1, total: 37 })
     if (step.kind === 'question') {
-      expect(step.total).toBe(31) // 32 − 1 de arrendamientos
       await saveAnswer(db, id, step.question.id, 'si')
       await undoLast(db, id)
       s = await loadDiagnosticState(db, id)
@@ -69,10 +78,12 @@ describe('consultations', () => {
     expect(await completeReviewIfDone(db, id)).toBe(false)
     for (;;) {
       s = await loadDiagnosticState(db, id)
-      step = nextStep(s.questions, s.flags, s.answers, s.group)
-      if (step.kind !== 'question') break
-      await saveAnswer(db, id, step.question.id, 'si')
+      step = nextStep(s)
+      if (step.kind === 'done') break
+      if (step.kind === 'flag') await setFlag(db, id, step.flag, step.flag !== 'arrendamientos')
+      else await saveAnswer(db, id, step.question.id, 'si')
     }
+    expect(Object.keys(s.answers)).toHaveLength(31) // 32 − 1 de arrendamientos
     expect(await completeReviewIfDone(db, id)).toBe(true)
     expect((await getOwnedConsultation(db, id, companyId))?.status).toBe('examinar')
   })
@@ -82,5 +93,31 @@ describe('consultations', () => {
     await setEeff(db, id, 'contador')
     await setEeff(db, id, null)
     expect(await getOwnedConsultation(db, id, companyId)).toMatchObject({ eeff: null, waitingSince: null })
+  })
+
+  it('Atrás después de una de Sí/No la deja otra vez sin responder', async () => {
+    const id = await startConsultation(db, companyId)
+    await saveClassification(db, id, input)
+    await setAudience(db, id, 'contador')
+    // Estados financieros y políticas (12 preguntas) hasta la primera de Sí/No: inventarios
+    for (;;) {
+      const step = nextStep(await loadDiagnosticState(db, id))
+      if (step.kind !== 'question') break
+      await saveAnswer(db, id, step.question.id, 'si')
+    }
+    await setFlag(db, id, 'inventarios', true)
+
+    await undoLast(db, id)
+    const s = await loadDiagnosticState(db, id)
+    expect(s.flags.inventarios).toBeUndefined()
+    expect(Object.keys(s.answers)).toHaveLength(12)
+  })
+
+  it('Atrás en la primera pregunta no cambia quién responde', async () => {
+    const id = await startConsultation(db, companyId)
+    await saveClassification(db, id, input)
+    await setAudience(db, id, 'empresario')
+    await undoLast(db, id)
+    expect((await loadDiagnosticState(db, id)).audience).toBe('empresario')
   })
 })

@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import { expect, test, type Page } from '@playwright/test'
 
-// Registro, cómo lleva la contabilidad, clasificación y "Sí" a todo el cuestionario, hasta Examinar
+// Registro, quién responde y cómo lleva la contabilidad, clasificación y "Sí" a todo el cuestionario, hasta Examinar
 async function hastaExaminar(page: Page, email: string, contabilidad: RegExp[]) {
   await page.goto('/registro')
   await page.getByLabel('Tu nombre').fill('Ana Gerente')
@@ -13,6 +13,7 @@ async function hastaExaminar(page: Page, email: string, contabilidad: RegExp[]) 
   await page.getByRole('button', { name: 'Crear cuenta' }).click()
 
   await expect(page).toHaveURL(/\/consulta\/.+\/clasificar$/)
+  await page.getByRole('button', { name: /^Empresario/ }).click()
   for (const option of contabilidad) await page.getByRole('button', { name: option }).click()
   await page.getByLabel('Activos totales').fill('800000000')
   await page.getByLabel('Ingresos del último año').fill('1500000000')

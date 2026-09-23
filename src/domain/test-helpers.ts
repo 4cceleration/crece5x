@@ -4,6 +4,8 @@ export function q(partial: Partial<Question> & Pick<Question, 'id' | 'dimension'
   return {
     text: `Pregunta ${partial.id}`,
     help: '',
+    simpleText: null,
+    simpleHelp: null,
     gap: `Brecha ${partial.id}`,
     fix: `Arreglo ${partial.id}`,
     weight: 1,
