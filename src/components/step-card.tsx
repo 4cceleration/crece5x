@@ -29,7 +29,7 @@ export function StepCard({
         {progress !== undefined && (
           <div className="h-1 overflow-hidden rounded-t-lg bg-ink/8" aria-hidden>
             <div
-              className="h-1 bg-brand transition-[width] duration-slow"
+              className="glow h-1 bg-linear-to-r from-brand to-neon-2 transition-[width] duration-slow"
               style={{ width: `${Math.round(progress * 100)}%` }}
             />
           </div>
@@ -52,4 +52,4 @@ export const backLinkClass = 'inline-flex items-center gap-1.5 text-muted transi
 
 // Opción grande de una sola pulsación (respuestas del cuestionario y preguntas de inicio)
 export const choiceClass =
-  'flex items-center justify-center rounded-md bg-card/80 text-lg font-medium text-ink ring-1 ring-ink/10 transition-[background-color,box-shadow,translate,scale] duration-base ease-spring hover:-translate-y-0.5 hover:bg-brand-soft hover:ring-brand active:translate-y-0 active:scale-97 focus-visible:bg-brand-soft'
+  'flex items-center justify-center rounded-md bg-card/80 text-lg font-medium text-ink ring-1 ring-ink/10 transition-[background-color,box-shadow,translate,scale] duration-base ease-spring hover:-translate-y-0.5 hover:bg-brand-soft hover:ring-brand hover:glow active:translate-y-0 active:scale-97 focus-visible:bg-brand-soft'

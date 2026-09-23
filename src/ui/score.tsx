@@ -37,7 +37,7 @@ export function Score({ value, size = 'lg' }: { value: number; size?: 'lg' | 'md
             strokeDasharray={circumference}
             strokeDashoffset={offset}
             style={{ '--ring-length': `${circumference}` } as React.CSSProperties}
-            className={`animate-draw stroke-current ${RING[light]}`}
+            className={`animate-draw glow-current stroke-current ${RING[light]}`}
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -55,7 +55,7 @@ export function Score({ value, size = 'lg' }: { value: number; size?: 'lg' | 'md
             <li
               key={s.light}
               aria-current={current ? 'true' : undefined}
-              className={`rounded-md px-2 py-2 transition-colors ${current ? ACTIVE[s.light] : 'bg-ink/5 text-muted'}`}
+              className={`rounded-md px-2 py-2 transition-colors ${current ? `${ACTIVE[s.light]} glow-current` : 'bg-ink/5 text-muted'}`}
             >
               <span className={`block text-xs ${current ? 'font-semibold' : ''}`}>{LIGHT_LABEL[s.light]}</span>
               <span className={`block text-[11px] tabular-nums ${current ? 'opacity-90' : 'opacity-70'}`}>{s.range}</span>

@@ -80,7 +80,7 @@ export function ChartCard({
 
       <dialog
         ref={dialog}
-        className="animate-pop m-auto w-[min(34rem,calc(100vw-2rem))] rounded-lg bg-surface p-0 text-ink shadow-xl backdrop:bg-ink/40 backdrop:backdrop-blur-sm"
+        className="animate-pop m-auto w-[min(34rem,calc(100vw-2rem))] glass rounded-lg p-0 text-ink backdrop:bg-canvas/50 backdrop:backdrop-blur-md"
       >
         <div className="flex items-start justify-between gap-4 border-b border-ink/10 px-6 py-4">
           <p className="font-display text-lg font-semibold">{title}</p>

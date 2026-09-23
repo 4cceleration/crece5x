@@ -8,27 +8,33 @@
  *   animate-spinner  giro continuo (800 ms): con <Spinner /> de src/ui/spinner.tsx
  *   duration-fast | duration-base | duration-slow   150 | 200 | 250 ms
  *   ease-out-soft    easing base; todo `transition-*` ya lo usa por defecto, con duration-fast
- *   glass            superficie de vidrio; úsese sobre <Backdrop /> (src/ui/backdrop.tsx)
+ *   glass            superficie de vidrio con grano; úsese sobre <Backdrop /> (src/ui/backdrop.tsx)
+ *   glow | glow-strong   halo neón (reposo | hover o activo); glow-current sigue el color del elemento
+ *   grain            textura de grano sobre una superficie sólida
  * Botones: Button, ButtonLink y buttonClass() ya traen estado presionado, foco y transición.
  */
 @source inline("animate-enter animate-fade animate-spinner animate-draw animate-pop duration-fast duration-base duration-slow ease-out-soft ease-spring");
 
 @theme {
-  --color-brand: #3F9B6E;
-  --color-brand-strong: #2E7D5B;
-  --color-brand-deep: #276A4D;
-  --color-brand-soft: #EEF6F1;
-  --color-ink: #14213D;
-  --color-muted: #5B6477;
-  --color-surface: #F7F7F5;
-  --color-canvas: #E9EDF2; /* fondo de página: gris azulado liso */
-  --color-card: #FFFFFF; /* superficie sólida: campos, listas, casillas del calendario */
-  --color-ok: #2F9E6B;
-  --color-warn: #E0A100;
-  --color-bad: #D64545;
-  --color-warn-ink: #8A6400; /* texto ámbar legible sobre el fondo */
+  /* Cada color con light-dark(claro, oscuro); ver el bloque de modo oscuro más abajo */
+  --color-brand: light-dark(#3F9B6E, #3DDC97);
+  --color-brand-strong: light-dark(#2E7D5B, #3DDC97);
+  --color-brand-deep: light-dark(#276A4D, #6FF0B8);
+  --color-brand-soft: light-dark(#E6F6ED, #10301F);
+  --color-on-accent: light-dark(#FFFFFF, #07120D);
+  --color-ink: light-dark(#14213D, #E7F2EC);
+  --color-muted: light-dark(#5B6477, #93A3B5);
+  --color-surface: light-dark(#F7F7F5, #151D2B);
+  --color-canvas: light-dark(#E9EDF2, #080D16);
+  --color-card: light-dark(#FFFFFF, #121A28);
+  --color-ok: light-dark(#2F9E6B, #3DDC97);
+  --color-warn: light-dark(#E0A100, #FFC940);
+  --color-bad: light-dark(#D64545, #FF6B6B);
+  --color-warn-ink: light-dark(#8A6400, #FFC940); /* texto ámbar legible sobre el fondo */
+  /* Neón: solo para brillos, bordes e indicadores (nunca texto sobre claro: no llega al contraste) */
+  --color-neon: light-dark(#19C27A, #3DFFA8);
+  --color-neon-2: light-dark(#14B8A6, #2EF2D0);
   --color-on-warn: #14213D; /* texto sobre un relleno ámbar: oscuro en los dos modos */
-  --color-on-accent: #FFFFFF; /* texto sobre un relleno de marca, verde o rojo */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-bricolage), var(--font-inter), ui-sans-serif, sans-serif;
 
@@ -74,88 +80,73 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
 }
 
 /*
- * Modo oscuro: los mismos tokens con otros valores, así las clases (bg-canvas, text-ink, glass…)
- * no cambian en ningún componente. Sigue al sistema salvo que la persona elija con el botón,
- * que escribe data-theme en <html> (src/ui/theme-toggle.tsx).
+ * Modo oscuro: cada token trae sus dos valores con light-dark(claro, oscuro), así las clases
+ * (bg-canvas, text-ink, glass…) no cambian en ningún componente y cada valor se escribe una sola vez.
+ * Manda color-scheme: sigue al sistema salvo que la persona elija con el botón, que escribe
+ * data-theme en <html> (src/ui/theme-toggle.tsx).
  */
+:root { color-scheme: light dark; }
+:root[data-theme='claro'] { color-scheme: light; }
+:root[data-theme='oscuro'] { color-scheme: dark; }
+
 :root {
-  color-scheme: light;
+  /* Halo de los brillos neón (utilidades glow y glow-strong) */
+  --neon-halo: light-dark(rgb(25 194 122 / 0.3), rgb(61 255 168 / 0.55));
+  --neon-halo-strong: light-dark(rgb(25 194 122 / 0.42), rgb(61 255 168 / 0.72));
+  --glow: 0 0 0 1px color-mix(in oklab, var(--color-neon) 35%, transparent), 0 0 18px -2px var(--neon-halo);
+  --glow-strong: 0 0 0 1px color-mix(in oklab, var(--color-neon) 60%, transparent), 0 0 28px 0 var(--neon-halo-strong);
+
   /* Vidrio y su color resultante sobre el fondo (lo usa la muesca de la etiqueta de los campos) */
-  --glass-bg: rgb(255 255 255 / 0.62);
-  --glass-ring: rgb(255 255 255 / 0.75);
-  --glass-shadow-near: rgb(20 33 61 / 0.04);
-  --glass-shadow-far: rgb(20 33 61 / 0.14);
-  --glass-notch: #F7F8FA;
-  /* Series de las gráficas (paleta categórica validada para este fondo) */
-  --chart-1: #12805A;
-  --chart-2: #5FBF93;
-  --chart-3: #3A6FB0;
+  --glass-bg: light-dark(rgb(255 255 255 / 0.55), rgb(18 26 40 / 0.55));
+  --glass-edge: light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.14));
+  --glass-ring: light-dark(rgb(255 255 255 / 0.6), rgb(61 255 168 / 0.12));
+  --glass-shadow-near: light-dark(rgb(20 33 61 / 0.05), rgb(0 0 0 / 0.3));
+  --glass-shadow-far: light-dark(rgb(20 33 61 / 0.16), rgb(0 0 0 / 0.55));
+  --glass-notch: light-dark(#F4F7F6, #111A26);
+
+  /* Aurora del fondo (src/ui/backdrop.tsx) */
+  --aurora-1: light-dark(rgb(25 194 122 / 0.28), rgb(61 255 168 / 0.22));
+  --aurora-2: light-dark(rgb(20 184 166 / 0.2), rgb(46 242 208 / 0.16));
+  --aurora-3: light-dark(rgb(58 111 176 / 0.14), rgb(75 124 186 / 0.2));
+
+  /* Grano: ruido gris con alfa bajo, sirve igual en los dos modos */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 .16 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+  /* Series de las gráficas (paleta categórica validada para cada fondo) */
+  --chart-1: light-dark(#12805A, #37AB6B);
+  --chart-2: light-dark(#5FBF93, #00774B);
+  --chart-3: light-dark(#3A6FB0, #4B7CBA);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='claro']) {
-    color-scheme: dark;
-    --color-brand: #4FB183;
-    --color-brand-strong: #4FB183;
-    --color-brand-deep: #64C79B;
-    --color-on-accent: #0F1522;
-    --color-brand-soft: #16301F;
-    --color-ink: #E7ECF5;
-    --color-muted: #9AA6BA;
-    --color-surface: #1B2334;
-    --color-canvas: #0F1522;
-    --color-card: #1B2434;
-    --color-ok: #4FBE8B;
-    --color-warn: #E8B93A;
-    --color-bad: #F0706E;
-    --color-warn-ink: #E8B93A;
-    --glass-bg: rgb(27 36 52 / 0.62);
-    --glass-ring: rgb(255 255 255 / 0.08);
-    --glass-shadow-near: rgb(0 0 0 / 0.25);
-    --glass-shadow-far: rgb(0 0 0 / 0.45);
-    --glass-notch: #1A2130;
-    --chart-1: #37AB6B;
-    --chart-2: #00774B;
-    --chart-3: #4B7CBA;
-  }
-}
-
-:root[data-theme='oscuro'] {
-  color-scheme: dark;
-  --color-brand: #4FB183;
-  --color-brand-strong: #4FB183;
-  --color-brand-deep: #64C79B;
-  --color-on-accent: #0F1522;
-  --color-brand-soft: #16301F;
-  --color-ink: #E7ECF5;
-  --color-muted: #9AA6BA;
-  --color-surface: #1B2334;
-  --color-canvas: #0F1522;
-  --color-card: #1B2434;
-  --color-ok: #4FBE8B;
-  --color-warn: #E8B93A;
-  --color-bad: #F0706E;
-  --color-warn-ink: #E8B93A;
-  --glass-bg: rgb(27 36 52 / 0.62);
-  --glass-ring: rgb(255 255 255 / 0.08);
-  --glass-shadow-near: rgb(0 0 0 / 0.25);
-  --glass-shadow-far: rgb(0 0 0 / 0.45);
-  --glass-notch: #1A2130;
-  --chart-1: #37AB6B;
-  --chart-2: #00774B;
-  --chart-3: #4B7CBA;
-}
-
-/* Vidrio: superficie translúcida con desenfoque. Úsese sobre <Backdrop /> para que se note */
+/* Vidrio: superficie translúcida con desenfoque, grano y un filo de luz arriba. Úsese sobre <Backdrop /> */
 @utility glass {
   --notch-bg: var(--glass-notch);
   background-color: var(--glass-bg);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  background-image: var(--grain), linear-gradient(to bottom, rgb(255 255 255 / 0.06), transparent 40%);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
   box-shadow:
+    inset 0 1px 0 0 var(--glass-edge),
     inset 0 0 0 1px var(--glass-ring),
     0 1px 2px var(--glass-shadow-near),
-    0 16px 40px -16px var(--glass-shadow-far);
+    0 20px 48px -20px var(--glass-shadow-far);
+}
+
+/* Brillo neón alrededor (botones, indicadores, foco); glow-strong para hover o lo activo.
+   Trae su propio filo de 1px y reemplaza la sombra/anillo del elemento */
+@utility glow {
+  box-shadow: var(--glow);
+}
+@utility glow-strong {
+  box-shadow: var(--glow-strong);
+}
+/* Brillo que sigue la forma y el color del elemento (anillos, iconos, trazos SVG) */
+@utility glow-current {
+  filter: drop-shadow(0 0 6px color-mix(in oklab, currentColor 70%, transparent));
+}
+/* Grano sobre cualquier superficie sólida */
+@utility grain {
+  background-image: var(--grain);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -21,7 +21,7 @@ export function NavLink({ href, children }: { href: string; children: React.Reac
       {children}
       <span
         aria-hidden
-        className={`absolute inset-x-3 bottom-1 h-0.5 origin-center rounded-full bg-brand transition-[scale,opacity] duration-base ${
+        className={`absolute inset-x-3 bottom-1 h-0.5 origin-center rounded-full bg-neon glow transition-[scale,opacity] duration-base ${
           active ? 'scale-x-100 opacity-100' : 'scale-x-0 opacity-0'
         }`}
       />
