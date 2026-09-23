@@ -3,6 +3,7 @@ import type { Db } from '@/db/client'
 import { answer, consultation, question, type ConsultationStatus } from '@/db/schema'
 import { classify, type ClassificationInput } from '@/domain/classify'
 import { nextStep, previousTarget } from '@/domain/flow'
+import type { Eeff } from '@/domain/eeff'
 import type { AnswerValue, Flag, Flags, Group, Question } from '@/domain/types'
 import { getSettings } from './settings'
 
@@ -63,6 +64,15 @@ export async function loadDiagnosticState(db: Db, id: string) {
   const rows = await db.select().from(answer).where(eq(answer.consultationId, id))
   const answers: Record<string, AnswerValue> = Object.fromEntries(rows.map((r) => [r.questionId, r.value]))
   return { questions, answers, flags: c.flags, group: (c.group ?? 2) as Group }
+}
+
+/** `null` vuelve a preguntar cómo lleva la contabilidad */
+export async function setEeff(db: Db, id: string, eeff: Eeff | null): Promise<void> {
+  // Solo "Los tiene mi contador" espera archivos: desde ahí cuentan los recordatorios
+  await db
+    .update(consultation)
+    .set({ eeff, waitingSince: eeff === 'contador' ? new Date() : null, waitingReminders: 0 })
+    .where(eq(consultation.id, id))
 }
 
 export async function setFlag(db: Db, id: string, flag: Flag, value: boolean): Promise<void> {

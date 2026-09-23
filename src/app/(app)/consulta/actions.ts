@@ -7,18 +7,24 @@ import {
   getOwnedConsultation,
   saveAnswer,
   saveClassification,
+  setEeff,
   setFlag,
   startConsultation,
   stepPath,
   undoLast,
 } from '@/services/consultations'
 import type { AnswerValue, Flag } from '@/domain/types'
+import { INVITE_DAYS, isEeff } from '@/domain/eeff'
+import { accountantInviteEmail } from '@/mail/templates'
+import { getCompany } from '@/services/companies'
+import { createInvite, EMAIL_RE } from '@/services/invites'
 import { getAnalyst } from '@/ai/analyst'
 import { getStorage } from '@/storage/storage'
 import { appUrl, getMailer } from '@/mail/mailer'
 import { renderReportPdf } from '@/report/report-pdf'
 import { removeUpload, saveUpload } from '@/services/uploads'
-import { runAnalysis } from '@/services/analysis'
+import { runAnalysis, saveFiguresAnalysis } from '@/services/analysis'
+import { parseFigures } from '@/domain/figures'
 import { finalizeConsultation, getResultData, sendReport } from '@/services/report'
 import { buildChartData, chartFacts, CHART_TITLES, isChartKey } from '@/domain/charts'
 import { planFor } from '@/domain/plans'
@@ -63,6 +69,68 @@ export async function flagAction(id: string, flag: Flag, fd: FormData) {
   await owned(id)
   await setFlag(db, id, flag, fd.get('value') === 'si')
   await goNext(id)
+}
+
+// Primera pantalla de la consulta: formal pregunta después qué tiene del último cierre; empírica queda lista
+export async function accountingAction(id: string, fd: FormData) {
+  await owned(id)
+  if (fd.get('value') === 'empirica') {
+    await setEeff(db, id, 'empirica')
+    redirect(`/consulta/${id}/clasificar`)
+  }
+  redirect(`/consulta/${id}/clasificar?contabilidad=formal`)
+}
+
+export async function eeffAction(id: string, fd: FormData) {
+  await owned(id)
+  const value = String(fd.get('value') ?? '')
+  if (!isEeff(value)) redirect(`/consulta/${id}/clasificar?contabilidad=formal`)
+  await setEeff(db, id, value)
+  redirect(`/consulta/${id}/clasificar`)
+}
+
+// Vuelve a preguntar cómo lleva la contabilidad; lo ya respondido del cuestionario se conserva
+export async function changeAccountingAction(id: string) {
+  const { c } = await owned(id)
+  if (c.status === 'resultado') redirect(stepPath(id, c.status))
+  await setEeff(db, id, null)
+  redirect(`/consulta/${id}/clasificar`)
+}
+
+// Las cifras que tiene a la mano: arman un balance estimado y llevan directo al resultado
+export async function figuresAction(id: string, fd: FormData) {
+  const { c, user } = await owned(id)
+  if (c.status !== 'examinar') redirect(stepPath(id, c.status))
+  const figures = parseFigures((key) => money(fd.get(key)))
+  if (figures.sales === 0 && figures.expenses === 0) redirect(`/consulta/${id}/examinar?cifras=1&error=cifras`)
+  await saveFiguresAnalysis(db, id, figures)
+  await audit(db, { userId: user.id, action: 'escribir_cifras', entity: 'consultation', entityId: id })
+  await finish(id)
+}
+
+// El contador recibe un enlace para subir los estados financieros sin crear cuenta
+export async function inviteAccountantAction(id: string, fd: FormData) {
+  const { c, companyId, user } = await owned(id)
+  if (c.status !== 'examinar') redirect(stepPath(id, c.status))
+  const email = String(fd.get('email') ?? '').trim()
+  if (!EMAIL_RE.test(email)) redirect(`/consulta/${id}/examinar?error=correo-contador`)
+
+  const company = await getCompany(db, companyId)
+  const { id: inviteId, token } = await createInvite(db, id, email)
+  const mail = accountantInviteEmail({
+    companyName: company?.name ?? 'Su cliente',
+    inviterName: user.name,
+    url: `${appUrl()}/contador/${token}`,
+    days: INVITE_DAYS,
+  })
+  try {
+    await getMailer().send({ to: [email], ...mail })
+  } catch (e) {
+    console.error('No se pudo enviar la invitación al contador', e)
+    redirect(`/consulta/${id}/examinar?error=envio`)
+  }
+  await audit(db, { userId: user.id, action: 'invitar_contador', entity: 'accountant_invite', entityId: inviteId })
+  redirect(`/consulta/${id}/examinar?invitado=1`)
 }
 
 const ANSWERS: AnswerValue[] = ['si', 'parcial', 'no', 'nose']

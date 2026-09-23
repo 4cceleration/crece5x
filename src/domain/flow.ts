@@ -2,7 +2,6 @@ import { isApplicable } from './scoring'
 import type { AnswerValue, Flag, Flags, Group, Question } from './types'
 
 export const FLAG_QUESTIONS: { key: Flag; text: string }[] = [
-  { key: 'tieneEEFF', text: '¿Tiene estados financieros del último cierre contable?' },
   { key: 'inventarios', text: '¿Maneja inventarios?' },
   { key: 'activosFijos', text: '¿Tiene activos fijos como maquinaria, vehículos, equipos o inmuebles?' },
   { key: 'arrendamientos', text: '¿Tiene contratos de arriendo o leasing?' },

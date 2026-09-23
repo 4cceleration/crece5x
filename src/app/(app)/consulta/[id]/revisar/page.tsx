@@ -7,10 +7,9 @@ import { ANSWER_LABEL, type AnswerValue } from '@/domain/types'
 import { answerAction, flagAction, undoAction } from '../../actions'
 import { Icon } from '@/ui/icons'
 import { InfoTip } from '@/ui/info-tip'
-import { StepCard, backLinkClass } from '@/components/step-card'
+import { StepCard, backLinkClass, choiceClass } from '@/components/step-card'
 
-const option =
-  'flex h-16 items-center justify-center gap-2.5 rounded-md bg-card/80 text-lg font-medium text-ink ring-1 ring-ink/10 transition-[background-color,box-shadow,translate,scale] duration-base ease-spring hover:-translate-y-0.5 hover:bg-brand-soft hover:ring-brand active:translate-y-0 active:scale-97 focus-visible:bg-brand-soft'
+const option = `${choiceClass} h-16 gap-2.5`
 
 const ICON_COLOR: Record<AnswerValue, string> = {
   si: 'text-ok',
@@ -24,7 +23,7 @@ export default async function RevisarPage({ params }: { params: Promise<{ id: st
   const { companyId } = await requireCompany()
   const c = await getOwnedConsultation(db, id, companyId)
   if (!c) notFound()
-  if (c.group === null) redirect(`/consulta/${id}/clasificar`)
+  if (c.group === null || c.eeff === null) redirect(`/consulta/${id}/clasificar`)
 
   const s = await loadDiagnosticState(db, id)
   const step = nextStep(s.questions, s.flags, s.answers, s.group)

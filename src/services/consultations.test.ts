@@ -10,6 +10,7 @@ import {
   loadDiagnosticState,
   saveAnswer,
   saveClassification,
+  setEeff,
   setFlag,
   startConsultation,
   undoLast,
@@ -50,6 +51,8 @@ describe('consultations', () => {
   it('recorre el diagnóstico completo, permite deshacer y pasa a examinar', async () => {
     const id = await startConsultation(db, companyId)
     await saveClassification(db, id, input)
+    await setEeff(db, id, 'contador')
+    expect(await getOwnedConsultation(db, id, companyId)).toMatchObject({ eeff: 'contador', waitingSince: expect.any(Date) })
     for (const f of FLAG_QUESTIONS) await setFlag(db, id, f.key, f.key !== 'arrendamientos')
 
     let s = await loadDiagnosticState(db, id)
@@ -72,5 +75,12 @@ describe('consultations', () => {
     }
     expect(await completeReviewIfDone(db, id)).toBe(true)
     expect((await getOwnedConsultation(db, id, companyId))?.status).toBe('examinar')
+  })
+
+  it('cambiar la respuesta de contabilidad reinicia la espera del contador', async () => {
+    const id = await startConsultation(db, companyId)
+    await setEeff(db, id, 'contador')
+    await setEeff(db, id, null)
+    expect(await getOwnedConsultation(db, id, companyId)).toMatchObject({ eeff: null, waitingSince: null })
   })
 })

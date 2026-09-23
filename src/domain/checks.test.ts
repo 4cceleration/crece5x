@@ -53,4 +53,14 @@ describe('runChecks', () => {
     e.periods[0].currentAssets = null
     expect(runChecks(e, 2)).toEqual([])
   })
+
+  it('con documentos parciales reporta una sola vez que no hay estados NIIF', () => {
+    const e = structuredClone(healthy)
+    e.statements = { esf: false, eri: false, flujo: false, patrimonio: false, notas: false }
+    e.periods = [e.periods[0]]
+    e.cashFlow = null
+    const f = runChecks(e, 2, { preliminary: true })
+    expect(f.map((x) => x.title)).toEqual(['No tiene estados financieros NIIF formales'])
+    expect(f[0].severity).toBe('alta')
+  })
 })

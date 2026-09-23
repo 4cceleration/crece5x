@@ -7,7 +7,7 @@ import { createCompanyForUser } from './companies'
 import { completedLessons, learningPathForCompany, markLessonDone } from './academia'
 import { seedDatabase } from '@/db/seed-data'
 import { FLAG_QUESTIONS, nextStep } from '@/domain/flow'
-import { completeReviewIfDone, loadDiagnosticState, saveAnswer, saveClassification, setFlag, startConsultation } from './consultations'
+import { completeReviewIfDone, loadDiagnosticState, saveAnswer, saveClassification, setEeff, setFlag, startConsultation } from './consultations'
 import { finalizeConsultation, getResultData } from './report'
 
 describe('academia', () => {
@@ -39,7 +39,8 @@ describe('academia', () => {
     // Consulta terminada: sin estados financieros y "No" a todo, así hay hallazgos con guía
     const id = await startConsultation(db, companyId)
     await saveClassification(db, id, { assets: 800_000_000, revenue: 1_500_000_000, employees: 25, issuesSecurities: false, publicInterest: false })
-    for (const f of FLAG_QUESTIONS) await setFlag(db, id, f.key, f.key !== 'tieneEEFF')
+    await setEeff(db, id, 'empirica')
+    for (const f of FLAG_QUESTIONS) await setFlag(db, id, f.key, true)
     for (;;) {
       const s = await loadDiagnosticState(db, id)
       const step = nextStep(s.questions, s.flags, s.answers, s.group)

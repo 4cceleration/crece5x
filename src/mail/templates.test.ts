@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { appointmentEmail, reportEmail } from './templates'
+import { accountantDoneEmail, accountantInviteEmail, appointmentEmail, reportEmail, waitingReminderEmail } from './templates'
 
 describe('plantillas de correo', () => {
   it('reporte: puntaje, hallazgos escapados, enlace y aviso legal', () => {
@@ -25,5 +25,18 @@ describe('plantillas de correo', () => {
     expect(appointmentEmail({ ...d, kind: 'recordatorio' }).subject).toMatch(/^Recordatorio/)
     expect(appointmentEmail({ ...d, kind: 'cancelada' }).subject).toMatch(/^Cita cancelada/)
     expect(appointmentEmail({ ...d, kind: 'asignada' }).subject).toMatch(/^Nueva cita/)
+  })
+
+  it('invitación al contador: empresa escapada, enlace y vencimiento', () => {
+    const { subject, html } = accountantInviteEmail({ companyName: 'Pan & Co', inviterName: 'Ana', url: 'https://crece.app/contador/abc', days: 7 })
+    expect(subject).toBe('Pan & Co le pide sus estados financieros')
+    expect(html).toContain('Pan &amp; Co')
+    expect(html).toContain('https://crece.app/contador/abc')
+    expect(html).toContain('vence en 7 días')
+  })
+
+  it('aviso de archivos del contador y recordatorio a la empresa', () => {
+    expect(accountantDoneEmail({ companyName: 'E', accountantEmail: 'c@f.co', files: 2, url: 'https://x' }).html).toContain('2 archivos')
+    expect(waitingReminderEmail({ companyName: 'E', url: 'https://x/examinar' }).html).toContain('https://x/examinar')
   })
 })

@@ -23,7 +23,7 @@ export function validateFile(f: { name: string; size: number }): string | null {
 export async function saveUpload(
   db: Db,
   storage: Storage,
-  i: { consultationId: string; name: string; size: number; bytes: Buffer; text?: string | null },
+  i: { consultationId: string; name: string; size: number; bytes: Buffer; text?: string | null; inviteId?: string },
 ): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
   const error = validateFile(i)
   if (error) return { ok: false, error }
@@ -33,7 +33,7 @@ export async function saveUpload(
   await storage.put(storageKey, i.bytes, MIME[ext])
   await db
     .insert(upload)
-    .values({ id, consultationId: i.consultationId, fileName: i.name, storageKey, mime: MIME[ext], size: i.size, text: i.text ?? null })
+    .values({ id, consultationId: i.consultationId, fileName: i.name, storageKey, mime: MIME[ext], size: i.size, text: i.text ?? null, inviteId: i.inviteId ?? null })
   return { ok: true, id }
 }
 

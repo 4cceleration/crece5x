@@ -18,7 +18,6 @@ export function q(partial: Partial<Question> & Pick<Question, 'id' | 'dimension'
 }
 
 export const ALL_FLAGS = {
-  tieneEEFF: true,
   inventarios: true,
   activosFijos: true,
   arrendamientos: true,

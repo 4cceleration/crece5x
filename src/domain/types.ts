@@ -1,6 +1,6 @@
 export type Group = 1 | 2 | 3
 export type Dimension = 'D1' | 'D2' | 'D3' | 'D4' | 'D5'
-export type Flag = 'tieneEEFF' | 'inventarios' | 'activosFijos' | 'arrendamientos' | 'financiamiento' | 'empleados'
+export type Flag = 'inventarios' | 'activosFijos' | 'arrendamientos' | 'financiamiento' | 'empleados'
 export type Flags = Record<Flag, boolean>
 export type AnswerValue = 'si' | 'parcial' | 'no' | 'nose'
 export type Severity = 'critica' | 'alta' | 'media' | 'baja'

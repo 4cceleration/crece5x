@@ -3,6 +3,7 @@ import type { Db } from '@/db/client'
 import { consultation, finding, type AnalysisStatus } from '@/db/schema'
 import { GROUP_NAMES } from '@/domain/classify'
 import { needsConsultant } from '@/domain/derivation'
+import { hasFormalStatements, type AnalysisBasis, type Eeff } from '@/domain/eeff'
 import { diagnosticFindings } from '@/domain/findings'
 import { learningPath } from '@/domain/learning-path'
 import type { Extracted } from '@/ai/schemas'
@@ -35,6 +36,10 @@ export type ResultData = {
   analysisStatus: AnalysisStatus | null
   analysisError: string | null
   needsConsultant: boolean
+  /** Qué tenía de su último cierre */
+  eeff: Eeff | null
+  /** De dónde salieron las cifras del análisis; null si no hubo análisis */
+  basis: AnalysisBasis | null
   completedAt: Date
   path: LessonMeta[]
 }
@@ -60,7 +65,7 @@ export async function finalizeConsultation(db: Db, id: string): Promise<void> {
   const analysisScore = a?.status === 'listo' ? scoreAnalysis(analysisFindings, settings.severityPenalty) : null
   const finalScore = finalIndex(diag.total, analysisScore, settings.blend)
   const needs = needsConsultant({
-    hasFinancialStatements: s.flags.tieneEEFF === true,
+    hasFinancialStatements: hasFormalStatements(c.eeff),
     finalScore,
     findings: [...diagFindings, ...analysisFindings],
     threshold: settings.consultantThreshold,
@@ -130,6 +135,8 @@ export async function getResultData(db: Db, id: string): Promise<ResultData | nu
     analysisStatus: a?.status ?? null,
     analysisError: a?.status === 'error' ? a.error : null,
     needsConsultant: c.needsConsultant ?? false,
+    eeff: c.eeff,
+    basis: a?.status !== 'listo' ? null : a.source === 'cifras' ? 'cifras' : c.eeff === 'parciales' ? 'parciales' : 'estados',
     completedAt: c.completedAt,
     path: learningPath(findings, LESSONS),
   }

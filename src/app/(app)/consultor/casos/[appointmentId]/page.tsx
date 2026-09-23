@@ -7,6 +7,14 @@ import { companyEmails } from '@/services/companies'
 import { audit } from '@/services/audit'
 import { formatDateTime } from '@/domain/dates'
 import { ResultView } from '@/components/result-view'
+import type { Eeff } from '@/domain/eeff'
+
+// Qué tenía la empresa de su último cierre, dicho para quien la va a atender
+const EEFF_FOR_CONSULTANT: Record<Exclude<Eeff, 'completos'>, string> = {
+  contador: 'Los estados financieros los tiene su contador.',
+  parciales: 'No tiene estados financieros: el análisis salió de su declaración de renta o balance de prueba.',
+  empirica: 'Lleva la contabilidad de forma empírica: candidata al Primer cierre NIIF.',
+}
 import { completeAction, saveNotesAction } from '../../actions'
 import { SubmitButton } from '@/ui/submit-button'
 import { buttonClass } from '@/ui/button'
@@ -55,7 +63,11 @@ export default async function CasoPage({
       </form>
 
       {data ? (
-        <ResultView data={data} pdfHref={`/consulta/${data.consultationId}/resultado/pdf`} />
+        <ResultView
+          data={data}
+          pdfHref={`/consulta/${data.consultationId}/resultado/pdf`}
+          notice={data.eeff && data.eeff !== 'completos' ? EEFF_FOR_CONSULTANT[data.eeff] : undefined}
+        />
       ) : (
         <p className="text-muted">Esta empresa aún no ha terminado una consulta.</p>
       )}

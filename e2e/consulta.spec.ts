@@ -13,8 +13,10 @@ test('consulta completa: registro → clasificar → revisar → examinar → re
   await page.getByLabel(/Autorizo el tratamiento/).check()
   await page.getByRole('button', { name: 'Crear cuenta' }).click()
 
-  // Tras registrarse entra directo al formulario de la consulta
+  // Tras registrarse entra directo a la consulta: primero cómo lleva la contabilidad
   await expect(page).toHaveURL(/\/consulta\/.+\/clasificar$/)
+  await page.getByRole('button', { name: /Contabilidad formal/ }).click()
+  await page.getByRole('button', { name: /Estados financieros completos/ }).click()
   await page.getByLabel('Activos totales').fill('800000000')
   await page.getByLabel('Ingresos del último año').fill('1500000000')
   await page.getByLabel('Número de empleados').fill('24')

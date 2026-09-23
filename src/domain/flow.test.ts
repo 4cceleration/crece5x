@@ -30,7 +30,7 @@ describe('previousTarget', () => {
     expect(previousTarget(qs, ALL_FLAGS, { a: 'si', b: 'no' }, 2)).toEqual({ kind: 'answer', questionId: 'b' })
   })
   it('sin respuestas deshace la última bandera', () => {
-    expect(previousTarget(qs, { tieneEEFF: true, inventarios: false }, {}, 2)).toEqual({ kind: 'flag', flag: 'inventarios' })
+    expect(previousTarget(qs, { inventarios: false, activosFijos: true }, {}, 2)).toEqual({ kind: 'flag', flag: 'activosFijos' })
   })
   it('al inicio no hay nada que deshacer', () => {
     expect(previousTarget(qs, {}, {}, 2)).toBeNull()

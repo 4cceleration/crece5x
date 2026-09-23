@@ -3,10 +3,14 @@ import type { Extracted } from '@/ai/schemas'
 import type { ClassificationInput } from '@/domain/classify'
 import type { Ratios } from '@/domain/ratios'
 import type { PlanKey } from '@/domain/plans'
+import type { Eeff } from '@/domain/eeff'
+import type { Figures } from '@/domain/figures'
 import type { AnswerValue, Dimension, FindingSource, Flag, Flags, Group, Role, Severity } from '@/domain/types'
 
 export type ConsultationStatus = 'clasificar' | 'revisar' | 'examinar' | 'resultado'
 export type AnalysisStatus = 'pendiente' | 'procesando' | 'listo' | 'error'
+/** archivos: la IA leyó lo que subió; cifras: la empresa escribió lo que tiene a la mano (no gasta el cupo de IA) */
+export type AnalysisSource = 'archivos' | 'cifras'
 export type AppointmentStatus = 'reservada' | 'cancelada' | 'realizada'
 
 const ts = (name: string) => timestamp(name, { withTimezone: true, mode: 'date' })
@@ -109,6 +113,11 @@ export const consultation = pgTable(
     groupReason: text('group_reason'),
     classificationInput: jsonb('classification_input').$type<ClassificationInput>(),
     flags: jsonb('flags').$type<Partial<Flags>>().notNull().$defaultFn(() => ({})),
+    // Qué tiene de su último cierre; null mientras no responde la primera pantalla de Revisar
+    eeff: text('eeff').$type<Eeff>(),
+    // "Los tiene mi contador": desde cuándo espera los archivos y cuántos recordatorios se le enviaron
+    waitingSince: ts('waiting_since'),
+    waitingReminders: integer('waiting_reminders').notNull().default(0),
     diagnosticScore: doublePrecision('diagnostic_score'),
     analysisScore: doublePrecision('analysis_score'),
     finalScore: doublePrecision('final_score'),
@@ -154,6 +163,21 @@ export const upload = pgTable('upload', {
   size: integer('size').notNull(),
   // Texto reconocido en el navegador (OCR) cuando el PDF viene escaneado
   text: text('text'),
+  // Si lo subió el contador desde su enlace; solo puede quitar los suyos
+  inviteId: text('invite_id').references(() => accountantInvite.id, { onDelete: 'set null' }),
+  createdAt: createdAt(),
+})
+
+// Enlace para que el contador suba los estados financieros sin crear cuenta. Uno por consulta:
+// reenviar cambia el token y el anterior deja de servir. Se guarda solo el hash del token
+export const accountantInvite = pgTable('accountant_invite', {
+  id: uuid(),
+  consultationId: text('consultation_id').notNull().unique().references(() => consultation.id, { onDelete: 'cascade' }),
+  email: text('email').notNull(),
+  tokenHash: text('token_hash').notNull().unique(),
+  expiresAt: ts('expires_at').notNull(),
+  // Cuando el contador avisa que terminó de subir
+  doneAt: ts('done_at'),
   createdAt: createdAt(),
 })
 
@@ -161,6 +185,9 @@ export const analysis = pgTable('analysis', {
   id: uuid(),
   consultationId: text('consultation_id').notNull().unique().references(() => consultation.id, { onDelete: 'cascade' }),
   status: text('status').$type<AnalysisStatus>().notNull().default('pendiente'),
+  source: text('source').$type<AnalysisSource>().notNull().default('archivos'),
+  // Lo que escribió, para volver a mostrarlo en el formulario
+  figures: jsonb('figures').$type<Figures>(),
   extracted: jsonb('extracted').$type<Extracted>(),
   ratios: jsonb('ratios').$type<Ratios>(),
   error: text('error'),

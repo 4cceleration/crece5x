@@ -1,11 +1,12 @@
 import { db } from '@/db'
 import { requireCompany } from '@/lib/session'
 import { getCompanyPlan } from '@/services/plans'
-import { PLAN_ORDER, PLANS, type Plan } from '@/domain/plans'
+import { PLAN_ORDER, PLANS, PRIMER_CIERRE, type Plan } from '@/domain/plans'
 import { formatCompactCOP } from '@/domain/format'
 import { choosePlanAction } from './actions'
 import { SubmitButton } from '@/ui/submit-button'
 import { Icon } from '@/ui/icons'
+import { ButtonLink } from '@/ui/button'
 
 function price(plan: Plan): string {
   if (plan.price === 0) return 'Gratis'
@@ -82,6 +83,32 @@ export default async function PlanesPage({ searchParams }: { searchParams: Promi
           )
         })}
       </ul>
+
+      <section id="primer-cierre" className="glass flex scroll-mt-24 flex-col gap-5 rounded-lg p-6 sm:flex-row sm:items-center sm:p-8">
+        <div className="flex-1 space-y-3">
+          <div className="space-y-1">
+            <p className="font-display text-xl font-semibold">{PRIMER_CIERRE.name}</p>
+            <p className="text-sm text-muted">{PRIMER_CIERRE.tagline}</p>
+          </div>
+          <ul className="space-y-2 text-sm">
+            {PRIMER_CIERRE.includes.map((item) => (
+              <li key={item} className="flex items-start gap-2">
+                <Icon name="check" size={18} className="mt-0.5 text-brand-strong" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="space-y-3 sm:w-56 sm:text-center">
+          <p className="font-display text-3xl font-semibold tabular-nums">
+            {formatCompactCOP(PRIMER_CIERRE.price)}
+            <span className="block text-base font-normal text-muted">pago único</span>
+          </p>
+          <ButtonLink href="/agenda" className="w-full">
+            Agendar una llamada
+          </ButtonLink>
+        </div>
+      </section>
 
       <p className="text-sm text-muted">
         Todavía no cobramos nada: los precios son los de lanzamiento y el cambio de plan es inmediato.

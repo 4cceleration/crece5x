@@ -88,6 +88,7 @@ function LockedFindings({
 export function ResultView({
   data,
   actions,
+  notice,
   pdfHref,
   mockNote = false,
   locked,
@@ -97,6 +98,8 @@ export function ResultView({
 }: {
   data: ResultData
   actions?: React.ReactNode
+  /** Aviso bajo el índice (p. ej. resultado preliminar o sin estados financieros) */
+  notice?: React.ReactNode
   /** Solo para quien ve el reporte completo (consultor); la empresa lo recibe por correo */
   pdfHref?: string
   mockNote?: boolean
@@ -118,6 +121,7 @@ export function ResultView({
           {data.companyName} · Grupo {data.group} · {data.groupName}
         </p>
         <Score value={data.finalScore} />
+        {notice && <div className="mx-auto max-w-md rounded-md bg-ink/5 px-4 py-3 text-left text-sm">{notice}</div>}
         {actions && <div className="flex flex-col items-center gap-4 [&>a:first-child]:w-full [&>a:first-child]:max-w-sm">{actions}</div>}
       </section>
 

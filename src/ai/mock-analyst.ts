@@ -21,8 +21,15 @@ export const MOCK_FINDINGS: AiFinding[] = [
 
 // Analista simulado: se usa cuando AI_MODEL está vacío (desarrollo, pruebas, demo)
 export const mockAnalyst: Analyst = {
-  async extract() {
-    return structuredClone(healthyExtracted)
+  async extract(_text, { preliminary = false } = {}) {
+    const e = structuredClone(healthyExtracted)
+    // Con declaración de renta o balance de prueba no hay estados formales: solo las cifras del último año
+    if (preliminary) {
+      e.statements = { esf: false, eri: false, flujo: false, patrimonio: false, notas: false }
+      e.periods = [e.periods[0]]
+      e.cashFlow = null
+    }
+    return e
   },
   async judge() {
     return structuredClone(MOCK_FINDINGS)

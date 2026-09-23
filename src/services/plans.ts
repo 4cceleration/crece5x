@@ -19,13 +19,13 @@ export async function getCompanyPlan(db: Db, companyId: string): Promise<Company
   return { plan, used, left: analysesLeft(plan, used), canAnalyze: canAnalyze(plan, used) }
 }
 
-/** Análisis que ya salieron bien: los que fallaron no se le cobran a nadie */
+/** Análisis con IA que ya salieron bien: los que fallaron no se le cobran a nadie, y las cifras escritas no usan IA */
 export async function analysesUsed(db: Db, companyId: string): Promise<number> {
   const [row] = await db
     .select({ n: count() })
     .from(analysis)
     .innerJoin(consultation, eq(consultation.id, analysis.consultationId))
-    .where(and(eq(consultation.companyId, companyId), eq(analysis.status, 'listo')))
+    .where(and(eq(consultation.companyId, companyId), eq(analysis.status, 'listo'), eq(analysis.source, 'archivos')))
   return row?.n ?? 0
 }
 

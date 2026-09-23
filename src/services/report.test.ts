@@ -11,19 +11,22 @@ import { diskStorage } from '@/storage/storage'
 import { mockAnalyst } from '@/ai/mock-analyst'
 import { FLAG_QUESTIONS, nextStep } from '@/domain/flow'
 import type { AnswerValue } from '@/domain/types'
+import type { Eeff } from '@/domain/eeff'
 import { createUserWithPassword } from './users'
 import { createCompanyForUser } from './companies'
-import { completeReviewIfDone, loadDiagnosticState, saveAnswer, saveClassification, setFlag, startConsultation } from './consultations'
+import { completeReviewIfDone, loadDiagnosticState, saveAnswer, saveClassification, setEeff, setFlag, startConsultation } from './consultations'
 import { saveUpload } from './uploads'
-import { runAnalysis } from './analysis'
+import { runAnalysis, saveFiguresAnalysis } from './analysis'
+import { analysesUsed } from './plans'
 import { finalizeConsultation, getResultData, sendReport } from './report'
 
 let db: Db
 let id: string
 let mailDir: string
 
-async function answerAll(value: AnswerValue, hasEEFF: boolean) {
-  for (const f of FLAG_QUESTIONS) await setFlag(db, id, f.key, f.key === 'tieneEEFF' ? hasEEFF : true)
+async function answerAll(value: AnswerValue, eeff: Eeff) {
+  await setEeff(db, id, eeff)
+  for (const f of FLAG_QUESTIONS) await setFlag(db, id, f.key, true)
   for (;;) {
     const s = await loadDiagnosticState(db, id)
     const step = nextStep(s.questions, s.flags, s.answers, s.group)
@@ -47,7 +50,7 @@ beforeEach(async () => {
 
 describe('finalizeConsultation', () => {
   it('sin análisis: diagnóstico 100, sin derivación; el correo solo sale al pedirlo', async () => {
-    await answerAll('si', true)
+    await answerAll('si', 'completos')
     await finalizeConsultation(db, id)
     const data = await getResultData(db, id)
     expect(data).not.toBeNull()
@@ -67,7 +70,7 @@ describe('finalizeConsultation', () => {
   })
 
   it('con análisis simulado listo, el índice final es 0.6·100 + 0.4·85 = 94', async () => {
-    await answerAll('si', true)
+    await answerAll('si', 'completos')
     const storage = diskStorage(mkdtempSync(join(tmpdir(), 'crece-st-')))
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Estado de situación financiera 2025'], ['Activo total', 1000000000]]), 'Balance')
@@ -85,7 +88,7 @@ describe('finalizeConsultation', () => {
   })
 
   it('sin estados financieros deriva al consultor y genera hallazgos del diagnóstico', async () => {
-    await answerAll('no', false)
+    await answerAll('no', 'empirica')
     await finalizeConsultation(db, id)
     const data = await getResultData(db, id)
     expect(data!.needsConsultant).toBe(true)
@@ -96,9 +99,30 @@ describe('finalizeConsultation', () => {
     expect(data!.path.length).toBeGreaterThan(0)
   })
 
+  it('contabilidad empírica con cifras: resultado estimado, deriva y no gasta el cupo de IA', async () => {
+    await answerAll('si', 'empirica')
+    const M = 1_000_000
+    await saveFiguresAnalysis(db, id, {
+      sales: 300 * M, expenses: 240 * M, cash: 120 * M, receivables: 60 * M,
+      inventory: 40 * M, fixedAssets: 200 * M, payables: 50 * M, loans: 100 * M,
+    })
+    await finalizeConsultation(db, id)
+    const data = (await getResultData(db, id))!
+    expect(data.basis).toBe('cifras')
+    expect(data.eeff).toBe('empirica')
+    expect(data.needsConsultant).toBe(true)
+    expect(data.findings.map((f) => f.title)).toContain('Lleva la contabilidad de forma empírica')
+    expect(data.analysisScore).toBe(90) // 100 − 10 del hallazgo alto
+    expect(data.financials?.periods[0].revenue).toBe(1200 * M)
+    expect(await analysesUsed(db, data.companyId)).toBe(0)
+
+    const { renderReportPdf } = await import('@/report/report-pdf')
+    expect((await renderReportPdf(data)).subarray(0, 4).toString()).toBe('%PDF')
+  })
+
   it('renderiza el PDF real', async () => {
     const { renderReportPdf } = await import('@/report/report-pdf')
-    await answerAll('parcial', true)
+    await answerAll('parcial', 'completos')
     await finalizeConsultation(db, id)
     const pdf = await renderReportPdf((await getResultData(db, id))!)
     expect(pdf.subarray(0, 4).toString()).toBe('%PDF')

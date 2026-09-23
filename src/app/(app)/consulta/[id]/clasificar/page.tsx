@@ -5,11 +5,12 @@ import { requireCompany } from '@/lib/session'
 import { getOwnedConsultation } from '@/services/consultations'
 import { GROUP_NAMES } from '@/domain/classify'
 import { getSettings } from '@/services/settings'
-import { classifyAction } from '../../actions'
+import { accountingAction, changeAccountingAction, classifyAction, eeffAction } from '../../actions'
+import { ACCOUNTING_OPTIONS, ACCOUNTING_QUESTION, EEFF_LABEL, FORMAL_OPTIONS, FORMAL_QUESTION } from '@/domain/eeff'
 import { ClassifyForm } from './classify-form'
 import { ButtonLink, buttonClass } from '@/ui/button'
 import { Icon } from '@/ui/icons'
-import { StepCard } from '@/components/step-card'
+import { StepCard, backLinkClass, choiceClass } from '@/components/step-card'
 
 const SHORT = { 1: 'NIIF Plenas', 2: 'NIIF para Pymes', 3: 'Microempresas' } as const
 
@@ -18,13 +19,51 @@ export default async function ClasificarPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ editar?: string }>
+  searchParams: Promise<{ editar?: string; contabilidad?: string }>
 }) {
   const { id } = await params
-  const { editar } = await searchParams
+  const { editar, contabilidad } = await searchParams
   const { companyId } = await requireCompany()
   const c = await getOwnedConsultation(db, id, companyId)
   if (!c) notFound()
+
+  // Lo primero es cómo lleva la contabilidad: decide si en Examinar sube archivos o escribe sus cifras
+  if (c.eeff === null) {
+    const formal = contabilidad === 'formal'
+    const options = formal ? FORMAL_OPTIONS : ACCOUNTING_OPTIONS
+    return (
+      <div data-step={formal ? 'formal' : 'contabilidad'}>
+        <StepCard
+          eyebrow="Su contabilidad"
+          title={formal ? FORMAL_QUESTION : ACCOUNTING_QUESTION}
+          back={
+            formal ? (
+              <Link href="?" className={backLinkClass}>
+                <Icon name="atras" size={16} />
+                Atrás
+              </Link>
+            ) : undefined
+          }
+        >
+          <form action={(formal ? eeffAction : accountingAction).bind(null, id)} className="grid gap-3">
+            {options.map((o) => (
+              <button key={o.key} name="value" value={o.key} className={`${choiceClass} flex-col gap-0.5 px-5 py-4`}>
+                <span>{o.label}</span>
+                <span className="text-sm font-normal text-muted">{o.hint}</span>
+              </button>
+            ))}
+          </form>
+        </StepCard>
+      </div>
+    )
+  }
+
+  const accounting = (
+    <form action={changeAccountingAction.bind(null, id)} className="mt-6 text-sm text-muted">
+      {EEFF_LABEL[c.eeff]} ·{' '}
+      <button className={buttonClass('link')}>Cambiar</button>
+    </form>
+  )
 
   const input = c.classificationInput
   if (c.group !== null && editar === undefined) {
@@ -56,6 +95,7 @@ export default async function ClasificarPage({
             Cambiar datos
           </Link>
         </div>
+        {accounting}
       </StepCard>
     )
   }
@@ -69,6 +109,7 @@ export default async function ClasificarPage({
         settings={{ smmlv: settings.smmlv, group1: settings.group1, group3: settings.group3 }}
         defaults={input}
       />
+      {accounting}
     </StepCard>
   )
 }

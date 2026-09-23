@@ -49,3 +49,7 @@ export function StepCard({
 }
 
 export const backLinkClass = 'inline-flex items-center gap-1.5 text-muted transition-colors hover:text-ink'
+
+// Opción grande de una sola pulsación (respuestas del cuestionario y preguntas de inicio)
+export const choiceClass =
+  'flex items-center justify-center rounded-md bg-card/80 text-lg font-medium text-ink ring-1 ring-ink/10 transition-[background-color,box-shadow,translate,scale] duration-base ease-spring hover:-translate-y-0.5 hover:bg-brand-soft hover:ring-brand active:translate-y-0 active:scale-97 focus-visible:bg-brand-soft'

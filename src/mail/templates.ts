@@ -85,3 +85,34 @@ export function emailChangeCodeEmail(d: { name: string; code: string; minutes: n
 <p style="margin-top:24px;font-size:14px;color:#5B6477">Si no pidió el cambio, ignore este correo: su cuenta sigue con el correo de siempre.</p>`
   return { subject: `Su código de crece5x: ${d.code}`, html: layout(body) }
 }
+
+export function accountantInviteEmail(d: { companyName: string; inviterName: string; url: string; days: number }): {
+  subject: string
+  html: string
+} {
+  const body = `
+<p style="font-size:22px;font-weight:600;margin:0 0 8px">${esc(d.companyName)} le pide sus estados financieros</p>
+<p style="margin:0 0 24px;color:#5B6477">${esc(d.inviterName)} está haciendo un diagnóstico NIIF de ${esc(d.companyName)} en crece5x y le pide subir los estados financieros del último cierre: balance, estado de resultados y notas, en PDF o Excel.</p>
+${button(d.url, 'Subir los estados financieros')}
+<p style="margin-top:24px;font-size:14px;color:#5B6477">No necesita crear cuenta. El enlace es solo para usted y vence en ${d.days} días.</p>`
+  return { subject: `${d.companyName} le pide sus estados financieros`, html: layout(body) }
+}
+
+export function accountantDoneEmail(d: { companyName: string; accountantEmail: string; files: number; url: string }): {
+  subject: string
+  html: string
+} {
+  const body = `
+<p style="font-size:22px;font-weight:600;margin:0 0 8px">Su contador ya subió los archivos</p>
+<p style="margin:0 0 32px;color:#5B6477">${esc(d.accountantEmail)} subió ${d.files === 1 ? 'un archivo' : `${d.files} archivos`} a la consulta de ${esc(d.companyName)}. Ya puede ver su análisis.</p>
+${button(d.url, 'Ver mi análisis')}`
+  return { subject: 'Su contador ya subió los estados financieros', html: layout(body) }
+}
+
+export function waitingReminderEmail(d: { companyName: string; url: string }): { subject: string; html: string } {
+  const body = `
+<p style="font-size:22px;font-weight:600;margin:0 0 8px">¿Ya tiene los estados financieros?</p>
+<p style="margin:0 0 32px;color:#5B6477">Su consulta de ${esc(d.companyName)} está esperando los archivos del último cierre. Súbalos usted o recuérdele a su contador desde crece5x.</p>
+${button(d.url, 'Seguir con mi consulta')}`
+  return { subject: 'Su consulta espera los estados financieros', html: layout(body) }
+}

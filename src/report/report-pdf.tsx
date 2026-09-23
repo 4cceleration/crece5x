@@ -4,6 +4,7 @@ import { LIGHT_LABEL } from '@/domain/scoring'
 import { SEVERITY_LABEL } from '@/domain/types'
 import { RATIO_LABELS } from '@/domain/ratios'
 import { formatDateTime } from '@/domain/dates'
+import { BASIS_NOTE } from '@/domain/eeff'
 
 const INK = '#14213D'
 const MUTED = '#5B6477'
@@ -34,6 +35,7 @@ export function ReportPdf({ data }: { data: ResultData }) {
         <Text style={s.muted}>{formatDateTime(data.completedAt)}</Text>
         <Text style={s.score}>{data.finalScore}/100</Text>
         <Text style={{ color: LIGHT_COLOR[data.light] }}>{LIGHT_LABEL[data.light]}</Text>
+        {data.basis && data.basis !== 'estados' && <Text style={s.muted}>{BASIS_NOTE[data.basis]}</Text>}
 
         <Text style={s.h2}>Por dimensión</Text>
         {data.dimensions.map((d) => (

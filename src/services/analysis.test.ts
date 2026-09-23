@@ -10,7 +10,7 @@ import { mockAnalyst } from '@/ai/mock-analyst'
 import type { Analyst } from '@/ai/analyst'
 import { createUserWithPassword } from './users'
 import { createCompanyForUser } from './companies'
-import { saveClassification, startConsultation } from './consultations'
+import { saveClassification, setEeff, startConsultation } from './consultations'
 import { saveUpload } from './uploads'
 import { getAnalysis, runAnalysis } from './analysis'
 import { finding } from '@/db/schema'
@@ -50,6 +50,27 @@ describe('runAnalysis', () => {
       ['ia', 'impuesto-ganancias'],
       ['ia', 'inventarios'],
     ])
+  })
+
+  it('con declaración de renta o balance de prueba el análisis es preliminar', async () => {
+    await setEeff(db, consultationId, 'parciales')
+    const bytes = xlsx()
+    await saveUpload(db, storage, { consultationId, name: 'balance-de-prueba.xlsx', size: bytes.length, bytes })
+    let seen: boolean | undefined
+    const analyst: Analyst = {
+      ...mockAnalyst,
+      judge: async (i) => {
+        seen = i.preliminary
+        return mockAnalyst.judge(i)
+      },
+    }
+    expect(await runAnalysis(db, consultationId, { analyst, storage })).toBe('listo')
+    expect(seen).toBe(true)
+
+    const f = await db.select().from(finding).where(eq(finding.consultationId, consultationId))
+    expect(f.map((x) => x.title)).toContain('No tiene estados financieros NIIF formales')
+    expect(f.map((x) => x.title)).not.toContain('Falta el estado de situación financiera')
+    expect(f.map((x) => x.title)).not.toContain('No presenta información comparativa')
   })
 
   it('reemplaza los hallazgos al volver a analizar', async () => {

@@ -91,6 +91,20 @@ export const PLANS: Record<PlanKey, Plan> = {
   },
 }
 
+// Servicio de única vez para quien no lleva contabilidad formal: no es un plan, lo hace un consultor.
+// Al terminar, la empresa ya tiene estados financieros y puede seguirlos con Monitoreo
+export const PRIMER_CIERRE = {
+  name: 'Primer cierre NIIF',
+  price: 1_900_000,
+  tagline: 'Para empresas sin contabilidad formal: salga con sus primeros estados financieros.',
+  includes: [
+    'Estado de situación financiera de apertura',
+    'Estado de resultados del último período',
+    'Manual de políticas contables mínimas',
+    'Acompañamiento de un consultor hasta el cierre',
+  ],
+}
+
 export const PLAN_ORDER: PlanKey[] = ['gratis', 'reporte', 'monitoreo', 'acompanamiento']
 
 export const DEFAULT_PLAN: PlanKey = 'gratis'

@@ -28,11 +28,25 @@ const REQUIRED: { key: keyof Extracted['statements']; groups: Group[]; finding: 
   { key: 'notas', groups: [1, 2, 3], finding: f('alta', 'Faltan las notas a los estados financieros', 'No se encontraron notas explicativas.', 'Sección 8', 'Redacte notas con políticas, juicios y detalle de partidas.', 'notas') },
 ]
 
-export function runChecks(e: Extracted, group: Group): NewFinding[] {
+export const NO_NIIF_STATEMENTS = f(
+  'alta',
+  'No tiene estados financieros NIIF formales',
+  'El análisis se hizo con su declaración de renta o balance de prueba: sirve de referencia, pero no reemplaza los estados financieros.',
+  'Sección 3',
+  'Prepare el estado de situación financiera, el estado de resultados y las notas del cierre bajo el marco de su grupo.',
+  'presentacion',
+)
+
+// `preliminary`: los archivos son declaración de renta, balance de prueba o reportes del software, no estados
+// financieros. Ahí no se reporta estado por estado lo que falta ni el comparativo: se reporta una sola vez que no hay estados NIIF
+export function runChecks(e: Extracted, group: Group, { preliminary = false }: { preliminary?: boolean } = {}): NewFinding[] {
   const out: NewFinding[] = []
 
-  for (const r of REQUIRED) {
-    if (r.groups.includes(group) && !e.statements[r.key]) out.push(r.finding)
+  if (preliminary) out.push(NO_NIIF_STATEMENTS)
+  else {
+    for (const r of REQUIRED) {
+      if (r.groups.includes(group) && !e.statements[r.key]) out.push(r.finding)
+    }
   }
 
   const p = e.periods[0]
@@ -51,7 +65,7 @@ export function runChecks(e: Extracted, group: Group): NewFinding[] {
     }
   }
 
-  if (e.periods.length < 2) {
+  if (!preliminary && e.periods.length < 2) {
     out.push(f('media', 'No presenta información comparativa', 'Solo se encontró un período.', 'Sección 3', 'Presente las cifras del año anterior junto a las del año actual.', 'presentacion'))
   }
 

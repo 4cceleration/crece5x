@@ -9,6 +9,7 @@ import { computeRatios } from '@/domain/ratios'
 import { lessonForSection } from '@/domain/learning-path'
 import { LESSONS } from '@/academia/lessons'
 import type { Group, NewFinding } from '@/domain/types'
+import { figuresFindings, figuresToExtracted, type Figures } from '@/domain/figures'
 import { listUploads } from './uploads'
 
 export async function getAnalysis(db: Db, consultationId: string) {
@@ -30,7 +31,10 @@ export async function runAnalysis(
   await db
     .insert(analysis)
     .values({ consultationId, status: 'procesando' })
-    .onConflictDoUpdate({ target: analysis.consultationId, set: { status: 'procesando', error: null, updatedAt: new Date() } })
+    .onConflictDoUpdate({
+      target: analysis.consultationId,
+      set: { status: 'procesando', source: 'archivos', figures: null, error: null, updatedAt: new Date() },
+    })
   await db
     .delete(finding)
     .where(and(eq(finding.consultationId, consultationId), inArray(finding.source, ['chequeo', 'ia'])))
@@ -50,9 +54,11 @@ export async function runAnalysis(
     }
 
     const group = (c.group ?? 2) as Group
-    const extracted = await deps.analyst.extract(text)
-    const checks = runChecks(extracted, group)
-    const ai = await deps.analyst.judge({ text, extracted, group, alreadyFound: checks.map((f) => f.title) })
+    // Sin estados financieros: la IA arma unos preliminares con la declaración de renta o el balance de prueba
+    const preliminary = c.eeff === 'parciales'
+    const extracted = await deps.analyst.extract(text, { preliminary })
+    const checks = runChecks(extracted, group, { preliminary })
+    const ai = await deps.analyst.judge({ text, extracted, group, alreadyFound: checks.map((f) => f.title), preliminary })
     const aiFindings = ai.map((f): NewFinding => ({ ...f, source: 'ia', lesson: lessonForSection(f.niifSection, LESSONS) }))
 
     const all = [...checks, ...aiFindings]
@@ -64,4 +70,27 @@ export async function runAnalysis(
     await setStatus(db, consultationId, { status: 'error', error: e instanceof Error ? e.message : 'Error desconocido' })
     return 'error'
   }
+}
+
+// Sin archivos: la empresa escribe lo que tiene a la mano y se arma un balance estimado. Son reglas fijas,
+// sin IA, así que no gasta el cupo de análisis del plan
+export async function saveFiguresAnalysis(db: Db, consultationId: string, figures: Figures): Promise<void> {
+  const c = await db.query.consultation.findFirst({ where: eq(consultation.id, consultationId) })
+  if (!c) throw new Error('Consulta no encontrada')
+  const extracted = figuresToExtracted(figures)
+  const values = {
+    status: 'listo' as const,
+    source: 'cifras' as const,
+    figures,
+    extracted,
+    ratios: computeRatios(extracted.periods[0]),
+    error: null,
+    updatedAt: new Date(),
+  }
+  await db.insert(analysis).values({ consultationId, ...values }).onConflictDoUpdate({ target: analysis.consultationId, set: values })
+  await db
+    .delete(finding)
+    .where(and(eq(finding.consultationId, consultationId), inArray(finding.source, ['chequeo', 'ia'])))
+  const found = figuresFindings(figures, { empirical: c.eeff === 'empirica' })
+  if (found.length > 0) await db.insert(finding).values(found.map((f) => ({ ...f, consultationId })))
 }
