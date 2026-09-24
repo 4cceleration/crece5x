@@ -17,28 +17,29 @@
 
 @theme {
   /*
-   * Paleta de marca. Cada color con light-dark(claro, oscuro); ver el bloque de modo oscuro más abajo.
-   * Nombres de la guía de diseño → token: success = ok, danger = bad, surface-100 = canvas, surface-200 = card
+   * Paleta de marca en modo oscuro: la app solo tiene este modo. Los tonos claros de la guía de diseño
+   * (brand #0F6B5C…) quedan para correos, PDF y favicon.
+   * Nombres de la guía → token: success = ok, danger = bad, surface-100 = canvas, surface-200 = card
    */
-  --color-brand: light-dark(#0F6B5C, #3BB39C); /* acciones primarias y enlaces */
-  --color-brand-strong: light-dark(#0B4F44, #5FCBB5); /* hover, estado presionado y texto fuerte */
-  --color-brand-soft: light-dark(#E2EDEB, #16302A); /* fondo suave de lo seleccionado */
-  --color-on-accent: light-dark(#FFFFFF, #0B1512); /* texto sobre brand o danger */
-  --color-accent: light-dark(#E8A33D, #F0B25A); /* énfasis puntual, nunca fondos grandes */
-  --color-ink: light-dark(#1E2422, #E8EEEA); /* texto principal */
-  --color-muted: light-dark(#52605A, #98A6A0); /* texto secundario */
-  --color-canvas: light-dark(#FAF8F4, #0E1413); /* surface-100: fondo general */
-  --color-card: light-dark(#FFFFFF, #151D1B); /* surface-200: tarjetas y paneles */
-  --color-surface: light-dark(#F2EFE8, #1B2421); /* relleno suave: hover de botones fantasma y casillas */
-  --color-border: light-dark(#DFDACF, #2A3431); /* divisores y bordes de campos */
-  --color-ok: light-dark(#2F8A5B, #52B383); /* success: cartera al día, saldo positivo */
-  --color-bad: light-dark(#B03A30, #E5675D); /* danger: cartera vencida, alertas críticas */
-  --color-warn: light-dark(#E8A33D, #F0B25A); /* ámbar del semáforo: el mismo accent */
-  --color-warn-ink: light-dark(#8C5A12, #F0B25A); /* texto ámbar legible sobre el fondo */
-  --color-on-warn: #1E2422; /* texto sobre un relleno ámbar: oscuro en los dos modos */
+  --color-brand: #3BB39C; /* acciones primarias y enlaces */
+  --color-brand-strong: #5FCBB5; /* hover, estado presionado y texto fuerte */
+  --color-brand-soft: #16302A; /* fondo suave de lo seleccionado */
+  --color-on-accent: #0B1512; /* texto sobre brand o danger */
+  --color-accent: #F0B25A; /* énfasis puntual, nunca fondos grandes */
+  --color-ink: #E8EEEA; /* texto principal */
+  --color-muted: #98A6A0; /* texto secundario */
+  --color-canvas: #0E1413; /* surface-100: fondo general */
+  --color-card: #151D1B; /* surface-200: tarjetas y paneles */
+  --color-surface: #1B2421; /* relleno suave: hover de botones fantasma y casillas */
+  --color-border: #2A3431; /* divisores y bordes de campos */
+  --color-ok: #52B383; /* success: cartera al día, saldo positivo */
+  --color-bad: #E5675D; /* danger: cartera vencida, alertas críticas */
+  --color-warn: #F0B25A; /* ámbar del semáforo: el mismo accent */
+  --color-warn-ink: #F0B25A; /* texto ámbar legible sobre el fondo */
+  --color-on-warn: #1E2422; /* texto sobre un relleno ámbar */
   /* Brillos con tonos de la paleta: solo para halos, bordes e indicadores (nunca texto) */
-  --color-neon: light-dark(#1F8F7A, #3BB39C);
-  --color-neon-2: light-dark(#2F8A5B, #52B383);
+  --color-neon: #3BB39C;
+  --color-neon-2: #52B383;
   /* Todo en Inter: la jerarquía la marcan el peso y el tamaño */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -84,43 +85,36 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
   :focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }
 }
 
-/*
- * Modo oscuro: cada token trae sus dos valores con light-dark(claro, oscuro), así las clases
- * (bg-canvas, text-ink, glass…) no cambian en ningún componente y cada valor se escribe una sola vez.
- * Manda color-scheme: sigue al sistema salvo que la persona elija con el botón, que escribe
- * data-theme en <html> (src/ui/theme-toggle.tsx).
- */
-:root { color-scheme: light dark; }
-:root[data-theme='claro'] { color-scheme: light; }
-:root[data-theme='oscuro'] { color-scheme: dark; }
+/* Solo modo oscuro: los controles nativos (barras de desplazamiento, campos) también se pintan oscuros */
+:root { color-scheme: dark; }
 
 :root {
   /* Halo de los brillos (utilidades glow y glow-strong), en el verde azulado de la marca */
-  --neon-halo: light-dark(rgb(15 107 92 / 0.24), rgb(59 179 156 / 0.45));
-  --neon-halo-strong: light-dark(rgb(15 107 92 / 0.34), rgb(59 179 156 / 0.62));
+  --neon-halo: rgb(59 179 156 / 0.45);
+  --neon-halo-strong: rgb(59 179 156 / 0.62);
   --glow: 0 0 0 1px color-mix(in oklab, var(--color-neon) 35%, transparent), 0 0 18px -2px var(--neon-halo);
   --glow-strong: 0 0 0 1px color-mix(in oklab, var(--color-neon) 60%, transparent), 0 0 28px 0 var(--neon-halo-strong);
 
   /* Vidrio y su color resultante sobre el fondo (lo usa la muesca de la etiqueta de los campos) */
-  --glass-bg: light-dark(rgb(255 255 255 / 0.62), rgb(21 29 27 / 0.6));
-  --glass-edge: light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.1));
-  --glass-ring: light-dark(rgb(223 218 207 / 0.7), rgb(59 179 156 / 0.12));
-  --glass-shadow-near: light-dark(rgb(30 36 34 / 0.05), rgb(0 0 0 / 0.3));
-  --glass-shadow-far: light-dark(rgb(30 36 34 / 0.14), rgb(0 0 0 / 0.55));
-  --glass-notch: light-dark(#FDFCFB, #121918);
+  --glass-bg: rgb(21 29 27 / 0.6);
+  --glass-edge: rgb(255 255 255 / 0.1);
+  --glass-ring: rgb(59 179 156 / 0.12);
+  --glass-shadow-near: rgb(0 0 0 / 0.3);
+  --glass-shadow-far: rgb(0 0 0 / 0.55);
+  --glass-notch: #121918;
 
   /* Aurora del fondo (src/ui/backdrop.tsx) */
-  --aurora-1: light-dark(rgb(15 107 92 / 0.16), rgb(59 179 156 / 0.16));
-  --aurora-2: light-dark(rgb(232 163 61 / 0.14), rgb(240 178 90 / 0.08));
-  --aurora-3: light-dark(rgb(47 138 91 / 0.12), rgb(82 179 131 / 0.12));
+  --aurora-1: rgb(59 179 156 / 0.16);
+  --aurora-2: rgb(240 178 90 / 0.08);
+  --aurora-3: rgb(82 179 131 / 0.12);
 
-  /* Grano: ruido gris con alfa bajo, sirve igual en los dos modos */
+  /* Grano: ruido gris con alfa bajo sobre las superficies */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 .16 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 
-  /* Series de las gráficas (paleta categórica validada para cada fondo) */
-  --chart-1: light-dark(#12805A, #37AB6B);
-  --chart-2: light-dark(#5FBF93, #00774B);
-  --chart-3: light-dark(#3A6FB0, #4B7CBA);
+  /* Series de las gráficas (paleta categórica validada para el fondo oscuro) */
+  --chart-1: #37AB6B;
+  --chart-2: #00774B;
+  --chart-3: #4B7CBA;
 }
 
 /* Vidrio: superficie translúcida con desenfoque, grano y un filo de luz arriba. Úsese sobre <Backdrop /> */

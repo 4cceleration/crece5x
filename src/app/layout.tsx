@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 
@@ -10,16 +10,16 @@ export const metadata: Metadata = {
   description: 'Diagnóstico y guía NIIF para pymes',
 }
 
-// Aplica el tema guardado antes del primer pintado; sin preferencia manda el sistema (globals.css)
-const TEMA_GUARDADO = "try{var t=localStorage.getItem('tema');if(t)document.documentElement.dataset.theme=t}catch(e){}"
+// Solo modo oscuro: la barra del navegador y sus controles se pintan con el fondo de la app (--color-canvas)
+export const viewport: Viewport = {
+  colorScheme: 'dark',
+  themeColor: '#0E1413',
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={inter.variable} suppressHydrationWarning>
-      <body className="min-h-dvh font-sans antialiased">
-        <script dangerouslySetInnerHTML={{ __html: TEMA_GUARDADO }} />
-        {children}
-      </body>
+    <html lang="es" className={inter.variable}>
+      <body className="min-h-dvh font-sans antialiased">{children}</body>
     </html>
   )
 }

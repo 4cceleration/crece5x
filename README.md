@@ -66,7 +66,7 @@ Contra producción, use la conexión de Neon: `DATABASE_URL=<DATABASE_URL_UNPOOL
 
 ## Diseño
 
-Paleta de marca: `brand` `#0F6B5C` (acciones primarias y enlaces), `brand-strong` `#0B4F44` (hover y presionado), `accent` `#E8A33D` (énfasis puntual, nunca fondos grandes), `success` `#2F8A5B`, `danger` `#B03A30`, `ink` `#1E2422`, `muted` `#52605A`, `surface-100` `#FAF8F4` (fondo), `surface-200` `#FFFFFF` (tarjetas) y `border` `#DFDACF`. El modo oscuro deriva de los mismos tonos. Todo en Inter, con la jerarquía por peso: negrita en títulos, seminegrita en secciones, media en etiquetas y regular en el texto. Superficies de vidrio (`glass`) con brillos en el verde de la marca, esquinas de 6 px y una acción principal por pantalla. Los tokens viven en `src/app/globals.css`, con su nombre en la guía anotado al lado.
+Paleta de marca: `brand` `#0F6B5C` (acciones primarias y enlaces), `brand-strong` `#0B4F44` (hover y presionado), `accent` `#E8A33D` (énfasis puntual, nunca fondos grandes), `success` `#2F8A5B`, `danger` `#B03A30`, `ink` `#1E2422`, `muted` `#52605A`, `surface-100` `#FAF8F4` (fondo), `surface-200` `#FFFFFF` (tarjetas) y `border` `#DFDACF`. La app funciona solo en modo oscuro, con tonos derivados de esa paleta; los hex claros quedan para correos, PDF y favicon. Todo en Inter, con la jerarquía por peso: negrita en títulos, seminegrita en secciones, media en etiquetas y regular en el texto. Superficies de vidrio (`glass`) con brillos en el verde de la marca, esquinas de 6 px y una acción principal por pantalla. Los tokens viven en `src/app/globals.css`, con su nombre en la guía anotado al lado.
 
 ## Pruebas
 

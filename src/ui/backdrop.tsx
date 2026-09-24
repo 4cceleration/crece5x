@@ -1,4 +1,4 @@
-// Fondo de la app: lienzo oscuro/claro con una aurora neón difusa y grano encima.
+// Fondo de la app: lienzo oscuro con una aurora difusa en los tonos de la marca y grano encima.
 // Las tarjetas de vidrio desenfocan la aurora; el grano les da textura (ver `glass` en globals.css)
 export function Backdrop() {
   return (
