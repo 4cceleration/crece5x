@@ -4,6 +4,7 @@ import { requireUser } from '@/lib/session'
 import { getCompanyIdForUser } from '@/services/companies'
 import { completedLessons, learningPathForCompany } from '@/services/academia'
 import { LESSONS, type LessonMeta } from '@/academia/lessons'
+import { lessonMinutes } from '@/academia/reading'
 import { ButtonLink } from '@/ui/button'
 
 function LessonList({ items, done }: { items: LessonMeta[]; done: Set<string> }) {
@@ -13,7 +14,7 @@ function LessonList({ items, done }: { items: LessonMeta[]; done: Set<string> })
         <li key={l.slug}>
           <Link href={`/academia/${l.slug}`} className="flex items-center justify-between gap-4 py-4 hover:text-brand-strong">
             <span className={done.has(l.slug) ? 'text-muted line-through decoration-muted/40' : ''}>{l.title}</span>
-            <span className="shrink-0 text-sm text-muted">{done.has(l.slug) ? 'Leída' : `${l.minutes} min`}</span>
+            <span className="shrink-0 text-sm text-muted">{done.has(l.slug) ? 'Leída' : `${lessonMinutes(l.slug)} min`}</span>
           </Link>
         </li>
       ))}

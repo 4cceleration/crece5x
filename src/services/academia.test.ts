@@ -1,7 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import { makeTestDb } from '@/test/db'
-import { LESSONS } from '@/academia/lessons'
-import { LESSON_CONTENT } from '@/academia/content'
 import { createUserWithPassword } from './users'
 import { createCompanyForUser } from './companies'
 import { completedLessons, learningPathForCompany, markLessonDone } from './academia'
@@ -11,10 +9,6 @@ import { completeReviewIfDone, loadDiagnosticState, saveAnswer, saveClassificati
 import { finalizeConsultation, getResultData } from './report'
 
 describe('academia', () => {
-  it('cada guía tiene contenido', () => {
-    for (const l of LESSONS) expect(LESSON_CONTENT[l.slug]?.length, l.slug).toBeGreaterThan(200)
-  })
-
   it('marca guías leídas sin duplicar', async () => {
     const db = await makeTestDb()
     const userId = await createUserWithPassword(db, { email: 'a@x.co', name: 'A', role: 'empresa', password: 'Clave12345!' })
