@@ -1,6 +1,5 @@
 // Marco de los pasos de la consulta: tarjeta de vidrio centrada en la pantalla, con "volver" arriba y encabezado uniforme
 export function StepCard({
-  eyebrow,
   title,
   subtitle,
   back,
@@ -9,7 +8,6 @@ export function StepCard({
   children,
   wide = false,
 }: {
-  eyebrow?: string
   title: string
   subtitle?: React.ReactNode
   back?: React.ReactNode
@@ -37,8 +35,7 @@ export function StepCard({
         {corner && <div className="absolute right-3 top-4 z-10">{corner}</div>}
         <div className="p-6 text-center sm:p-8">
           <div className={`space-y-2 ${children ? 'mb-8' : ''} ${corner ? 'px-8' : ''}`}>
-            {eyebrow && <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted">{eyebrow}</p>}
-            <h1 className="font-display text-2xl font-semibold leading-snug tracking-tight sm:text-3xl">{title}</h1>
+            <h1 className="font-display text-2xl font-bold leading-snug tracking-tight sm:text-3xl">{title}</h1>
             {subtitle && <div className="text-muted">{subtitle}</div>}
           </div>
           {children}
@@ -52,4 +49,4 @@ export const backLinkClass = 'inline-flex items-center gap-1.5 text-muted transi
 
 // Opción grande de una sola pulsación (respuestas del cuestionario y preguntas de inicio)
 export const choiceClass =
-  'flex items-center justify-center rounded-md bg-card/80 text-lg font-medium text-ink ring-1 ring-ink/10 transition-[background-color,box-shadow,translate,scale] duration-base ease-spring hover:-translate-y-0.5 hover:bg-brand-soft hover:ring-brand hover:glow active:translate-y-0 active:scale-97 focus-visible:bg-brand-soft'
+  'flex items-center justify-center rounded-md bg-card/80 text-lg font-medium text-ink ring-1 ring-border transition-[background-color,box-shadow,translate,scale] duration-base ease-spring hover:-translate-y-0.5 hover:bg-brand-soft hover:ring-brand hover:glow active:translate-y-0 active:scale-97 focus-visible:bg-brand-soft'

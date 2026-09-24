@@ -178,7 +178,7 @@ function Meter({ label, value, max, reference, display, good, direction, hint }:
     <div className="space-y-1.5">
       <div className="flex items-baseline justify-between gap-3">
         <span className="text-sm">{label}</span>
-        <span className={`font-display whitespace-nowrap text-lg font-semibold tabular-nums ${good ? 'text-ok' : 'text-warn'}`}>{display}</span>
+        <span className={`font-display whitespace-nowrap text-lg font-semibold tabular-nums ${good ? 'text-ok' : 'text-warn-ink'}`}>{display}</span>
       </div>
       <div className="relative h-2 rounded-full bg-ink/8">
         <div
@@ -187,7 +187,7 @@ function Meter({ label, value, max, reference, display, good, direction, hint }:
         />
         <span className="absolute top-[-3px] h-3.5 w-0.5 rounded-full bg-ink/40" style={{ left: pct(reference) }} aria-hidden />
       </div>
-      <p className={`flex items-center gap-1 text-xs font-medium ${good ? 'text-ok' : 'text-warn'}`}>
+      <p className={`flex items-center gap-1 text-xs font-medium ${good ? 'text-ok' : 'text-warn-ink'}`}>
         <Icon name={good ? 'check' : 'alerta'} size={14} />
         {veredicto}
       </p>
@@ -209,7 +209,7 @@ function CashFlow({ flows, closingCash }: { flows: Flow[]; closingCash: number |
         }))}
       />
       {closingCash !== null && (
-        <p className="flex items-baseline justify-between gap-4 border-t border-ink/10 pt-3 text-sm">
+        <p className="flex items-baseline justify-between gap-4 border-t border-border pt-3 text-sm">
           <span className="text-muted">Efectivo al cierre</span>
           <span className="font-medium tabular-nums">{formatCompactCOP(closingCash)}</span>
         </p>

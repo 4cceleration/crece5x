@@ -16,7 +16,7 @@ const DAYS = [
 const HOURS = Array.from({ length: 14 }, (_, i) => i + 6) // 6:00 a 19:00
 
 const select =
-  'h-10 w-full min-w-24 rounded-md px-3 text-ink bg-card ring-1 ring-ink/15 outline-hidden transition-shadow duration-base hover:ring-ink/30 focus:ring-brand'
+  'h-10 w-full min-w-24 rounded-md px-3 text-ink bg-card ring-1 ring-border outline-hidden transition-shadow duration-base hover:ring-ink/30 focus:ring-brand'
 
 export default async function DisponibilidadPage({ searchParams }: { searchParams: Promise<{ ok?: string }> }) {
   const user = await requireUser(['consultor'])
@@ -25,11 +25,11 @@ export default async function DisponibilidadPage({ searchParams }: { searchParam
 
   return (
     <form action={saveAvailabilityAction} className="space-y-8 pt-6">
-      <h1 className="font-display text-4xl font-semibold tracking-tight">Disponibilidad</h1>
+      <h1 className="font-display text-4xl font-bold tracking-tight">Disponibilidad</h1>
       <div className="glass overflow-hidden rounded-lg">
         <table className="w-full text-left">
           <thead>
-            <tr className="border-b border-ink/10 text-xs uppercase tracking-wide text-muted">
+            <tr className="border-b border-border text-xs uppercase tracking-wide text-muted">
               <th scope="col" className="px-5 py-3 font-medium">Día</th>
               <th scope="col" className="px-3 py-3 font-medium">Desde</th>
               <th scope="col" className="px-5 py-3 font-medium">Hasta</th>

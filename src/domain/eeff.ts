@@ -5,16 +5,16 @@ export type Eeff = 'completos' | 'contador' | 'parciales' | 'empirica'
 export const ACCOUNTING_QUESTION = '¿Cómo lleva la contabilidad de su empresa?'
 
 export const ACCOUNTING_OPTIONS = [
-  { key: 'formal', label: 'Contabilidad formal', hint: 'Con contador y software o libros contables' },
-  { key: 'empirica', label: 'De forma empírica', hint: 'Cuadernos, hojas de cálculo o de memoria' },
+  { key: 'formal', label: 'Contabilidad formal' },
+  { key: 'empirica', label: 'De forma empírica' },
 ] as const
 
 export const FORMAL_QUESTION = '¿Qué tiene de su último cierre?'
 
-export const FORMAL_OPTIONS: { key: Exclude<Eeff, 'empirica'>; label: string; hint: string }[] = [
-  { key: 'completos', label: 'Estados financieros completos', hint: 'Balance, estado de resultados y notas' },
-  { key: 'contador', label: 'Los tiene mi contador', hint: 'Le pedimos que los suba por usted' },
-  { key: 'parciales', label: 'Declaración de renta o balance de prueba', hint: 'O reportes de su software contable' },
+export const FORMAL_OPTIONS: { key: Exclude<Eeff, 'empirica'>; label: string }[] = [
+  { key: 'completos', label: 'Estados financieros completos' },
+  { key: 'contador', label: 'Los tiene mi contador' },
+  { key: 'parciales', label: 'Declaración de renta o balance de prueba' },
 ]
 
 export const EEFF_LABEL: Record<Eeff, string> = {

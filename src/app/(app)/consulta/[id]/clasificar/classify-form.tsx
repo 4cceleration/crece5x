@@ -86,7 +86,7 @@ export function ClassifyForm({
                 key={g}
                 aria-current={activo ? 'true' : undefined}
                 className={`rounded-md px-2 py-2.5 text-center transition-colors duration-base ${
-                  activo ? 'bg-brand-strong text-on-accent' : 'bg-card/60 text-muted'
+                  activo ? 'bg-brand text-on-accent' : 'bg-card/60 text-muted'
                 }`}
               >
                 <span className="block font-display font-semibold">Grupo {g}</span>
@@ -95,15 +95,11 @@ export function ClassifyForm({
             )
           })}
         </ol>
-        <p className="mt-3 text-sm text-muted">
-          {preview ? (
-            <>
-              <span className="font-medium text-ink">{GROUP_NAMES[preview.group]}.</span> {preview.reason}
-            </>
-          ) : (
-            'Llene las tres cifras y le mostramos aquí, en vivo, el marco que le aplica.'
-          )}
-        </p>
+        {preview && (
+          <p className="mt-3 text-sm text-muted">
+            <span className="font-medium text-ink">{GROUP_NAMES[preview.group]}.</span> {preview.reason}
+          </p>
+        )}
       </div>
 
       <SubmitButton className="w-full gap-2" pendingLabel="Clasificando…">

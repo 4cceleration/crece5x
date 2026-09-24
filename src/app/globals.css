@@ -9,34 +9,39 @@
  *   duration-fast | duration-base | duration-slow   150 | 200 | 250 ms
  *   ease-out-soft    easing base; todo `transition-*` ya lo usa por defecto, con duration-fast
  *   glass            superficie de vidrio con grano; úsese sobre <Backdrop /> (src/ui/backdrop.tsx)
- *   glow | glow-strong   halo neón (reposo | hover o activo); glow-current sigue el color del elemento
+ *   glow | glow-strong   halo de la marca (reposo | hover o activo); glow-current sigue el color del elemento
  *   grain            textura de grano sobre una superficie sólida
  * Botones: Button, ButtonLink y buttonClass() ya traen estado presionado, foco y transición.
  */
 @source inline("animate-enter animate-fade animate-spinner animate-draw animate-pop duration-fast duration-base duration-slow ease-out-soft ease-spring");
 
 @theme {
-  /* Cada color con light-dark(claro, oscuro); ver el bloque de modo oscuro más abajo */
-  --color-brand: light-dark(#3F9B6E, #3DDC97);
-  --color-brand-strong: light-dark(#2E7D5B, #3DDC97);
-  --color-brand-deep: light-dark(#276A4D, #6FF0B8);
-  --color-brand-soft: light-dark(#E6F6ED, #10301F);
-  --color-on-accent: light-dark(#FFFFFF, #07120D);
-  --color-ink: light-dark(#14213D, #E7F2EC);
-  --color-muted: light-dark(#5B6477, #93A3B5);
-  --color-surface: light-dark(#F7F7F5, #151D2B);
-  --color-canvas: light-dark(#E9EDF2, #080D16);
-  --color-card: light-dark(#FFFFFF, #121A28);
-  --color-ok: light-dark(#2F9E6B, #3DDC97);
-  --color-warn: light-dark(#E0A100, #FFC940);
-  --color-bad: light-dark(#D64545, #FF6B6B);
-  --color-warn-ink: light-dark(#8A6400, #FFC940); /* texto ámbar legible sobre el fondo */
-  /* Neón: solo para brillos, bordes e indicadores (nunca texto sobre claro: no llega al contraste) */
-  --color-neon: light-dark(#19C27A, #3DFFA8);
-  --color-neon-2: light-dark(#14B8A6, #2EF2D0);
-  --color-on-warn: #14213D; /* texto sobre un relleno ámbar: oscuro en los dos modos */
+  /*
+   * Paleta de marca. Cada color con light-dark(claro, oscuro); ver el bloque de modo oscuro más abajo.
+   * Nombres de la guía de diseño → token: success = ok, danger = bad, surface-100 = canvas, surface-200 = card
+   */
+  --color-brand: light-dark(#0F6B5C, #3BB39C); /* acciones primarias y enlaces */
+  --color-brand-strong: light-dark(#0B4F44, #5FCBB5); /* hover, estado presionado y texto fuerte */
+  --color-brand-soft: light-dark(#E2EDEB, #16302A); /* fondo suave de lo seleccionado */
+  --color-on-accent: light-dark(#FFFFFF, #0B1512); /* texto sobre brand o danger */
+  --color-accent: light-dark(#E8A33D, #F0B25A); /* énfasis puntual, nunca fondos grandes */
+  --color-ink: light-dark(#1E2422, #E8EEEA); /* texto principal */
+  --color-muted: light-dark(#52605A, #98A6A0); /* texto secundario */
+  --color-canvas: light-dark(#FAF8F4, #0E1413); /* surface-100: fondo general */
+  --color-card: light-dark(#FFFFFF, #151D1B); /* surface-200: tarjetas y paneles */
+  --color-surface: light-dark(#F2EFE8, #1B2421); /* relleno suave: hover de botones fantasma y casillas */
+  --color-border: light-dark(#DFDACF, #2A3431); /* divisores y bordes de campos */
+  --color-ok: light-dark(#2F8A5B, #52B383); /* success: cartera al día, saldo positivo */
+  --color-bad: light-dark(#B03A30, #E5675D); /* danger: cartera vencida, alertas críticas */
+  --color-warn: light-dark(#E8A33D, #F0B25A); /* ámbar del semáforo: el mismo accent */
+  --color-warn-ink: light-dark(#8C5A12, #F0B25A); /* texto ámbar legible sobre el fondo */
+  --color-on-warn: #1E2422; /* texto sobre un relleno ámbar: oscuro en los dos modos */
+  /* Brillos con tonos de la paleta: solo para halos, bordes e indicadores (nunca texto) */
+  --color-neon: light-dark(#1F8F7A, #3BB39C);
+  --color-neon-2: light-dark(#2F8A5B, #52B383);
+  /* Todo en Inter: la jerarquía la marcan el peso y el tamaño */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-bricolage), var(--font-inter), ui-sans-serif, sans-serif;
+  --font-display: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
   --transition-duration-fast: 150ms;
   --transition-duration-base: 200ms;
@@ -72,7 +77,7 @@
 }
 
 body { background: var(--color-canvas); color: var(--color-ink); }
-/* Títulos con la fuente de marca; el texto corrido sigue en Inter */
+/* Títulos en Inter, más juntos que el texto corrido */
 h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
 /* En la capa base para que utilidades como outline-hidden (campos) la puedan reemplazar */
 @layer base {
@@ -90,24 +95,24 @@ h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
 :root[data-theme='oscuro'] { color-scheme: dark; }
 
 :root {
-  /* Halo de los brillos neón (utilidades glow y glow-strong) */
-  --neon-halo: light-dark(rgb(25 194 122 / 0.3), rgb(61 255 168 / 0.55));
-  --neon-halo-strong: light-dark(rgb(25 194 122 / 0.42), rgb(61 255 168 / 0.72));
+  /* Halo de los brillos (utilidades glow y glow-strong), en el verde azulado de la marca */
+  --neon-halo: light-dark(rgb(15 107 92 / 0.24), rgb(59 179 156 / 0.45));
+  --neon-halo-strong: light-dark(rgb(15 107 92 / 0.34), rgb(59 179 156 / 0.62));
   --glow: 0 0 0 1px color-mix(in oklab, var(--color-neon) 35%, transparent), 0 0 18px -2px var(--neon-halo);
   --glow-strong: 0 0 0 1px color-mix(in oklab, var(--color-neon) 60%, transparent), 0 0 28px 0 var(--neon-halo-strong);
 
   /* Vidrio y su color resultante sobre el fondo (lo usa la muesca de la etiqueta de los campos) */
-  --glass-bg: light-dark(rgb(255 255 255 / 0.55), rgb(18 26 40 / 0.55));
-  --glass-edge: light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.14));
-  --glass-ring: light-dark(rgb(255 255 255 / 0.6), rgb(61 255 168 / 0.12));
-  --glass-shadow-near: light-dark(rgb(20 33 61 / 0.05), rgb(0 0 0 / 0.3));
-  --glass-shadow-far: light-dark(rgb(20 33 61 / 0.16), rgb(0 0 0 / 0.55));
-  --glass-notch: light-dark(#F4F7F6, #111A26);
+  --glass-bg: light-dark(rgb(255 255 255 / 0.62), rgb(21 29 27 / 0.6));
+  --glass-edge: light-dark(rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.1));
+  --glass-ring: light-dark(rgb(223 218 207 / 0.7), rgb(59 179 156 / 0.12));
+  --glass-shadow-near: light-dark(rgb(30 36 34 / 0.05), rgb(0 0 0 / 0.3));
+  --glass-shadow-far: light-dark(rgb(30 36 34 / 0.14), rgb(0 0 0 / 0.55));
+  --glass-notch: light-dark(#FDFCFB, #121918);
 
   /* Aurora del fondo (src/ui/backdrop.tsx) */
-  --aurora-1: light-dark(rgb(25 194 122 / 0.28), rgb(61 255 168 / 0.22));
-  --aurora-2: light-dark(rgb(20 184 166 / 0.2), rgb(46 242 208 / 0.16));
-  --aurora-3: light-dark(rgb(58 111 176 / 0.14), rgb(75 124 186 / 0.2));
+  --aurora-1: light-dark(rgb(15 107 92 / 0.16), rgb(59 179 156 / 0.16));
+  --aurora-2: light-dark(rgb(232 163 61 / 0.14), rgb(240 178 90 / 0.08));
+  --aurora-3: light-dark(rgb(47 138 91 / 0.12), rgb(82 179 131 / 0.12));
 
   /* Grano: ruido gris con alfa bajo, sirve igual en los dos modos */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 .16 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");

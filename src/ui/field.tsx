@@ -28,7 +28,7 @@ export function Field({
         <input
           {...props}
           placeholder=" "
-          className={`peer h-14 w-full rounded-md bg-card ${icon ? 'pl-11' : 'pl-4'} ${suffix ? 'pr-16' : trailing ? 'pr-14' : 'pr-4'} text-ink outline-hidden ring-1 ring-ink/15 transition-shadow duration-base hover:ring-ink/30 focus:ring-brand focus:glow ${className}`}
+          className={`peer h-14 w-full rounded-md bg-card ${icon ? 'pl-11' : 'pl-4'} ${suffix ? 'pr-16' : trailing ? 'pr-14' : 'pr-4'} text-ink outline-hidden ring-1 ring-border transition-shadow duration-base hover:ring-ink/30 focus:ring-brand focus:glow ${className}`}
         />
         {suffix && (
           <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium tracking-wide text-muted transition-[color] duration-base peer-focus:text-brand-strong">
@@ -60,7 +60,7 @@ export function Check({ label, ...props }: ComponentProps<'input'> & { label: st
       <span className="relative mt-0.5 flex size-5 shrink-0">
         <input
           type="checkbox"
-          className="peer size-5 cursor-pointer appearance-none rounded-full bg-surface ring-1 ring-muted/40 transition-[background-color,box-shadow] checked:bg-brand-strong checked:ring-brand-strong checked:glow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+          className="peer size-5 cursor-pointer appearance-none rounded-full bg-surface ring-1 ring-muted/40 transition-[background-color,box-shadow] checked:bg-brand checked:ring-brand checked:glow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
           {...props}
         />
         <svg

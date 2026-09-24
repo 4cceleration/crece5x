@@ -35,7 +35,6 @@ export default async function ContadorPage({
 
   return (
     <StepCard
-      eyebrow="Para el contador"
       title={`Suba los estados financieros de ${invite.companyName}`}
       subtitle={`Balance, estado de resultados y notas del último cierre, en PDF o Excel. No necesita crear cuenta; el enlace sirve hasta el ${formatLongDate(invite.expiresAt)}.`}
     >
@@ -49,7 +48,7 @@ export default async function ContadorPage({
         <UploadForm action={accountantUploadAction.bind(null, token)} />
         {error && <p className="text-sm text-bad">{error}</p>}
         {files.length > 0 && (
-          <ul className="divide-y divide-ink/10 rounded-md bg-card/70 ring-1 ring-ink/10">
+          <ul className="divide-y divide-border rounded-md bg-card/70 ring-1 ring-border">
             {files.map((f) => (
               <li key={f.id} className="flex items-center justify-between gap-3 px-4 py-3">
                 <span className="flex min-w-0 items-center gap-2">

@@ -21,7 +21,7 @@ export default async function AnaliticaPage() {
   return (
     <div className="animate-enter space-y-6 pt-6">
       <header className="space-y-2">
-        <h1 className="font-display text-4xl font-semibold tracking-tight">Analítica financiera</h1>
+        <h1 className="font-display text-4xl font-bold tracking-tight">Analítica financiera</h1>
         <p className="text-muted">
           {!data?.financials
             ? 'Aquí verá sus cifras cuando analicemos sus estados financieros.'

@@ -42,7 +42,7 @@ export default async function CasoPage({
     <div className="space-y-16 pt-6">
       <section className="space-y-2">
         <p className="text-sm text-muted first-letter:uppercase">{formatDateTime(appt.startsAt)}</p>
-        <h1 className="font-display text-4xl font-semibold tracking-tight">{detail.companyName}</h1>
+        <h1 className="font-display text-4xl font-bold tracking-tight">{detail.companyName}</h1>
         <p className="text-muted">{emails.join(', ')}</p>
       </section>
 
@@ -53,7 +53,7 @@ export default async function CasoPage({
             name="notes"
             defaultValue={appt.notes ?? ''}
             rows={5}
-            className="w-full rounded-md p-4 text-ink bg-card ring-1 ring-ink/15 outline-hidden transition-shadow duration-base hover:ring-ink/30 focus:ring-brand"
+            className="w-full rounded-md p-4 text-ink bg-card ring-1 ring-border outline-hidden transition-shadow duration-base hover:ring-ink/30 focus:ring-brand"
           />
         </label>
         <div className="flex flex-wrap items-center gap-6">

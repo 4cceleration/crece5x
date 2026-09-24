@@ -9,11 +9,11 @@ export default async function ConsultorPage() {
   const items = await consultantAgenda(db, user.id)
   return (
     <section className="space-y-8 pt-6">
-      <h1 className="font-display text-4xl font-semibold tracking-tight">Próximas citas</h1>
+      <h1 className="font-display text-4xl font-bold tracking-tight">Próximas citas</h1>
       {items.length === 0 ? (
         <p className="text-muted">No tiene citas agendadas.</p>
       ) : (
-        <ul className="divide-y divide-ink/10">
+        <ul className="divide-y divide-border">
           {items.map((a) => (
             <li key={a.id}>
               <Link href={`/consultor/casos/${a.id}`} className="flex items-center justify-between gap-4 py-4 hover:text-brand-strong">

@@ -50,7 +50,6 @@ export default async function ExaminarPage({
     const empirica = c.eeff === 'empirica'
     return (
       <StepCard
-        eyebrow="Examinar"
         title={empirica ? 'Cuéntenos las cifras que tiene a la mano' : 'Escriba sus cifras'}
         subtitle="No tienen que ser exactas: con valores aproximados le mostramos cómo está su empresa."
       >
@@ -81,7 +80,7 @@ export default async function ExaminarPage({
   const errorLine = error && <p className="text-sm text-bad">{ERRORS[error] ?? error}</p>
 
   const fileList = files.length > 0 && (
-    <ul className="divide-y divide-ink/10 rounded-md bg-card/70 ring-1 ring-ink/10">
+    <ul className="divide-y divide-border rounded-md bg-card/70 ring-1 ring-border">
       {files.map((f) => (
         <li key={f.id} className="flex items-center justify-between gap-3 px-4 py-3">
           <span className="flex min-w-0 items-center gap-2">
@@ -101,7 +100,6 @@ export default async function ExaminarPage({
     const pending = invite && isPending(invite)
     return (
       <StepCard
-        eyebrow="Examinar"
         title="Su contador puede subirlos por usted"
         subtitle="Le enviamos un enlace seguro para subir los estados financieros, sin crear cuenta. Vence en 7 días."
       >
@@ -138,7 +136,7 @@ export default async function ExaminarPage({
             </SubmitButton>
           </form>
           {errorLine}
-          <div className="space-y-3 border-t border-ink/10 pt-5">
+          <div className="space-y-3 border-t border-border pt-5">
             <p className="text-center text-sm text-muted">¿Ya los tiene a la mano? Súbalos usted.</p>
             <UploadForm action={uploadAction.bind(null, id)} />
           </div>
@@ -157,7 +155,6 @@ export default async function ExaminarPage({
 
   return (
     <StepCard
-      eyebrow="Examinar"
       title={parciales ? 'Con esto también podemos analizar' : 'Suba sus estados financieros'}
       subtitle={
         parciales

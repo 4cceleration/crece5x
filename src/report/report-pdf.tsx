@@ -6,9 +6,9 @@ import { RATIO_LABELS } from '@/domain/ratios'
 import { formatDateTime } from '@/domain/dates'
 import { BASIS_NOTE } from '@/domain/eeff'
 
-const INK = '#14213D'
-const MUTED = '#5B6477'
-const LIGHT_COLOR = { verde: '#2F9E6B', ambar: '#E0A100', rojo: '#D64545' } as const
+const INK = '#1E2422'
+const MUTED = '#52605A'
+const LIGHT_COLOR = { verde: '#2F8A5B', ambar: '#E8A33D', rojo: '#B03A30' } as const
 
 const s = StyleSheet.create({
   page: { padding: 48, fontSize: 10.5, color: INK, fontFamily: 'Helvetica', lineHeight: 1.4 },

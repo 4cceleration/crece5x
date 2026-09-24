@@ -23,14 +23,14 @@ import { StepCard, backLinkClass, choiceClass } from '@/components/step-card'
 const SHORT = { 1: 'NIIF Plenas', 2: 'NIIF para Pymes', 3: 'Microempresas' } as const
 
 // El contador ve las preguntas técnicas; el empresario, las mismas en palabras sencillas
-const AUDIENCE_OPTIONS: { key: Audience; label: string; hint: string }[] = [
-  { key: 'contador', label: 'Contador', hint: 'Con los términos de la NIIF' },
-  { key: 'empresario', label: 'Empresario', hint: 'En palabras sencillas' },
+const AUDIENCE_OPTIONS: { key: Audience; label: string }[] = [
+  { key: 'contador', label: 'Contador' },
+  { key: 'empresario', label: 'Empresario' },
 ]
 
 const AUDIENCE_LABEL: Record<Audience, string> = { contador: 'Responde el contador', empresario: 'Responde el empresario' }
 
-const option = `${choiceClass} flex-col gap-0.5 px-5 py-4`
+const option = `${choiceClass} px-5 py-4`
 
 export default async function ClasificarPage({
   params,
@@ -49,16 +49,11 @@ export default async function ClasificarPage({
   if (c.audience === null) {
     return (
       <div data-step="quien-responde">
-        <StepCard
-          eyebrow="Su consulta"
-          title="¿Quién va a responder?"
-          subtitle="Las preguntas miden lo mismo; solo cambia cómo se las hacemos."
-        >
+        <StepCard title="¿Quién va a responder?">
           <form action={audienceAction.bind(null, id)} className="grid gap-3">
             {AUDIENCE_OPTIONS.map((o) => (
               <button key={o.key} name="value" value={o.key} className={option}>
-                <span>{o.label}</span>
-                <span className="text-sm font-normal text-muted">{o.hint}</span>
+                {o.label}
               </button>
             ))}
           </form>
@@ -74,7 +69,6 @@ export default async function ClasificarPage({
     return (
       <div data-step={formal ? 'formal' : 'contabilidad'}>
         <StepCard
-          eyebrow="Su contabilidad"
           title={formal ? FORMAL_QUESTION : ACCOUNTING_QUESTION}
           back={
             formal ? (
@@ -95,8 +89,7 @@ export default async function ClasificarPage({
           <form action={(formal ? eeffAction : accountingAction).bind(null, id)} className="grid gap-3">
             {options.map((o) => (
               <button key={o.key} name="value" value={o.key} className={option}>
-                <span>{o.label}</span>
-                <span className="text-sm font-normal text-muted">{o.hint}</span>
+                {o.label}
               </button>
             ))}
           </form>
@@ -123,13 +116,13 @@ export default async function ClasificarPage({
   if (c.group !== null && editar === undefined) {
     const current = c.group
     return (
-      <StepCard eyebrow="Su marco contable" title={`Grupo ${current}`} subtitle={GROUP_NAMES[current]}>
+      <StepCard title={`Grupo ${current}`} subtitle={GROUP_NAMES[current]}>
         <ol className="grid grid-cols-3 gap-1.5" aria-label="Grupos NIIF">
           {([1, 2, 3] as const).map((g) => (
             <li
               key={g}
               aria-current={g === current ? 'true' : undefined}
-              className={`rounded-md px-2 py-3 ${g === current ? 'bg-brand-strong text-on-accent' : 'bg-ink/5 text-muted'}`}
+              className={`rounded-md px-2 py-3 ${g === current ? 'bg-brand text-on-accent' : 'bg-ink/5 text-muted'}`}
             >
               <span className="block font-display text-lg font-semibold">Grupo {g}</span>
               <span className={`block text-xs ${g === current ? 'opacity-90' : ''}`}>{SHORT[g]}</span>
@@ -157,7 +150,7 @@ export default async function ClasificarPage({
   const settings = await getSettings(db)
 
   return (
-    <StepCard eyebrow="Clasificar" title="¿Qué tamaño tiene su empresa?">
+    <StepCard title="¿Qué tamaño tiene su empresa?">
       <ClassifyForm
         action={classifyAction.bind(null, id)}
         settings={{ smmlv: settings.smmlv, group1: settings.group1, group3: settings.group3 }}

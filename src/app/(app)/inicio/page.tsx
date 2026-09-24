@@ -28,7 +28,7 @@ export default async function InicioPage() {
   if (last?.status === 'resultado' && last.finalScore !== null) {
     return (
       <section className="animate-enter mx-auto max-w-xl space-y-6 pt-6">
-        <h1 className="text-center font-display text-4xl font-semibold tracking-tight">Hola, {firstName}</h1>
+        <h1 className="text-center font-display text-4xl font-bold tracking-tight">Hola, {firstName}</h1>
         <div className="glass space-y-8 rounded-lg p-6 sm:p-8">
           <Score value={last.finalScore} />
           <div className="flex flex-col items-center gap-4">

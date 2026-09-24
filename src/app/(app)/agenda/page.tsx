@@ -12,7 +12,7 @@ import { Icon } from '@/ui/icons'
 import { SubmitButton } from '@/ui/submit-button'
 
 const chip =
-  'flex h-12 items-center justify-center rounded-md bg-card/80 font-medium tabular-nums ring-1 ring-ink/10 transition-[background-color,box-shadow,translate,scale] duration-base ease-spring hover:-translate-y-0.5 hover:bg-brand-soft hover:ring-brand active:translate-y-0 active:scale-97'
+  'flex h-12 items-center justify-center rounded-md bg-card/80 font-medium tabular-nums ring-1 ring-border transition-[background-color,box-shadow,translate,scale] duration-base ease-spring hover:-translate-y-0.5 hover:bg-brand-soft hover:ring-brand active:translate-y-0 active:scale-97'
 
 const ERRORS: Record<string, string> = {
   ocupado: 'Ese horario acaba de ocuparse. Elija otro.',
@@ -53,7 +53,7 @@ export default async function AgendaPage({
             </div>
           </div>
 
-          <dl className="mt-6 grid grid-cols-1 gap-5 border-t border-ink/10 pt-6 sm:grid-cols-2">
+          <dl className="mt-6 grid grid-cols-1 gap-5 border-t border-border pt-6 sm:grid-cols-2">
             <div className="flex items-start gap-3">
               <Icon name="agenda" size={22} className="mt-0.5 text-brand-strong" />
               <div>
@@ -194,7 +194,7 @@ function AgendaCard({
       )}
       <div className="glass rounded-lg p-6 sm:p-8">
         <div className={`space-y-1 ${children ? 'mb-6' : ''}`}>
-          <h1 className="font-display text-2xl font-semibold tracking-tight">{title}</h1>
+          <h1 className="font-display text-2xl font-bold tracking-tight">{title}</h1>
           {subtitle && <p className="text-muted first-letter:uppercase">{subtitle}</p>}
         </div>
         {children}

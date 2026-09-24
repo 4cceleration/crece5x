@@ -167,7 +167,7 @@ export function ResultView({
           <LockedFindings count={data.findings.length} {...locked} />
         ) : (
           <>
-            <ul className="divide-y divide-ink/10">
+            <ul className="divide-y divide-border">
               {top.map((f) => (
                 <FindingItem key={f.id} f={f} />
               ))}
@@ -175,7 +175,7 @@ export function ResultView({
             {rest.length > 0 && (
               <details>
                 <summary className="cursor-pointer py-2 text-sm text-muted">Ver {rest.length} más</summary>
-                <ul className="divide-y divide-ink/10">
+                <ul className="divide-y divide-border">
                   {rest.map((f) => (
                     <FindingItem key={f.id} f={f} />
                   ))}

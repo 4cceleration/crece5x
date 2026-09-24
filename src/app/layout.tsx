@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
-import { Bricolage_Grotesque, Inter } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import './globals.css'
 
+// Inter variable: todos los pesos, del regular del texto al negrita de los títulos
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const display = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-bricolage' })
 
 export const metadata: Metadata = {
   title: 'crece5x · Consulta NIIF',
@@ -15,7 +15,7 @@ const TEMA_GUARDADO = "try{var t=localStorage.getItem('tema');if(t)document.docu
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" className={`${inter.variable} ${display.variable}`} suppressHydrationWarning>
+    <html lang="es" className={inter.variable} suppressHydrationWarning>
       <body className="min-h-dvh font-sans antialiased">
         <script dangerouslySetInnerHTML={{ __html: TEMA_GUARDADO }} />
         {children}

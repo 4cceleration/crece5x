@@ -21,7 +21,7 @@ export default async function PlanesPage({ searchParams }: { searchParams: Promi
   return (
     <div className="animate-enter space-y-6 pt-6">
       <header className="space-y-2">
-        <h1 className="font-display text-4xl font-semibold tracking-tight">Planes</h1>
+        <h1 className="font-display text-4xl font-bold tracking-tight">Planes</h1>
         <p className="text-muted">
           Estamos en pruebas: cámbiese de plan cuando quiera, sin pagar, y pruebe cada nivel. Su plan actual es{' '}
           <span className="text-ink">{PLANS[current].name}</span>.{' '}

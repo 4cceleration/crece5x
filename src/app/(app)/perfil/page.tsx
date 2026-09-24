@@ -46,7 +46,7 @@ export default async function PerfilPage({ searchParams }: { searchParams: Promi
   return (
     <div className="animate-enter space-y-6 pt-6">
       <header className="space-y-2">
-        <h1 className="font-display text-4xl font-semibold tracking-tight">Su perfil</h1>
+        <h1 className="font-display text-4xl font-bold tracking-tight">Su perfil</h1>
         <p className="text-muted">{profile.name}</p>
       </header>
 

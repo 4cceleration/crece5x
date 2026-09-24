@@ -35,7 +35,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
           {lesson.sections.length > 0 ? `Sección ${lesson.sections.join(', ')} · ` : ''}
           {lesson.minutes} min
         </p>
-        <h1 className="text-4xl font-semibold tracking-tight">{lesson.title}</h1>
+        <h1 className="text-4xl font-bold tracking-tight">{lesson.title}</h1>
       </div>
       <div className="space-y-4 text-lg leading-relaxed">
         <ReactMarkdown

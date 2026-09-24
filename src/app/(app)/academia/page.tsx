@@ -8,7 +8,7 @@ import { ButtonLink } from '@/ui/button'
 
 function LessonList({ items, done }: { items: LessonMeta[]; done: Set<string> }) {
   return (
-    <ul className="divide-y divide-ink/10">
+    <ul className="divide-y divide-border">
       {items.map((l) => (
         <li key={l.slug}>
           <Link href={`/academia/${l.slug}`} className="flex items-center justify-between gap-4 py-4 hover:text-brand-strong">
@@ -32,7 +32,7 @@ export default async function AcademiaPage() {
   return (
     <div className="space-y-14 pt-6">
       <section className="space-y-6">
-        <h1 className="text-4xl font-semibold tracking-tight">Academia NIIF</h1>
+        <h1 className="text-4xl font-bold tracking-tight">Academia NIIF</h1>
         {path.length > 0 ? (
           <>
             <p className="text-muted">
