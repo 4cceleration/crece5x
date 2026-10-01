@@ -79,7 +79,7 @@ El E2E usa Chromium sin interfaz (la primera vez: `npx playwright install chromi
 
 ## Desplegar en Vercel
 
-Producción: **https://crece5x.vercel.app** (proyecto `crece5x`).
+Producción: **https://crece.4cceleration.com** (proyecto `crece5x`; también responde en https://crece5x.vercel.app). DNS en Namecheap: `CNAME crece → 78d572936b77b727.vercel-dns-017.com`.
 
 - **Base de datos**: Neon (Marketplace de Vercel), conectada al proyecto; crea `DATABASE_URL` y `DATABASE_URL_UNPOOLED`.
   Migrar y sembrar desde su máquina con la conexión directa:
@@ -91,7 +91,7 @@ Producción: **https://crece5x.vercel.app** (proyecto `crece5x`).
 - **Archivos**: Vercel Blob privado `crece5x-archivos` (`BLOB_READ_WRITE_TOKEN`).
 - **IA**: `AI_MODEL=groq/openai/gpt-oss-120b` con `GROQ_API_KEY`.
 - **Correo**: Resend (`RESEND_API_KEY`, `MAIL_FROM` con dominio verificado).
-- **Otras**: `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL=https://crece5x.vercel.app`, `CRON_SECRET`. En despliegues de vista previa la URL sale de `VERCEL_URL`.
+- **Otras**: `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL=https://crece.4cceleration.com`, `CRON_SECRET`. En despliegues de vista previa la URL sale de `VERCEL_URL`.
 - Desplegar: `vercel deploy --prod`.
 
 ## Elegir el proveedor de IA
